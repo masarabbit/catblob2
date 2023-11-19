@@ -39,7 +39,7 @@ function init() {
 
   const settings = {
     transitionTimer: null,
-    isWindowActive: false,
+    isWindowActive: true,
     yOffset: 0,
     npcs: [
       {
@@ -123,6 +123,7 @@ function init() {
 
 
   setInterval(()=> {
+    if (!settings.isWindowActive) return
     ;[player, ...settings.npcs].forEach(actor => {
       settings.yOffset = settings.yOffset + 1 === 4
         ? 0
@@ -322,6 +323,8 @@ function init() {
   }
 
   const triggerNpcMotion = npc => {
+    if (!settings.isWindowActive) return
+
     clearTimeout(npc.motionTimer)
     const target = settings.npcs[1]
     if (npc.pause || npc.pos === target.pos) return
@@ -380,6 +383,7 @@ function init() {
   }
 
   setInterval(()=> {
+    if (!settings.isWindowActive) return
     settings.npcs.forEach(npc => {
       if (npc.isFleeing) {
         avoidPlayer(npc)
@@ -465,7 +469,8 @@ function init() {
   setupMap()
   addNpcs()
 
-  console.log('settings', settings)
+  window.addEventListener('focus', ()=> settings.isWindowActive = true)
+  window.addEventListener('blur', ()=> settings.isWindowActive = false)
   
   window.addEventListener('resize', adjustMapWidthAndHeight)
   window.addEventListener('mousemove', moveCursor )

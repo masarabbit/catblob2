@@ -78,7 +78,7 @@ const placeTile = ({ mapIndex, color, url, ctx, overrideD, gridData, triggerLast
     ctx.clearRect(mapX, mapY, d, d)
   } else {
     ctx.imageSmoothingEnabled = false
-    ctx.fillStyle = color || '#a2fcf0'
+    ctx.fillStyle = color || '#2e1a66'
     ctx.fillRect(mapX, mapY, d, d)
   }
 

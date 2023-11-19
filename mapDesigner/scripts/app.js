@@ -177,6 +177,16 @@ function init() {
         outputTile()
       })
     })  
+    console.log('test', tilesList.map(t => {
+      return { 
+        key: t[0], 
+        id: tiles[t[0]]?.id || tiles[t[0][0]]?.id + '_' + t[0][2],
+        up: [],
+        right: [],
+        down: [],
+        left: [],
+      }
+    }))
   }
 
 
