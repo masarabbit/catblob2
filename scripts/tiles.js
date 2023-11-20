@@ -1,36 +1,85 @@
 const tiles = [
   {
-      "key": "a",
-      "id": "h",
-      "up": ['block', 'floor'],
-      "right": ['h','h_edge_h','l_corner_h'],
-      "down": ['floor'],
-      "left": ['h', 'h_edge', 'l_corner']
-  },
-  {
-      "key": "b",
-      "id": "h_edge",
-      "up": ['floor'],
-      "right": ['h','h_edge_h','l_corner_h'],
-      "down": ['floor'],
-      "left": ['dot', 'floor']
-  },
-  {
-      "key": "b.h",
-      "id": "h_edge_h",
-      "up": ['floor'],
-      "right": ['dot', 'floor'],
-      "down": ['floor'],
-      "left": ['h','h_edge','l_corner']
-  },
-  {
-      "key": "c",
-      "id": "v_down_edge",
-      "up": ['v','v_up_edge','v_r_joint','v_r_joint_h','v_t_joint','v_r_joint','v_r_joint_h'],
-      "right": ['floor','dot','l_corner'],
-      "down": ['floor','dot'],
-      "left": ['floor','dot','l_corner_h']
-  },
+    "key": "a",
+    "id": "h",
+    "up": ['h'],
+    "right": ['h'],
+    "down": ['h'],
+    "left": ['h'],
+},
+// {
+//     "key": "b",
+//     "id": "h_edge",
+//     "up": ['h'],
+//     "right": ['h'],
+//     "down": ['h'],
+//     "left": ['h'],
+// },
+// {
+//     "key": "b.h",
+//     "id": "h_edge_h",
+//     "up": ['h'],
+//     "right": ['h'],
+//     "down": ['h'],
+//     "left": ['h'],
+// },
+//   {
+//     "key": "a",
+//     "id": "h",
+//     "up": ['h', 'h_edge', ],
+//     "right": ['h','h_edge_h'],
+//     "down": ['h_edge'],
+//     "left": ['h', 'h_edge', ],
+// },
+{
+    "key": "b",
+    "id": "h_edge",
+    "up": ['h', 'h_edge', ],
+    "right": ['h','h_edge_h'],
+    "down": ['h_edge'],
+    "left": ['h', 'h_edge', ],
+},
+{
+    "key": "b.h",
+    "id": "h_edge_h",
+    "up": ['h', 'h_edge', ],
+    "right": ['h','h_edge_h'],
+    "down": ['h_edge'],
+    "left": ['h', 'h_edge', ],
+},
+
+  // {
+  //     "key": "a",
+  //     "id": "h",
+  //     "up": ['block', 'floor'],
+  //     "right": ['h','h_edge_h','l_corner_h'],
+  //     "down": ['floor'],
+  //     "left": ['h', 'h_edge', 'l_corner']
+  // },
+  // {
+  //     "key": "b",
+  //     "id": "h_edge",
+  //     "up": ['floor'],
+  //     "right": ['h','h_edge_h','l_corner_h'],
+  //     "down": ['floor'],
+  //     "left": ['dot', 'floor']
+  // },
+  // {
+  //     "key": "b.h",
+  //     "id": "h_edge_h",
+  //     "up": ['floor'],
+  //     "right": ['dot', 'floor'],
+  //     "down": ['floor'],
+  //     "left": ['h','h_edge','l_corner']
+  // },
+  // {
+  //     "key": "c",
+  //     "id": "v_down_edge",
+  //     "up": ['v','v_up_edge','v_r_joint','v_r_joint_h','v_t_joint','v_r_joint','v_r_joint_h'],
+  //     "right": ['floor','dot','l_corner'],
+  //     "down": ['floor','dot'],
+  //     "left": ['floor','dot','l_corner_h']
+  // },
   // {
   //     "key": "d",
   //     "id": "v",

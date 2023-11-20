@@ -56,9 +56,9 @@ function init() {
     },
     map: {
       el: elements.mapCover, 
-      w: 30, h: 20,
+      w: 20, h: 20,
       d: 32,
-      column: 30,
+      column: 20,
       row: 20,
       data: [],
       blocks: [],
@@ -117,7 +117,7 @@ function init() {
 
   const setupMap = () => {
     const { d, column, row } = settings.map
-    settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
+    settings.map.data = new Array(column * row).fill('')
     settings.mapImage.w = column * d
     settings.mapImage.h = row * d
 
@@ -127,54 +127,151 @@ function init() {
     const drawnTiles = []
 
     // randomly draw tiles
-    settings.map.data.forEach((_tile, i) => {
-      if (randomN(30) > 29) {
-        const index = randomN(4) - 1
-        drawnTiles[i] = tiles[index]
-        const tileX = (index % 10) * 16
-        const tileY = Math.floor(index / 10) * 16
-        settings.mapImage.ctx.drawImage(elements.mapTiles, 
-          tileX, tileY,
-          16, 16,
-          mapX(i) * d, mapY(i) * d, 
-          d, d)
-        }
-    })
+    // settings.map.data.forEach((_tile, i) => {
+    //   if (randomN(30) > 29) {
+    //     const index = randomN(4) - 1
+    //     drawnTiles[i] = tiles[index]
+    //     const tileX = (index % 10) * 16
+    //     const tileY = Math.floor(index / 10) * 16
+    //     settings.mapImage.ctx.drawImage(elements.mapTiles, 
+    //       tileX, tileY,
+    //       16, 16,
+    //       mapX(i) * d, mapY(i) * d, 
+    //       d, d)
+    //     }
+    // })
+
+    const placeTile = i => {
+      const index = randomN(3) - 1
+      drawnTiles[i] = tiles[index]
+      const tileX = (index % 10) * 16
+      const tileY = Math.floor(index / 10) * 16
+      settings.mapImage.ctx.drawImage(elements.mapTiles, 
+        tileX, tileY,
+        16, 16,
+        mapX(i) * d, mapY(i) * d, 
+        d, d)
+    }
+
+    const randomI = randomN(settings.map.data.length / 2)
+    placeTile(randomI)
 
 
     // check 4 directions and draw possible tile
     // ? right now doesn't consider when tiles have multiple neighbours...
-    setTimeout(()=> {
+
+    // Shouldn't be looping through drawnTiles, should be looping through tiles due to be drawn on next to drawnTiles.
+    // Need way to create list using two arrays - find tile that us present in both.
+    
+    const tilesToDraw = []
+
+    // Repeat while tilesToDraw has blank tiles
+    while (tilesToDraw.length !== settings.map.data.length) {
       drawnTiles.forEach((tile, i) => {
         if (tile) {
-          ;['up', 'right', 'down', 'left'].forEach((dir, dI) => {
-            const tileId = tile[dir][Math.floor(Math.random() * tile[dir].length)]
-            const tI = tiles.findIndex(t => t.id === tileId) 
-
-            const tileX = (tI % 10) * 16
-            const tileY = Math.floor(tI / 10) * 16
-            const offset = [-column, 1, column, -1][dI]
-            drawnTiles[i + offset] = tiles[tI]
+          [-column, 1, column, -1].forEach((dir, dI) => {
+            const possibleTiles = tile[['up', 'right', 'down', 'left'][dI]]
+            
+            // only check tiles that are actually next to each other
+            if (
+              (i + dir) > (settings.map.data.length - 1) ||
+              (i + dir) < 0 || 
+              ([1, -1].includes(dir) && (mapY(i) !== mapY(i + dir))) || 
+              ((dir === column) && mapY(i + dir) > settings.map.row)
+              ) return
   
-            settings.mapImage.ctx.drawImage(elements.mapTiles, 
-              tileX, tileY,
-              16, 16,
-              mapX(i + offset) * d, mapY(i + offset) * d, 
-              d, d
-            )
+            // ensure tiles meet all requirement
+            const existingPossibleTiles = tilesToDraw[i + dir]
+            if (existingPossibleTiles) {
+              tilesToDraw[i + dir] = possibleTiles.map(t => existingPossibleTiles.includes(t) && t).filter(t => t)
+            } else {
+              tilesToDraw[i + dir] = possibleTiles
+            }
+
+  
+            // if (noWall(i + dir)) {
+            //   const block = {
+            //     el: Object.assign(document.createElement('div'), { 
+            //       className: 'block',
+            //       innerHTML: i + dir
+            //     }),
+            //     x: mapX(i + dir) * d,
+            //     y: mapY(i + dir) * d
+            //   }
+            //   setPos(block)
+            //   settings.map.blocks[i + dir] = block
+            //   settings.mapImage.el.appendChild(block.el)
+            // }
           })
         }
       })
-    }, 1000)
+  
 
-    console.log(drawnTiles)
+
+      const lowestPossibilityCount = tilesToDraw.map(t => t.length).filter(t => t).sort((a, b) => a - b)[0]
+      
+      if (!lowestPossibilityCount) return
+  
+      // draw tiles to draw based on possible tiles
+      tilesToDraw.forEach((tile, dI) => {
+        // && (tile.length === lowestPossibilityCount)
+        if (tile) {
+          const tileId = tile[Math.floor(Math.random() * tile.length)]
+  
+          const tI = tiles.findIndex(t => t.id === tileId) 
+          const tileX = (tI % 10) * 16
+          const tileY = Math.floor(tI / 10) * 16
+
+          // console.log('test', tiles[tI])
+          drawnTiles[dI] = tiles[tI]
+  
+          settings.mapImage.ctx.drawImage(elements.mapTiles, 
+            tileX, tileY,
+            16, 16,
+            mapX(dI) * d, mapY(dI) * d, 
+            d, d
+          )
+        } else {
+          tilesToDraw[dI] = []
+        }
+      })
+    }
+
+    console.log('tilesToDraw', tilesToDraw)
+
+
+    // setTimeout(()=> {
+    //   drawnTiles.forEach((tile, i) => {
+    //     if (tile) {
+    //       ;['up', 'right', 'down', 'left'].forEach((dir, dI) => {
+    //         const tileId = tile[dir][Math.floor(Math.random() * tile[dir].length)]
+    //         const tI = tiles.findIndex(t => t.id === tileId) 
+
+    //         const tileX = (tI % 10) * 16
+    //         const tileY = Math.floor(tI / 10) * 16
+    //         const offset = [-column, 1, column, -1][dI]
+    //         drawnTiles[i + offset] = tiles[tI]
+  
+    //         settings.mapImage.ctx.drawImage(elements.mapTiles, 
+    //           tileX, tileY,
+    //           16, 16,
+    //           mapX(i + offset) * d, mapY(i + offset) * d, 
+    //           d, d
+    //         )
+    //       })
+    //     }
+    //   })
+    // }, 1000)
+
+    console.log('drawnTiles', drawnTiles)
   }
 
 
   const noWall = pos =>{    
-    const { map: { data, blocks }, npcs } = settings
-    if (!data[pos] || blocks[pos] || player.pos === pos) return false
-    return settings.map.data[pos] !== '$'
+    // const { map: { data, blocks }, npcs } = settings
+    // if (!data[pos] || blocks[pos] || player.pos === pos) return false
+    // return settings.map.data[pos] !== '$'
+    return true
   }
 
   const handleWalk = dir => {
@@ -249,6 +346,12 @@ function init() {
     clearInterval(player.walkingInterval)
   })
   window.addEventListener('keydown', handleKeyAction)
+
+
+  // const testA = ['a', 'b', 'c']
+  // const testB = ['a', 'b', 'd']
+
+  // console.log(testA.map(t => testB.includes(t) && t))
 }
 
 window.addEventListener('DOMContentLoaded', init)

@@ -39,6 +39,7 @@ canvas {
 .map-image-wrapper {
   position: absolute;
   transition: 0.3s;
+  border: 1px solid yellow;
 }
 
 .map-image-wrapper.transition {
