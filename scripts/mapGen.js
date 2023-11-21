@@ -4,9 +4,7 @@ import { tiles } from './tiles.js'
 
 function init() {  
   
-  // TODO refactor to simplify functions
-  // TODO enable npc to break block
-  // TODO enable npcs to be in the same pos?
+  // TODO test what happens if we add more tiles
 
   const elements = {
     wrapper: document.querySelector('.wrapper'),
@@ -34,7 +32,7 @@ function init() {
   }
 
   const player = {
-    pos: 314,
+    pos: 254,
     el: elements.player,
     sprite: document.querySelector('.player').childNodes[1].childNodes[1],
     walkingDirection: '',
@@ -81,6 +79,7 @@ function init() {
     if (h) el.style.height = px(h * m)
     el.style.transform = `translate(${x ? px(x) : 0}, ${y ? px(y) : 0})`
   }
+  const isNum = x => typeof x === 'number'
   // const nearestN = (n, denom) => n === 0 ? 0 : (n - 1) + Math.abs(((n - 1) % denom) - denom)
 
 
@@ -142,7 +141,8 @@ function init() {
     // })
 
     const placeTile = i => {
-      const index = randomN(3) - 1
+      // const index = randomN(3) - 1
+      const index = 1
       drawnTiles[i] = tiles[index]
       const tileX = (index % 10) * 16
       const tileY = Math.floor(index / 10) * 16
@@ -153,8 +153,8 @@ function init() {
         d, d)
     }
 
-    const randomI = randomN(settings.map.data.length / 2)
-    placeTile(randomI)
+    // const randomI = randomN(settings.map.data.length / 2)
+    placeTile(314)
 
 
     // check 4 directions and draw possible tile
@@ -166,7 +166,11 @@ function init() {
     const tilesToDraw = []
 
     // Repeat while tilesToDraw has blank tiles
-    while (tilesToDraw.length !== settings.map.data.length) {
+    let count = 0
+    //drawnTiles.length !== settings.map.data.length
+    // drawnTiles.filter(t=>t).length !== settings.map.data.length
+    while (count < 100) {
+      count++
       drawnTiles.forEach((tile, i) => {
         if (tile) {
           [-column, 1, column, -1].forEach((dir, dI) => {
@@ -174,6 +178,7 @@ function init() {
             
             // only check tiles that are actually next to each other
             if (
+              drawnTiles[i + dir] ||
               (i + dir) > (settings.map.data.length - 1) ||
               (i + dir) < 0 || 
               ([1, -1].includes(dir) && (mapY(i) !== mapY(i + dir))) || 
@@ -187,12 +192,13 @@ function init() {
             } else {
               tilesToDraw[i + dir] = possibleTiles
             }
+            
 
   
             // if (noWall(i + dir)) {
             //   const block = {
             //     el: Object.assign(document.createElement('div'), { 
-            //       className: 'block',
+            //       className: `block ${possibleTiles.join(' ')}`,
             //       innerHTML: i + dir
             //     }),
             //     x: mapX(i + dir) * d,
@@ -206,38 +212,47 @@ function init() {
         }
       })
   
+      // console.log('testtest', tilesToDraw)
 
+      const lowestPossibilityCount = tilesToDraw.map((t, dI) => t.length && !drawnTiles[dI]).filter(t => t).sort((a, b) => a - b)[0]
+      console.log('lowest', count, lowestPossibilityCount)
+      if (!lowestPossibilityCount) return 
+      //lowestPossibilityCount not working as intended
 
-      const lowestPossibilityCount = tilesToDraw.map(t => t.length).filter(t => t).sort((a, b) => a - b)[0]
-      
-      if (!lowestPossibilityCount) return
-  
       // draw tiles to draw based on possible tiles
       tilesToDraw.forEach((tile, dI) => {
         // && (tile.length === lowestPossibilityCount)
-        if (tile) {
+        // if (tile.length !== lowestPossibilityCount) console.log(count, 'tile', tile)
+        if (tile.length ) {
           const tileId = tile[Math.floor(Math.random() * tile.length)]
   
           const tI = tiles.findIndex(t => t.id === tileId) 
           const tileX = (tI % 10) * 16
           const tileY = Math.floor(tI / 10) * 16
 
-          // console.log('test', tiles[tI])
-          drawnTiles[dI] = tiles[tI]
-  
-          settings.mapImage.ctx.drawImage(elements.mapTiles, 
-            tileX, tileY,
-            16, 16,
-            mapX(dI) * d, mapY(dI) * d, 
-            d, d
-          )
+          // console.log('test', count, drawnTiles[dI])
+          if (!drawnTiles[dI] && tiles[tI]) {
+            drawnTiles[dI] = tiles[tI]
+            setTimeout(()=> {
+              settings.mapImage.ctx.drawImage(elements.mapTiles, 
+                tileX, tileY,
+                16, 16,
+                mapX(dI) * d, mapY(dI) * d, 
+                d, d
+              )
+            }, count * 200)
+          }
+          
+        
         } else {
-          tilesToDraw[dI] = []
+          tilesToDraw[dI] = null
         }
       })
+      console.log('tilesToDraw', count, tilesToDraw)
+      console.log('drawnTiles', count, drawnTiles)
     }
 
-    console.log('tilesToDraw', tilesToDraw)
+
 
 
     // setTimeout(()=> {
@@ -263,7 +278,7 @@ function init() {
     //   })
     // }, 1000)
 
-    console.log('drawnTiles', drawnTiles)
+  
   }
 
 

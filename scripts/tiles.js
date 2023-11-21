@@ -5,24 +5,24 @@ const tiles = [
     "up": ['h'],
     "right": ['h'],
     "down": ['h'],
+    "left": ['h_edge_h', 'h'],
+},
+{
+    "key": "b",
+    "id": "h_edge",
+    "up": ['h_edge', 'h'],
+    "right": ['h'],
+    "down": ['h'],
     "left": ['h'],
 },
-// {
-//     "key": "b",
-//     "id": "h_edge",
-//     "up": ['h'],
-//     "right": ['h'],
-//     "down": ['h'],
-//     "left": ['h'],
-// },
-// {
-//     "key": "b.h",
-//     "id": "h_edge_h",
-//     "up": ['h'],
-//     "right": ['h'],
-//     "down": ['h'],
-//     "left": ['h'],
-// },
+{
+    "key": "b.h",
+    "id": "h_edge_h",
+    "up": ['h'],
+    "right": ['h'],
+    "down": ['h'],
+    "left": ['h_edge_h','h'],
+},
 //   {
 //     "key": "a",
 //     "id": "h",
@@ -31,22 +31,22 @@ const tiles = [
 //     "down": ['h_edge'],
 //     "left": ['h', 'h_edge', ],
 // },
-{
-    "key": "b",
-    "id": "h_edge",
-    "up": ['h', 'h_edge', ],
-    "right": ['h','h_edge_h'],
-    "down": ['h_edge'],
-    "left": ['h', 'h_edge', ],
-},
-{
-    "key": "b.h",
-    "id": "h_edge_h",
-    "up": ['h', 'h_edge', ],
-    "right": ['h','h_edge_h'],
-    "down": ['h_edge'],
-    "left": ['h', 'h_edge', ],
-},
+// {
+//     "key": "b",
+//     "id": "h_edge",
+//     "up": ['h', 'h_edge', ],
+//     "right": ['h','h_edge_h'],
+//     "down": ['h_edge'],
+//     "left": ['h', 'h_edge', ],
+// },
+// {
+//     "key": "b.h",
+//     "id": "h_edge_h",
+//     "up": ['h', 'h_edge', ],
+//     "right": ['h','h_edge_h'],
+//     "down": ['h_edge'],
+//     "left": ['h', 'h_edge', ],
+// },
 
   // {
   //     "key": "a",
@@ -80,14 +80,14 @@ const tiles = [
   //     "down": ['floor','dot'],
   //     "left": ['floor','dot','l_corner_h']
   // },
-  // {
-  //     "key": "d",
-  //     "id": "v",
-  //     "up": [],
-  //     "right": [],
-  //     "down": [],
-  //     "left": []
-  // },
+  {
+      "key": "d",
+      "id": "v",
+      "up": [],
+      "right": [],
+      "down": [],
+      "left": []
+  },
   // {
   //     "key": "e",
   //     "id": "t_joint_down",

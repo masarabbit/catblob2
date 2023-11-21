@@ -116,6 +116,10 @@ button:hover {
   color: black;
 }
 
+input.tile_name {
+  width: 150px;
+}
+
 .pagewrap {
   padding: 80px 0 30px 0;
   margin: 40px auto 0 auto;

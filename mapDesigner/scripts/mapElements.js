@@ -4,6 +4,7 @@ const input = {
   d: document.querySelector('.cell_size'),
   letter: document.querySelector('.letter'),
   editKey: document.querySelector('.edit_key'),
+  tileName: document.querySelector('.tile_name'),
   codesBox: document.querySelectorAll('.codes'),
   indexIndicator: document.querySelector('.index_indicator')
 }

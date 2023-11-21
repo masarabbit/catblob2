@@ -1,4 +1,4 @@
-import { tiles, tilesList, tileSheetData, tileX, tileY } from './data/tileData.js'
+import { tiles, tilesList, tileSheetData, tileX, tileY, newTilesData } from './data/tileData.js'
 import { artData } from './mapState.js'
 import { drawPos, grid, resize, drawDataUrl } from './artUtils/draw.js'
 import { createSelectBox, copySelection, paste, select  } from './artUtils/select.js'
@@ -36,7 +36,7 @@ function init() {
       limit: tilesList.length - 1,
       action: ()=> {
         populatePalette()
-        switchPalette()
+        // switchPalette()
       }
     }
     tilesList.forEach((code, i) => {
@@ -174,19 +174,21 @@ function init() {
         const letters = tilesList[i][0].split('.')
         input.letter.value = letters[0]
         input.editKey.value = letters[1] || ''
+
+        input.tileName.value = newTilesData.find(tile => tile.key === tilesList[i][0]).id
         outputTile()
       })
     })  
-    console.log('test', tilesList.map(t => {
-      return { 
-        key: t[0], 
-        id: tiles[t[0]]?.id || tiles[t[0][0]]?.id + '_' + t[0][2],
-        up: [],
-        right: [],
-        down: [],
-        left: [],
-      }
-    }))
+    // console.log('test', tilesList.map(t => {
+    //   return { 
+    //     key: t[0], 
+    //     id: tiles[t[0]]?.id || tiles[t[0][0]]?.id + '_' + t[0][2],
+    //     up: [],
+    //     right: [],
+    //     down: [],
+    //     left: [],
+    //   }
+    // }))
   }
 
 
