@@ -213,15 +213,15 @@ const tiles = {
     down: [],
     left: [],
   },
-  w: {
-    id: 'v_r_joint',
-    img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADZJREFUOE9jZEACbkZ3/iPzcbG/lT1iOBLhxAiSBxMwQKwBu86pwPWNGjAaiKMJCZKDBj4vAAAsskIR7/AzGQAAAABJRU5ErkJggg==',
-    type: 'A',
-    up: [],
-    right: [],
-    down: [],
-    left: [],
-  },
+  // w: {
+  //   id: 'v_r_joint_h',
+  //   img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADZJREFUOE9jZEACbkZ3/iPzcbG/lT1iOBLhxAiSBxMwQKwBu86pwPWNGjAaiKMJCZKDBj4vAAAsskIR7/AzGQAAAABJRU5ErkJggg==',
+  //   type: 'A',
+  //   up: [],
+  //   right: [],
+  //   down: [],
+  //   left: [],
+  // },
   x: {
     id: 'block_r_joint',
     img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAACpJREFUOE9jdDO685+BAsA4agDDaBgwDGAYfCt7BE6/ZMUCTPOoAZAyAABQtTMVsn45jwAAAABJRU5ErkJggg==',
@@ -535,22 +535,6 @@ const newTilesData = [
   {
       "key": "v",
       "id": "v_t_joint",
-      "up": [],
-      "right": [],
-      "down": [],
-      "left": []
-  },
-  {
-      "key": "w",
-      "id": "v_r_joint",
-      "up": [],
-      "right": [],
-      "down": [],
-      "left": []
-  },
-  {
-      "key": "w.h",
-      "id": "v_r_joint_h",
       "up": [],
       "right": [],
       "down": [],

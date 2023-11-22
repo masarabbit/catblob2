@@ -141,8 +141,8 @@ function init() {
     // })
 
     const placeTile = i => {
-      // const index = randomN(3) - 1
-      const index = 1
+      const index = randomN(tiles.length) - 1
+      // const index = 1
       drawnTiles[i] = tiles[index]
       const tileX = (index % 10) * 16
       const tileY = Math.floor(index / 10) * 16
