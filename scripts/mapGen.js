@@ -32,7 +32,7 @@ function init() {
   }
 
   const player = {
-    pos: 254,
+    pos: 0,
     el: elements.player,
     sprite: document.querySelector('.player').childNodes[1].childNodes[1],
     walkingDirection: '',
@@ -140,12 +140,13 @@ function init() {
     //     }
     // })
 
-    const placeTile = i => {
-      const index = randomN(tiles.length) - 1
+    const placeTile = (tileId, i) => {
+      console.log(tiles.find(t => t.id === tileId))
+      const index = tiles.find(t => t.id === tileId)
       // const index = 1
-      drawnTiles[i] = tiles[index]
-      const tileX = (index % 10) * 16
-      const tileY = Math.floor(index / 10) * 16
+      drawnTiles[i] = tiles.find(t => t.id === tileId)
+      const tileX = (index % 5) * 16
+      const tileY = Math.floor(index / 5) * 16
       settings.mapImage.ctx.drawImage(elements.mapTiles, 
         tileX, tileY,
         16, 16,
@@ -154,8 +155,11 @@ function init() {
     }
 
     // const randomI = randomN(settings.map.data.length / 2)
-    placeTile(314)
-
+    // placeTile(314)
+    placeTile('r_corner', randomN(settings.map.data.length) - 1)
+    placeTile('r_corner_h', randomN(settings.map.data.length) - 1)
+    placeTile('l_corner', randomN(settings.map.data.length) - 1)
+    placeTile('l_corner_h', randomN(settings.map.data.length) - 1)
 
     // check 4 directions and draw possible tile
     // ? right now doesn't consider when tiles have multiple neighbours...
@@ -169,7 +173,7 @@ function init() {
     let count = 0
     //drawnTiles.length !== settings.map.data.length
     // drawnTiles.filter(t=>t).length !== settings.map.data.length
-    while (count < 100) {
+    while (drawnTiles.filter(t=>!t.length).length !== settings.map.data.length) {
       count++
       drawnTiles.forEach((tile, i) => {
         if (tile) {
@@ -187,9 +191,9 @@ function init() {
   
             // ensure tiles meet all requirement
             const existingPossibleTiles = tilesToDraw[i + dir]
-            if (existingPossibleTiles) {
+            if (existingPossibleTiles?.length) {
               tilesToDraw[i + dir] = possibleTiles.map(t => existingPossibleTiles.includes(t) && t).filter(t => t)
-            } else {
+            } else if (possibleTiles.length) {
               tilesToDraw[i + dir] = possibleTiles
             }
             
@@ -214,21 +218,37 @@ function init() {
   
       // console.log('testtest', tilesToDraw)
 
-      const lowestPossibilityCount = tilesToDraw.map((t, dI) => t.length && !drawnTiles[dI]).filter(t => t).sort((a, b) => a - b)[0]
-      console.log('lowest', count, lowestPossibilityCount)
-      if (!lowestPossibilityCount) return 
+      const lowestPossibilityCount = tilesToDraw.map((t, dI) => !drawnTiles[dI] && t.length).filter(t => t).sort((a, b) => a - b)[0]
+      if (!lowestPossibilityCount) console.log('check low', lowestPossibilityCount)
+      if (!lowestPossibilityCount && lowestPossibilityCount !== 0) return 
       //lowestPossibilityCount not working as intended
 
       // draw tiles to draw based on possible tiles
       tilesToDraw.forEach((tile, dI) => {
         // && (tile.length === lowestPossibilityCount)
-        // if (tile.length !== lowestPossibilityCount) console.log(count, 'tile', tile)
-        if (tile.length ) {
+        if (tile?.length === 0) {
+          tile = ['floor']
+          console.log('overwrite', dI)
+          if (noWall(dI)) {
+            const block = {
+              el: Object.assign(document.createElement('div'), { 
+                className: `block`,
+                innerHTML: dI
+              }),
+              x: mapX(dI) * d,
+              y: mapY(dI) * d
+            }
+            setPos(block)
+            settings.map.blocks[dI] = block
+            settings.mapImage.el.appendChild(block.el)
+          }
+        }
+        if (tile?.length && ((tile.length === lowestPossibilityCount) || (tile.length === 1 && tile[0] === 'floor'))) {
           const tileId = tile[Math.floor(Math.random() * tile.length)]
   
           const tI = tiles.findIndex(t => t.id === tileId) 
-          const tileX = (tI % 10) * 16
-          const tileY = Math.floor(tI / 10) * 16
+          const tileX = (tI % 5) * 16
+          const tileY = Math.floor(tI / 5) * 16
 
           // console.log('test', count, drawnTiles[dI])
           if (!drawnTiles[dI] && tiles[tI]) {
@@ -240,7 +260,23 @@ function init() {
                 mapX(dI) * d, mapY(dI) * d, 
                 d, d
               )
+
+              // if (noWall(dI)) {
+              //   const block = {
+              //     el: Object.assign(document.createElement('div'), { 
+              //       className: `block ${tiles[tI]}`,
+              //       innerHTML: dI
+              //     }),
+              //     x: mapX(dI) * d,
+              //     y: mapY(dI) * d
+              //   }
+              //   setPos(block)
+              //   settings.map.blocks[dI] = block
+              //   settings.mapImage.el.appendChild(block.el)
+              // }
             }, count * 200)
+          } else if (!tiles[tI]) {
+            console.log('check fail')
           }
           
         

@@ -15,6 +15,18 @@ const mapData = {
     map: 'ac1,c2,ac1,c7,ac2,c9,ac1,c4,ac1,c2,ac1,c6,ac2,c3,w12,c1,ac1,c6,w3,v1,w6,v1,w1,ac1,c5,w18,c2,w2,v1,w6,v1,w8,c2,ac1,c1,w3,v1,w9,v1,w2,c1,ac1,c2,w16,ac2,c1,ac2,c2,ac2,c3,ac1,c13,ac1,c6,ac2,c3,ac2,c2',
     walls: '$42,12,$8,12,$6,18,$2,18,$4,16,$4,16,$42',
   },
+  tileDesign: {
+    column: 36,
+    row: 30,
+    map: '$1,z1,$1,zz18,z1,zz14,z1,o1,z1,zz17,y1,zz1,y1,zz13,$1,z1,$1,zz18,y1,zz50,z1,y1,z1,zz1,z2,y1,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,y1,z2,zz5,z1,c1,z1,zz1,z1,o1,z1,zz1,z1,b1,y1,zz1,z1,o1,z1,zz1,z1,g1,z1,zz1,z1,o1,z1,zz1,y1,b.h1,z1,zz1,z1,o1,z1,zz5,z3,zz1,z3,zz1,z3,zz1,z2,y1,zz1,z1,y1,z1,zz1,y1,z2,zz1,z3,zz1,z3,zz41,z1,y2,zz1,z2,y1,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,y1,z2,zz1,y2,z1,zz5,z1,c1,z1,zz1,z1,b1,y1,zz1,z1,b1,y1,zz1,z1,g1,z1,zz1,z1,g1,z1,zz1,y1,b.h1,z1,zz1,y1,b.h1,z1,zz1,z1,c1,z1,zz5,z3,zz1,z3,zz1,z2,y1,zz1,z1,y2,zz1,y2,z1,zz1,y1,z2,zz1,z3,zz1,z3,zz41,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz5,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz1,z1,zz5,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz1,z3,zz41,z1,y2,zz1,z2,y1,zz1,z3,zz1,z3,zz1,z3,zz1,y1,z2,zz1,y2,z1,zz1,y3,zz5,z1,h1,y1,zz1,z1,b1,y1,zz1,z1,n1,y1,zz1,z1,g1,z1,zz1,y1,n.h1,z1,zz1,y1,b.h1,z1,zz1,y1,h.h1,z1,zz1,z1,c1,z1,zz5,z3,zz1,z2,y1,zz1,z1,y2,zz1,y3,zz1,y2,z1,zz1,y1,z2,zz1,z3,zz1,z3,zz41,z1,y2,zz1,$1,y1,$1,zz1,y2,z1,zz1,$1,y1,$1,zz2,z3,zz16,z1,m1,y1,zz1,y1,e1,y1,zz1,y1,m.h1,z1,zz1,y1,a1,y1,zz2,y1,zz1,y1,zz16,z1,y2,zz1,z1,y1,z1,zz1,y2,z1,zz1,z3,zz2,y3,zz2,z2,$1,zz33,z1,k1,y1,zz11,$1,y1,$1,zz1,$1,z1,$1,zz5,$1,y1,$1,zz2,z2,y1,zz2,$1,y1,z1,zz11,z1,d1,z1,zz1,y1,a1,y1,zz5,y1,l1,y1,zz2,z1,o1,z1,zz16,$1,y1,$1,zz1,$1,z1,$1,zz5,y3,zz2,y1,z2,zz87,1,zz31',
+    walls: '',
+  },
+  smallSprite: {
+    column: 10,
+    row: 3,
+    map: 'b1,a1,e1,b.h1,g1,h1,h.h1,k1,k.h1,d1,o1,c1,m1,m.h1,l1,n1,n.h1,x1,x.h1,za1,za.h1,p9',
+    walls: '',
+  }
 }
 
 export {

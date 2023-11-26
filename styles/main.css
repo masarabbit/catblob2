@@ -77,6 +77,12 @@ canvas {
   background-size: var(--c); 
   background-repeat: no-repeat;
   image-rendering: pixelated;
+  opacity: 0.05;
+}
+
+.block.missing {
+  /* opacity: 0.5; */
+  border: 1px solid red;
 }
 
 .sprite-container {
