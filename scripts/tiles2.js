@@ -39,7 +39,6 @@ const tiles = [
     id: 'r_corner',
     key: 'k',
     criteria: ['xoox'],
-    // criteria2: ['xxxx','xxxo','xxoo','oxoo','oxxo', 'xxox','oxxx','oxox']
     criteria2: ['xx','xo']
   },
   {
@@ -47,7 +46,6 @@ const tiles = [
     key: 'k.h',
     criteria: ['xxoo'],
     criteria2: ['xx','ox']
-    // criteria2: 'xxxx'
   },
   {
     id: 'v',
@@ -86,7 +84,6 @@ const tiles = [
     id: 'block_corner',
     key: '',
     criteria: ['xoox'],
-    // criteria2: ['xooo','xoxo','xoxx','xoox','ooxx','ooox','oooo','ooxo'],
     criteria2: ['oo','ox']
   },
   {
@@ -122,32 +119,23 @@ const tiles = [
   {
     key: 'ab',
     id: 'top_dot',
-    criteria: [],
-    criteria2: []
   },
   {
     key: 'ab.h',
     id: 'top_dot_h',
-    criteria: [],
-    criteria2: []
   },
   {
     key: 'ac',
     id: 'bottom_dot',
-    criteria: [],
-    criteria2: []
   },
   {
     key: 'ac.h',
     id: 'bottom_dot_h',
-    criteria: [],
-    criteria2: []
   },
   
   {
     id: 'floor',
     key: 'p',
-    criteria: []
   },
 ]
 

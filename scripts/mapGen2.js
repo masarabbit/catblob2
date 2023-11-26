@@ -149,10 +149,9 @@ function init() {
     settings.mapImage.h = row * d
 
     setUpCanvas(settings.mapImage)
-    // adjustMapWidthAndHeight()
 
     settings.map.data = settings.map.data.map((t, i) => {
-      if ([0, column - 1].includes(mapY(i)) || [0, row - 1].includes(mapX(i))) return '$'
+      if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
 
       return t
     })
@@ -160,10 +159,7 @@ function init() {
     settings.map.data.forEach((t, i) => {
       const checkDir = dir => settings.map.data?.[i + dir] !== 'x' ? 'o' : 'x'
       const criteria = [-column, 1, column, -1].reduce((acc, d) => acc + checkDir(d), '')
-
       const criteria2 = [column + 1, column - 1].reduce((acc, d) => acc + checkDir(d), '')
-
-      // console.log('test a', criteria2)
     
       const matchingTile = tiles.find(tile => {
         if (tile.criteria2) {
@@ -192,14 +188,11 @@ function init() {
       })
 
       if (t === '$') {
-        // placeTile({ tileId: 'bottom_dot', i })
         if (criteria[0] === 'o' && criteria[3] === 'x' && checkDir(-(column + 1)) === 'o') {
           placeTile({ tileId: 'top_dot', i })
-          // console.log('top tile', criteria, )
         }
         if (criteria.slice(0,2) === 'ox' && checkDir(-(column - 1)) === 'o') {
           placeTile({ tileId: 'top_dot_h', i })
-          // console.log('top tile 2', matchingTile?.id)
         }
         if (criteria.slice(-2) === 'ox' && criteria2[1] === 'o') placeTile({ tileId: 'bottom_dot', i })
         if (criteria.slice(1,3) === 'xo' && criteria2[0] === 'o') placeTile({ tileId: 'bottom_dot_h', i })

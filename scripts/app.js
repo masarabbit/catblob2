@@ -1,8 +1,126 @@
+
+
 function init() {  
   
   // TODO refactor to simplify functions
   // TODO enable npc to break block
   // TODO enable npcs to be in the same pos?
+
+  const tiles = [
+    {
+      id: 'h_edge',
+      criteria: ['xoxx']
+    },
+    {
+      id: 'h',
+      criteria: ['xoxo', 'ooxo']
+    },
+    {
+      id: 't_joint_down',
+      criteria: ['xooo','oooo'],
+      criteria2: ['xx']
+    },
+    {
+      id: 'h_edge_h',
+      criteria: ['xxxo']
+    },
+    {
+      id: 'v_up_edge',
+      criteria: ['xxox']
+    },
+    {
+      id: 'l_corner',
+      criteria: ['ooxx']
+    },
+    {
+      id: 'l_corner_h',
+      criteria: ['oxxo']
+    },
+    {
+      id: 'r_corner',
+      criteria: ['xoox'],
+      criteria2: ['xx','xo']
+    },
+    {
+      id: 'r_corner_h',
+      criteria: ['xxoo'],
+      criteria2: ['xx','ox']
+    },
+    {
+      id: 'v',
+      criteria: ['oxox']
+    },
+    {
+      id: 'dot',
+      criteria: ['xxxx']
+    },
+    {
+      id: 'v_down_edge',
+      criteria: ['oxxx']
+    },
+    {
+      id: 'block_edge',
+      criteria: ['ooox'],
+      criteria2: ['oo', 'ox']
+    },
+    {
+      id: 'block_edge_h',
+      criteria: ['oxoo'],
+      criteria2: ['oo','xo']
+    },
+    {
+      id: 'block',
+      criteria: ['oooo','xooo'],
+      criteria2: ['oo']
+    },
+    {
+      id: 'block_corner',
+      criteria: ['xoox'],
+      criteria2: ['oo','ox']
+    },
+    {
+      id: 'block_corner_h',
+      criteria: ['xxoo'],
+      criteria2: ['xo','oo']
+    },
+    {
+      id: 'block_r_joint',
+      criteria: ['oooo','xooo'],
+      criteria2: ['xo']
+    },
+    {
+      id: 'block_r_joint_h',
+      criteria: ['oooo','xooo'],
+      criteria2: ['ox']
+    },
+    {
+      id: 'block_edge_r_joint',
+      criteria: ['ooox'],
+      criteria2: ['xo','xx']
+    },
+    {
+      id: 'block_edge_r_joint_h',
+
+      criteria: ['oxoo'],
+      criteria2: ['ox','xx']
+    },
+    {
+      id: 'top_dot',
+    },
+    {
+      id: 'top_dot_h',
+    },
+    {
+      id: 'bottom_dot',
+    },
+    {
+      id: 'bottom_dot_h',
+    },
+    {
+      id: 'floor',
+    },
+  ]
+  
 
   const elements = {
     wrapper: document.querySelector('.wrapper'),
@@ -10,21 +128,22 @@ function init() {
     player: document.querySelector('.player'), 
     mapImage: document.querySelector('.map-image'),
     indicator: document.querySelector('.indicator'),
-    cursor: document.querySelector('.cursor')
+    cursor: document.querySelector('.cursor'),
+    mapTiles: document.querySelector('.map-tiles'),
   }
 
-  const decompress = arr =>{
-    const output = []
-    const input = arr.split(',')
-    input.forEach(x =>{
-      const letter = x.split('').filter(y => y * 0 !== 0).join('')
-      const repeat = x.split('').filter(y => y * 0 === 0).join('') || 1
-      for (let i = 0; i < repeat; i++){
-        output.push(letter)
-      }
-    })
-    return output
-  }
+  // const decompress = arr =>{
+  //   const output = []
+  //   const input = arr.split(',')
+  //   input.forEach(x =>{
+  //     const letter = x.split('').filter(y => y * 0 !== 0).join('')
+  //     const repeat = x.split('').filter(y => y * 0 === 0).join('') || 1
+  //     for (let i = 0; i < repeat; i++){
+  //       output.push(letter)
+  //     }
+  //   })
+  //   return output
+  // }
 
   const player = {
     pos: 314,
@@ -62,6 +181,7 @@ function init() {
         track: [],
         pause: false,
         d: 44,
+        chaseTarget: player,
       },
       {
         id: 'mouse',
@@ -84,6 +204,8 @@ function init() {
         track: [],
         pause: false,
         d: 36,
+        chaseTarget: null,
+        runAwayTarget: player
       }
     ],
     mapImage: {
@@ -120,6 +242,7 @@ function init() {
     el.style.transform = `translate(${x ? px(x) : 0}, ${y ? px(y) : 0})`
   }
   const nearestN = (n, denom) => n === 0 ? 0 : (n - 1) + Math.abs(((n - 1) % denom) - denom)
+  const randomN = max => Math.ceil(Math.random() * max)
 
 
   setInterval(()=> {
@@ -133,11 +256,11 @@ function init() {
     })
   }, 200)
 
-  const outputMap = ({ i, tile }) => {
-    const { d } = settings.map
-    settings.mapImage.ctx.fillStyle = tile === '$' ? '#a2fcf0' : '#2e1a66'
-    settings.mapImage.ctx.fillRect(mapX(i) * d, mapY(i) * d, d, d)
-  }
+  // const outputMap = ({ i, tile }) => {
+  //   const { d } = settings.map
+  //   settings.mapImage.ctx.fillStyle = tile === '$' ? '#a2fcf0' : '#2e1a66'
+  //   settings.mapImage.ctx.fillRect(mapX(i) * d, mapY(i) * d, d, d)
+  // }
 
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -170,16 +293,93 @@ function init() {
     ctx.imageSmoothingEnabled = false
   }
 
+  const placeTile = ({ tileId, i, fill }) => {
+    const { d } = settings.map
+    const index = tiles.indexOf(tiles.find(t => t.id === tileId))
+    const tileX = (index % 10) * 16
+    const tileY = Math.floor(index / 10) * 16
+    const x = mapX(i) * d
+    const y = mapY(i) * d
+    if (fill) {
+      settings.mapImage.ctx.fillStyle = '#2e1a66'
+      settings.mapImage.ctx.fillRect(x, y, d, d)
+    }
+    settings.mapImage.ctx.drawImage(elements.mapTiles, 
+      tileX, tileY,
+      16, 16,
+      x, y,
+      d, d)
+  }
+
   const setupMap = () => {
     const { d, column, row } = settings.map
-    settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
+    // settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
+    const mapLength = column * row
+    const wallPercentage = Math.round(mapLength * 0.2)
+
+    settings.map.data = new Array(mapLength).fill('').map((_, i) => {
+      return (i < wallPercentage) ? '$' : 'x'
+    }).sort(() => Math.random() - 0.5)
     settings.mapImage.w = column * d
     settings.mapImage.h = row * d
 
     setUpCanvas(settings.mapImage)
-    adjustMapWidthAndHeight()
 
-    settings.map.data.forEach((tile, i) => outputMap({ i, tile }))
+    // add wall around edge
+    settings.map.data = settings.map.data.map((t, i) => {
+      if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
+      return t
+    })
+
+    settings.map.data.forEach((t, i) => {
+      const checkDir = dir => settings.map.data?.[i + dir] !== 'x' ? 'o' : 'x'
+      const criteria = [-column, 1, column, -1].reduce((acc, d) => acc + checkDir(d), '')
+      const criteria2 = [column + 1, column - 1].reduce((acc, d) => acc + checkDir(d), '')
+    
+      const matchingTile = tiles.find(tile => {
+        if (tile.criteria2) {
+          return tile.criteria.includes(criteria) && tile.criteria2.includes(criteria2)
+        } 
+        return tile.criteria.includes(criteria)
+      })
+
+      // const block = {
+      //   el: Object.assign(document.createElement('div'), { 
+      //     className: `block ${criteria} ${criteria2} ${matchingTile?.id || 'missing'} ${t}`,
+      //     innerHTML: i
+      //   }),
+      //   x: mapX(i) * d,
+      //   y: mapY(i) * d
+      // }
+      // setPos(block)
+      // settings.mapImage.el.appendChild(block.el)
+
+      if (!matchingTile) console.log(criteria, criteria2)
+      placeTile({
+        tileId: t === 'x' ? 'floor' : matchingTile.id,
+        i,
+        fill: true,
+      })
+
+      // round off edges
+      if (t === '$') {
+        if (criteria[0] === 'o' && criteria[3] === 'x' && checkDir(-(column + 1)) === 'o') {
+          placeTile({ tileId: 'top_dot', i })
+        }
+        if (criteria.slice(0,2) === 'ox' && checkDir(-(column - 1)) === 'o') {
+          placeTile({ tileId: 'top_dot_h', i })
+        }
+        if (criteria.slice(-2) === 'ox' && criteria2[1] === 'o') placeTile({ tileId: 'bottom_dot', i })
+        if (criteria.slice(1,3) === 'xo' && criteria2[0] === 'o') placeTile({ tileId: 'bottom_dot_h', i })
+      }
+    })
+
+    const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && i).filter(t => t)
+    player.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
+    // TODO there's nothing to stop dogs and mouses from appearing too close or in same spot as player
+    settings.npcs.forEach(npc => npc.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)])
+  
+    adjustMapWidthAndHeight()
   }
 
   const defaultPathMemory = arr => arr.map(()=> {
@@ -232,7 +432,6 @@ function init() {
     }
   }
 
-
   const selectPath = ({ character, current }) =>{
     character.route.push(current)
     if (character.searchMemory[current].prev) {
@@ -254,7 +453,8 @@ function init() {
     const { pos: p } = npc
     const { column: w } = settings.map
     let motion = [ 1, -1, w, -w ]
-    const target = settings.npcs[0]
+    const target = npc.runAwayTarget
+    if (!target) return
     const checkAndRemoveDir = ({ arr, dir }) => {
       if (arr.includes(target.pos)) {
         motion = motion.filter(option => option !== dir)
@@ -284,7 +484,6 @@ function init() {
     motion = motion.filter(pos => noWall(npc.pos + pos))
 
     // TODO need something here to ensure there's way out?
-    
     moveNpc({ npc, newPos:npc.pos + (motion[Math.floor(Math.random() * motion.length)]) })
   }
 
@@ -324,20 +523,22 @@ function init() {
 
   const triggerNpcMotion = npc => {
     if (!settings.isWindowActive) return
-
     clearTimeout(npc.motionTimer)
-    const target = settings.npcs[1]
-    if (npc.pause || npc.pos === target.pos) return
+    const target = npc.chaseTarget
+    if (npc.pause || npc.pos === target?.pos) return
     npc.searchMemory = defaultPathMemory(settings.map.data)
     npc.carryOn = true
-    npc.goal = target.pos
+    if (target) npc.goal = target.pos
     decideNextMove({ character: npc, current: npc.pos })
   }
   
 
+  // TODO enable cat and mouse to be in the same spot, but not mouse and dog
   const noWall = pos =>{    
     const { map: { data, blocks }, npcs } = settings
-    if (!data[pos] || blocks[pos] || player.pos === pos || npcs.some(npc => npc.pos === pos)) return false
+    if (!data[pos] || blocks[pos] || player.pos === pos 
+      || npcs.some(npc => npc.pos === pos)
+      ) return false
     return settings.map.data[pos] !== '$'
   }
 
@@ -366,9 +567,7 @@ function init() {
   const walk = ({ actor, dir }) => {
     if (!dir || player.pause) return
     const { diff, para, dist } = getWalkConfig(dir) 
-
     turnSprite({ actor: player, diff })
-  
     if (noWall(actor.pos + diff)) {
       if (actor === player) { // TODO may not require this if this is only used for player
         settings.mapImage[para] += dist
@@ -428,7 +627,6 @@ function init() {
   }
 
 
-
   const turnSprite = ({ actor, diff, newPos = 0 }) => {
     const { column } = settings.map
     const { pos, sprite: el, d } = actor
@@ -447,6 +645,7 @@ function init() {
   } 
 
   const moveNpc = ({ npc, newPos }) => {
+    if (!settings.isWindowActive) return
     turnSprite({ actor: npc, newPos })
     npc.pos = newPos
     const { column, d } = settings.map
