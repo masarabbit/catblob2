@@ -286,6 +286,11 @@ const tiles = {
     img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAACtJREFUOE9jZIACmxX7/h+JcGKE8YmlSdaAbvCoAQwMo2EwGgagfDHw6QAAOAwEESiH2ygAAAAASUVORK5CYII=',
     type: 'A',
   },
+  ad: {
+    id: 'corner',
+    img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZEADbkZ3/qOL4eMzwiRJ1QjTBzaAXM0gvZQbQIntYBeMGjAaBsMjHQAAr1ElQelcPl4AAAAASUVORK5CYII=',
+    type: 'Q',
+  },
   // {
   //   key: 'zf',
   //   id: 'top_dot',

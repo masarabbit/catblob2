@@ -3,7 +3,7 @@
 function init() {  
   
   // TODO refactor to simplify functions?
-  // TODO enable npc to break block
+  // TODO enable npc to break block - partially done
   // TODO enable npcs to be in the same pos?
   // TODO add life and damage
   // TODO add more npcs
@@ -108,6 +108,18 @@ function init() {
       criteria2: ['ox','xx']
     },
     {
+      id: 'top_left_corner',
+    },
+    {
+      id: 'top_right_corner',
+    },
+    {
+      id: 'bottom_left_corner',
+    },
+    {
+      id: 'bottom_right_corner',
+    },
+    {
       id: 'top_dot',
     },
     {
@@ -124,6 +136,18 @@ function init() {
     },
   ]
   
+  const decompress = arr =>{
+    const output = []
+    const input = Array.isArray(arr) ? arr : arr.split(',')
+    input.forEach(x=>{
+      const letter = x.split('').filter(y => y * 0 !== 0).join('')
+      const repeat = x.split('').filter(y => y * 0 === 0).join('') || 1
+      for (let i = 0; i < repeat; i++){
+        output.push(letter)
+      }
+    })
+    return output
+  }
 
   const elements = {
     wrapper: document.querySelector('.wrapper'),
@@ -155,7 +179,7 @@ function init() {
     walkingDirection: '',
     walkingInterval: '',
     pause: false,
-    id: 'cb',
+    id: 'catblob',
     d: 44,
   }
 
@@ -170,7 +194,7 @@ function init() {
         el: Object.assign(document.createElement('div'), 
         { 
           className: 'npc sprite-container',
-          innerHTML: '<div class="overflow-hidden"><div class="db sprite"></div></div>'
+          innerHTML: '<div class="overflow-hidden"><div class="dogblob sprite"></div></div>'
         }),
         x: 0,
         y: 0,
@@ -192,7 +216,7 @@ function init() {
         el: Object.assign(document.createElement('div'), 
         { 
           className: 'npc sprite-container',
-          innerHTML: '<div class="overflow-hidden small"><div class="mouse sprite"></div></div>'
+          innerHTML: '<div class="overflow-hidden small"><div class="mouseblob sprite"></div></div>'
         }),
         x: 0,
         y: 0,
@@ -265,6 +289,8 @@ function init() {
   //   settings.mapImage.ctx.fillRect(mapX(i) * d, mapY(i) * d, d, d)
   // }
 
+  const blockState = ['cracked', 'cracked-more', 'cracked-even-more']
+
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
     const { d } = settings.map
@@ -316,28 +342,28 @@ function init() {
 
   const setupMap = () => {
     const { d, column, row } = settings.map
-    // settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
+    settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
     const mapLength = column * row
     const wallPercentage = Math.round(mapLength * 0.2)
 
-    settings.map.data = new Array(mapLength).fill('').map((_, i) => {
-      return (i < wallPercentage) ? '$' : 'x'
-    }).sort(() => Math.random() - 0.5)
+    // settings.map.data = new Array(mapLength).fill('').map((_, i) => {
+    //   return (i < wallPercentage) ? '$' : 'x'
+    // }).sort(() => Math.random() - 0.5)
     settings.mapImage.w = column * d
     settings.mapImage.h = row * d
 
     setUpCanvas(settings.mapImage)
 
     // add wall around edge
-    settings.map.data = settings.map.data.map((t, i) => {
-      if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
-      // don't put right at edge
-      // if ([1, column - 2].includes(mapX(i)) || [1, row - 2].includes(mapY(i))) return '$' 
-      return t
-    })
+    // settings.map.data = settings.map.data.map((t, i) => {
+    //   if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
+    //   // don't put right at edge
+    //   // if ([1, column - 2].includes(mapX(i)) || [1, row - 2].includes(mapY(i))) return '$' 
+    //   return t
+    // })
 
     settings.map.data.forEach((t, i) => {
-      const checkDir = dir => settings.map.data?.[i + dir] !== 'x' ? 'o' : 'x'
+      const checkDir = dir => settings.map.data?.[i + dir] === 'x' ? 'x' : 'o'
       const criteria = [-column, 1, column, -1].reduce((acc, d) => acc + checkDir(d), '')
       const criteria2 = [column + 1, column - 1].reduce((acc, d) => acc + checkDir(d), '')
     
@@ -360,14 +386,14 @@ function init() {
       // settings.mapImage.el.appendChild(block.el)
 
       if (!matchingTile) console.log(criteria, criteria2)
+
       placeTile({
         tileId: t === 'x' ? 'floor' : matchingTile.id,
         i,
         fill: true,
       })
-
+  
       // round off edges
-      // TODO can remove corners...
       if (t === '$') {
         if (criteria[0] === 'o' && criteria[3] === 'x' && checkDir(-(column + 1)) === 'o') {
           placeTile({ tileId: 'top_dot', i })
@@ -378,6 +404,25 @@ function init() {
         if (criteria.slice(-2) === 'ox' && criteria2[1] === 'o') placeTile({ tileId: 'bottom_dot', i })
         if (criteria.slice(1,3) === 'xo' && criteria2[0] === 'o') placeTile({ tileId: 'bottom_dot_h', i })
       }
+      
+      // update corner
+      const d2 = d / 2
+      if (i === 0) {
+        settings.mapImage.ctx.clearRect(0, 0, d2, d2)
+        placeTile({ tileId: 'top_left_corner', i }) 
+      } 
+      if (i === column - 1) {
+        settings.mapImage.ctx.clearRect((column * d) - d2, 0, d2, d2)
+        placeTile({ tileId: 'top_right_corner', i }) 
+      } 
+      if (i === (mapLength - column)) {
+        settings.mapImage.ctx.clearRect(0, (row * d) - d2, d2, d2)
+        placeTile({ tileId: 'bottom_left_corner', i }) 
+      } 
+      if (i === (mapLength - 1)) {
+        settings.mapImage.ctx.clearRect((column * d) - d2, (row * d) - d2, d2, d2)
+        placeTile({ tileId: 'bottom_right_corner', i }) 
+      } 
     })
 
     const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && i).filter(t => t)
@@ -415,6 +460,23 @@ function init() {
         npc.el.classList.add('attacking')
         npc.el.classList.add(Math.abs(npc.pos - wallCloseBy) === 1 ? 'horizontal' : 'vertical')
         turnSprite({ actor: npc, newPos: wallCloseBy })
+
+        const block = settings.map.blocks[wallCloseBy]
+        let attackBlock
+        attackBlock = setInterval(()=> {
+          block.el.classList.add(blockState[block.state])
+          block.state += 1
+          if (block.state === 4) {
+            settings.mapImage.el.removeChild(block.el)
+            settings.map.blocks[wallCloseBy] = null
+            clearInterval(attackBlock)
+            npc.el.classList.remove('attacking')
+            npc.isHunting = true
+            npc.pause = false
+            triggerNpcMotion(npc)
+          }
+        }, 800)
+      
         npc.pause = true
         return
       }
@@ -615,7 +677,8 @@ function init() {
       const block = {
         el: Object.assign(document.createElement('div'), { className: 'block' }),
         x: drawPos.x,
-        y: drawPos.y
+        y: drawPos.y,
+        state: 0
       }
       setPos(block)
       settings.map.blocks[index] = block
