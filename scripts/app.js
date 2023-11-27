@@ -2,9 +2,12 @@
 
 function init() {  
   
-  // TODO refactor to simplify functions
+  // TODO refactor to simplify functions?
   // TODO enable npc to break block
   // TODO enable npcs to be in the same pos?
+  // TODO add life and damage
+  // TODO add more npcs
+  // TODO enable cat to catch mouse
 
   const tiles = [
     {
@@ -328,6 +331,8 @@ function init() {
     // add wall around edge
     settings.map.data = settings.map.data.map((t, i) => {
       if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
+      // don't put right at edge
+      // if ([1, column - 2].includes(mapX(i)) || [1, row - 2].includes(mapY(i))) return '$' 
       return t
     })
 
@@ -362,6 +367,7 @@ function init() {
       })
 
       // round off edges
+      // TODO can remove corners...
       if (t === '$') {
         if (criteria[0] === 'o' && criteria[3] === 'x' && checkDir(-(column + 1)) === 'o') {
           placeTile({ tileId: 'top_dot', i })

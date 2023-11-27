@@ -132,7 +132,6 @@ const tiles = [
     key: 'ac.h',
     id: 'bottom_dot_h',
   },
-  
   {
     id: 'floor',
     key: 'p',
