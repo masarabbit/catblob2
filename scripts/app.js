@@ -3,10 +3,8 @@
 function init() {  
   
   // TODO refactor to simplify functions?
-  // TODO enable npc to break block - partially done (update block animation, update sprite and possibly add bits coming out with :after and :before)
-  // TODO enable npcs to be in the same pos?
+  // TODO enable npcs to be in the same pos? //need to update this to makesure dogs don't get stuck attacking
   // TODO add life and damage
-  // TODO add more npcs
   // TODO enable cat to catch mouse
 
   const tiles = [
@@ -136,19 +134,6 @@ function init() {
     },
   ]
   
-  // const decompress = arr =>{
-  //   const output = []
-  //   const input = Array.isArray(arr) ? arr : arr.split(',')
-  //   input.forEach(x=>{
-  //     const letter = x.split('').filter(y => y * 0 !== 0).join('')
-  //     const repeat = x.split('').filter(y => y * 0 === 0).join('') || 1
-  //     for (let i = 0; i < repeat; i++){
-  //       output.push(letter)
-  //     }
-  //   })
-  //   return output
-  // }
-
   const elements = {
     wrapper: document.querySelector('.wrapper'),
     mapCover: document.querySelector('.map-cover'), 
@@ -158,19 +143,6 @@ function init() {
     cursor: document.querySelector('.cursor'),
     mapTiles: document.querySelector('.map-tiles'),
   }
-
-  // const decompress = arr =>{
-  //   const output = []
-  //   const input = arr.split(',')
-  //   input.forEach(x =>{
-  //     const letter = x.split('').filter(y => y * 0 !== 0).join('')
-  //     const repeat = x.split('').filter(y => y * 0 === 0).join('') || 1
-  //     for (let i = 0; i < repeat; i++){
-  //       output.push(letter)
-  //     }
-  //   })
-  //   return output
-  // }
 
   const player = {
     pos: 314,
@@ -183,59 +155,39 @@ function init() {
     d: 44,
   }
 
+  const npcObj = {
+    x: 0,
+    y: 0,
+    goal: 0,
+    carryOn: true,
+    delay: 10,
+    pause: false,
+  }
+
+  const dogBlobObj = {
+    id: null,
+    pos: 100,
+    d: 44,
+    chaseTarget: player,
+    attackDir: null,
+    isHunting: true,
+  }
+
+  const mouseBlobObj = {
+    id: 'mouse',
+    pos: 200,
+    d: 36,
+    chaseTarget: null,
+    runAwayTarget: player,
+    isHunting: false,
+    isFleeing: true,
+  }
+
   const settings = {
     transitionTimer: null,
     isWindowActive: true,
     yOffset: 0,
-    npcs: [
-      {
-        id: 'dog_1',
-        pos: 100,
-        el: Object.assign(document.createElement('div'), 
-        { 
-          className: 'npc sprite-container',
-          innerHTML: '<div class="overflow-hidden"><div class="dogblob sprite"></div></div>'
-        }),
-        x: 0,
-        y: 0,
-        goal: 0,
-        carryOn: true,
-        delay: 10,
-        motionTimer: null,
-        searchMemory: null,
-        route: [],
-        isHunting: true,
-        track: [],
-        pause: false,
-        d: 44,
-        chaseTarget: player,
-        attackDir: null,
-      },
-      {
-        id: 'mouse',
-        pos: 200,
-        el: Object.assign(document.createElement('div'), 
-        { 
-          className: 'npc sprite-container',
-          innerHTML: '<div class="overflow-hidden small"><div class="mouseblob sprite"></div></div>'
-        }),
-        x: 0,
-        y: 0,
-        goal: 0,
-        carryOn: true,
-        delay: 10,
-        motionTimer: null,
-        searchMemory: null,
-        route: [],
-        isHunting: false,
-        isFleeing: true,
-        track: [],
-        pause: false,
-        d: 36,
-        chaseTarget: null,
-        runAwayTarget: player
-      }
-    ],
+    npcs: [],
     mapImage: {
       el: elements.mapImage.parentNode,
       canvas: elements.mapImage,
@@ -271,25 +223,6 @@ function init() {
   }
   const nearestN = (n, denom) => n === 0 ? 0 : (n - 1) + Math.abs(((n - 1) % denom) - denom)
   const randomN = max => Math.ceil(Math.random() * max)
-
-
-  setInterval(()=> {
-    if (!settings.isWindowActive) return
-    ;[player, ...settings.npcs].forEach(actor => {
-      settings.yOffset = settings.yOffset + 1 === 4
-        ? 0
-        : settings.yOffset + 1
-      const { sprite: el, d } = actor
-      setPos({ el, y: [0, -d, -(d * 2), -d][settings.yOffset] })
-    })
-  }, 200)
-
-  // const outputMap = ({ i, tile }) => {
-  //   const { d } = settings.map
-  //   settings.mapImage.ctx.fillStyle = tile === '$' ? '#a2fcf0' : '#2e1a66'
-  //   settings.mapImage.ctx.fillRect(mapX(i) * d, mapY(i) * d, d, d)
-  // }
-
   const sphereState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
 
   const adjustMapWidthAndHeight = () =>{
@@ -330,10 +263,6 @@ function init() {
     const tileY = Math.floor(index / 10) * 16
     const x = mapX(i) * d
     const y = mapY(i) * d
-    // if (fill) {
-    //   settings.mapImage.ctx.fillStyle = '#2e1a66'
-    //   settings.mapImage.ctx.fillRect(x, y, d, d)
-    // }
     settings.mapImage.ctx.drawImage(elements.mapTiles, 
       tileX, tileY,
       16, 16,
@@ -361,8 +290,6 @@ function init() {
     // add wall around edge
     settings.map.data = settings.map.data.map((t, i) => {
       if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
-      // don't put right at edge
-      // if ([1, column - 2].includes(mapX(i)) || [1, row - 2].includes(mapY(i))) return '$' 
       return t
     })
 
@@ -372,22 +299,10 @@ function init() {
       const criteria2 = [column + 1, column - 1].reduce((acc, d) => acc + checkDir(d), '')
     
       const matchingTile = tiles.find(tile => {
-        if (tile.criteria2) {
-          return tile.criteria.includes(criteria) && tile.criteria2.includes(criteria2)
-        } 
-        return tile.criteria.includes(criteria)
+        return tile.criteria2
+          ? tile.criteria.includes(criteria) && tile.criteria2.includes(criteria2)
+          : tile.criteria.includes(criteria)
       })
-
-      // const block = {
-      //   el: Object.assign(document.createElement('div'), { 
-      //     className: `block ${criteria} ${criteria2} ${matchingTile?.id || 'missing'} ${t}`,
-      //     innerHTML: i
-      //   }),
-      //   x: mapX(i) * d,
-      //   y: mapY(i) * d
-      // }
-      // setPos(block)
-      // settings.mapImage.el.appendChild(block.el)
 
       if (!matchingTile) console.log(criteria, criteria2)
 
@@ -447,7 +362,6 @@ function init() {
     player.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
     // TODO there's nothing to stop dogs and mouses from appearing too close or in same spot as player
     settings.npcs.forEach(npc => npc.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)])
-  
     adjustMapWidthAndHeight()
   }
 
@@ -485,15 +399,17 @@ function init() {
         attackSphere = setInterval(()=> {
           sphere.el.classList.add(sphereState[sphere.state])
           sphere.state += 1
-          if (sphere.state === 5) {
+          if (sphere.state === 5 || !settings.map.spheres[wallCloseBy]) {
             clearInterval(attackSphere)
             npc.el.classList.remove('attacking')
             npc.el.classList.remove(npc.attackDir)
             npc.isHunting = true
             npc.pause = false
             triggerNpcMotion(npc)
-            settings.mapImage.el.removeChild(sphere.el)
-            settings.map.spheres[wallCloseBy] = null
+            if (settings.map.spheres[wallCloseBy]) {
+              settings.mapImage.el.removeChild(sphere.el)
+              settings.map.spheres[wallCloseBy] = null
+            }
           }
         }, 400)
       
@@ -669,15 +585,6 @@ function init() {
     })
   }
 
-  setInterval(()=> {
-    if (!settings.isWindowActive) return
-    settings.npcs.forEach(npc => {
-      if (npc.isFleeing) {
-        avoidPlayer(npc)
-      } else if (npc.isHunting) triggerNpcMotion(npc)
-    })
-  }, 600)
-
   const handleKeyAction = e => {
     const key = e.key ? e.key.toLowerCase().replace('arrow','') : e
     if (e.key && e.key[0] === 'A') handleWalk(key)
@@ -743,6 +650,41 @@ function init() {
     setPos(npc)
   }
 
+  const createNpcs = () => {
+    const dogBlobs = new Array(3).fill('').map((_, i) => {
+      return {
+        ...npcObj,
+        ...dogBlobObj,
+        id: `dog_${i}`,
+        el: Object.assign(document.createElement('div'), 
+        { 
+          className: 'npc sprite-container',
+          innerHTML: '<div class="overflow-hidden"><div class="dogblob sprite"></div></div>'
+        }),
+        motionTimer: null,
+        searchMemory: null,
+        route: [],
+        track: [],
+      }
+    })
+    const mouseBlobs = new Array(3).fill('').map((_, i) => {
+      return {
+        ...npcObj,
+        ...mouseBlobObj,
+        id: `mouse_${i}`,
+        el: Object.assign(document.createElement('div'), 
+        { 
+          className: 'npc sprite-container',
+          innerHTML: '<div class="overflow-hidden small"><div class="mouseblob sprite"></div></div>'
+        }),
+      }
+    })
+    settings.npcs = [
+      ...dogBlobs,
+      ...mouseBlobs
+    ]
+  }
+
   const addNpcs = () => {
     settings.npcs.forEach(npc => {
       const { pos } = npc
@@ -753,9 +695,30 @@ function init() {
     })
   }
 
-
+  createNpcs()
   setupMap()
   addNpcs()
+
+
+  setInterval(()=> {
+    if (!settings.isWindowActive) return
+    ;[player, ...settings.npcs].forEach(actor => {
+      settings.yOffset = settings.yOffset + 1 === 4
+        ? 0
+        : settings.yOffset + 1
+      const { sprite: el, d } = actor
+      setPos({ el, y: [0, -d, -(d * 2), -d][settings.yOffset] })
+    })
+  }, 200)
+
+  setInterval(()=> {
+    if (!settings.isWindowActive) return
+    settings.npcs.forEach(npc => {
+      if (npc.isFleeing) {
+        avoidPlayer(npc)
+      } else if (npc.isHunting) triggerNpcMotion(npc)
+    })
+  }, 600)
 
   window.addEventListener('focus', ()=> settings.isWindowActive = true)
   window.addEventListener('blur', ()=> settings.isWindowActive = false)
