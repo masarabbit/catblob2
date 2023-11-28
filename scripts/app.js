@@ -249,7 +249,7 @@ function init() {
       column: 30,
       row: 20,
       data: [],
-      blocks: [],
+      spheres: [],
     }, 
     cursor: {
       el: elements.cursor,
@@ -290,7 +290,7 @@ function init() {
   //   settings.mapImage.ctx.fillRect(mapX(i) * d, mapY(i) * d, d, d)
   // }
 
-  const blockState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
+  const sphereState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
 
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -394,17 +394,16 @@ function init() {
       if (matchingTile.id === 'dot' && randomN(10) === 10) {
         const x = mapX(i) * d
         const y = mapY(i) * d
-        const block = {
+        const sphere = {
           el: Object.assign(document.createElement('div'), { 
-            className: 'block',
-            // innerHTML: i
+            className: 'sphere',
           }),
           x, y,
           state: 0
         }
-        setPos(block)
-        settings.mapImage.el.appendChild(block.el)
-        settings.map.blocks[i] = block
+        setPos(sphere)
+        settings.mapImage.el.appendChild(sphere.el)
+        settings.map.spheres[i] = sphere
       } else {
         placeTile({
           tileId: t === 'x' ? 'floor' : matchingTile.id,
@@ -473,7 +472,7 @@ function init() {
       npc.track.length = 0
 
       // TODO npc identifies wall close by and attacks it
-      const wallCloseBy = [npc.pos + 1, npc.pos - 1, npc.pos + column, npc.pos - column].find(p => settings.map.blocks[p])
+      const wallCloseBy = [npc.pos + 1, npc.pos - 1, npc.pos + column, npc.pos - column].find(p => settings.map.spheres[p])
       if (wallCloseBy) {
         clearTimeout(npc.motionTimer)
         npc.el.classList.add('attacking')
@@ -481,20 +480,20 @@ function init() {
         npc.el.classList.add(npc.attackDir)
         turnSprite({ actor: npc, newPos: wallCloseBy })
 
-        const block = settings.map.blocks[wallCloseBy]
-        let attackBlock
-        attackBlock = setInterval(()=> {
-          block.el.classList.add(blockState[block.state])
-          block.state += 1
-          if (block.state === 5) {
-            clearInterval(attackBlock)
+        const sphere = settings.map.spheres[wallCloseBy]
+        let attackSphere
+        attackSphere = setInterval(()=> {
+          sphere.el.classList.add(sphereState[sphere.state])
+          sphere.state += 1
+          if (sphere.state === 5) {
+            clearInterval(attackSphere)
             npc.el.classList.remove('attacking')
             npc.el.classList.remove(npc.attackDir)
             npc.isHunting = true
             npc.pause = false
             triggerNpcMotion(npc)
-            settings.mapImage.el.removeChild(block.el)
-            settings.map.blocks[wallCloseBy] = null
+            settings.mapImage.el.removeChild(sphere.el)
+            settings.map.spheres[wallCloseBy] = null
           }
         }, 400)
       
@@ -505,7 +504,7 @@ function init() {
       npc.isHunting = true
     }
 
-    if (settings.map.blocks[newPos]) {
+    if (settings.map.spheres[newPos]) {
       triggerNpcMotion(npc)
       return
     } 
@@ -584,7 +583,7 @@ function init() {
     if (!possibleDestination.some(c => c === goal)) {
       const mapInfo = []
       possibleDestination.forEach(cell =>{  
-        if (noWall({ pos:cell, ignoreBlock: true }) && !searchMemory[cell].searched && cell !== pos) {
+        if (noWall({ pos:cell, ignoreSphere: true }) && !searchMemory[cell].searched && cell !== pos) {
           mapInfo.push({ 
             cell, 
             prev: current, 
@@ -623,9 +622,9 @@ function init() {
   
 
   // TODO enable cat and mouse to be in the same spot, but not mouse and dog
-  const noWall = ({ pos, ignoreBlock }) =>{    
-    const { map: { data, blocks }, npcs } = settings
-    if (!data[pos] || (!ignoreBlock && blocks[pos]) || player.pos === pos 
+  const noWall = ({ pos, ignoreSphere }) =>{    
+    const { map: { data, spheres }, npcs } = settings
+    if (!data[pos] || (!ignoreSphere && spheres[pos]) || player.pos === pos 
       || npcs.some(npc => npc.pos === pos)
       ) return false
     return settings.map.data[pos] !== '$'
@@ -684,7 +683,7 @@ function init() {
     if (e.key && e.key[0] === 'A') handleWalk(key)
   }
 
-  const placeBlock = () => {
+  const placeSphere = () => {
     const { d, column } = settings.map
     const { x, y } = settings.cursor
     const { left, top } = settings.mapImage.canvas.getBoundingClientRect()
@@ -695,15 +694,15 @@ function init() {
     const index = (((drawPos.y) / d) * column) + drawPos.x / d
 
     if (noWall({ pos: index })) {
-      const block = {
-        el: Object.assign(document.createElement('div'), { className: 'block' }),
+      const sphere = {
+        el: Object.assign(document.createElement('div'), { className: 'sphere' }),
         x: drawPos.x,
         y: drawPos.y,
         state: 0
       }
-      setPos(block)
-      settings.map.blocks[index] = block
-      settings.mapImage.el.appendChild(block.el)
+      setPos(sphere)
+      settings.map.spheres[index] = sphere
+      settings.mapImage.el.appendChild(sphere.el)
     }
   }
 
@@ -763,7 +762,7 @@ function init() {
   
   window.addEventListener('resize', adjustMapWidthAndHeight)
   window.addEventListener('mousemove', moveCursor )
-  settings.map.el.addEventListener('click', placeBlock)
+  settings.map.el.addEventListener('click', placeSphere)
   window.addEventListener('keyup', () => {
     player.walkingDirection = null
     clearInterval(player.walkingInterval)
