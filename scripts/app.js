@@ -3,7 +3,7 @@
 function init() {  
   
   // TODO refactor to simplify functions?
-  // TODO enable npc to break block - partially done
+  // TODO enable npc to break block - partially done (update block animation, update sprite and possibly add bits coming out with :after and :before)
   // TODO enable npcs to be in the same pos?
   // TODO add life and damage
   // TODO add more npcs
@@ -136,18 +136,18 @@ function init() {
     },
   ]
   
-  const decompress = arr =>{
-    const output = []
-    const input = Array.isArray(arr) ? arr : arr.split(',')
-    input.forEach(x=>{
-      const letter = x.split('').filter(y => y * 0 !== 0).join('')
-      const repeat = x.split('').filter(y => y * 0 === 0).join('') || 1
-      for (let i = 0; i < repeat; i++){
-        output.push(letter)
-      }
-    })
-    return output
-  }
+  // const decompress = arr =>{
+  //   const output = []
+  //   const input = Array.isArray(arr) ? arr : arr.split(',')
+  //   input.forEach(x=>{
+  //     const letter = x.split('').filter(y => y * 0 !== 0).join('')
+  //     const repeat = x.split('').filter(y => y * 0 === 0).join('') || 1
+  //     for (let i = 0; i < repeat; i++){
+  //       output.push(letter)
+  //     }
+  //   })
+  //   return output
+  // }
 
   const elements = {
     wrapper: document.querySelector('.wrapper'),
@@ -209,6 +209,7 @@ function init() {
         pause: false,
         d: 44,
         chaseTarget: player,
+        attackDir: null,
       },
       {
         id: 'mouse',
@@ -289,7 +290,7 @@ function init() {
   //   settings.mapImage.ctx.fillRect(mapX(i) * d, mapY(i) * d, d, d)
   // }
 
-  const blockState = ['cracked', 'cracked-more', 'cracked-even-more']
+  const blockState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
 
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -322,17 +323,17 @@ function init() {
     ctx.imageSmoothingEnabled = false
   }
 
-  const placeTile = ({ tileId, i, fill }) => {
+  const placeTile = ({ tileId, i }) => {
     const { d } = settings.map
     const index = tiles.indexOf(tiles.find(t => t.id === tileId))
     const tileX = (index % 10) * 16
     const tileY = Math.floor(index / 10) * 16
     const x = mapX(i) * d
     const y = mapY(i) * d
-    if (fill) {
-      settings.mapImage.ctx.fillStyle = '#2e1a66'
-      settings.mapImage.ctx.fillRect(x, y, d, d)
-    }
+    // if (fill) {
+    //   settings.mapImage.ctx.fillStyle = '#2e1a66'
+    //   settings.mapImage.ctx.fillRect(x, y, d, d)
+    // }
     settings.mapImage.ctx.drawImage(elements.mapTiles, 
       tileX, tileY,
       16, 16,
@@ -342,25 +343,28 @@ function init() {
 
   const setupMap = () => {
     const { d, column, row } = settings.map
-    settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
+    // settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
     const mapLength = column * row
     const wallPercentage = Math.round(mapLength * 0.2)
 
-    // settings.map.data = new Array(mapLength).fill('').map((_, i) => {
-    //   return (i < wallPercentage) ? '$' : 'x'
-    // }).sort(() => Math.random() - 0.5)
+    settings.map.data = new Array(mapLength).fill('').map((_, i) => {
+      return (i < wallPercentage) ? '$' : 'x'
+    }).sort(() => Math.random() - 0.5)
     settings.mapImage.w = column * d
     settings.mapImage.h = row * d
 
     setUpCanvas(settings.mapImage)
 
+    settings.mapImage.ctx.fillStyle = '#2e1a66'
+    settings.mapImage.ctx.fillRect(0, 0, settings.mapImage.w, settings.mapImage.h)
+
     // add wall around edge
-    // settings.map.data = settings.map.data.map((t, i) => {
-    //   if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
-    //   // don't put right at edge
-    //   // if ([1, column - 2].includes(mapX(i)) || [1, row - 2].includes(mapY(i))) return '$' 
-    //   return t
-    // })
+    settings.map.data = settings.map.data.map((t, i) => {
+      if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
+      // don't put right at edge
+      // if ([1, column - 2].includes(mapX(i)) || [1, row - 2].includes(mapY(i))) return '$' 
+      return t
+    })
 
     settings.map.data.forEach((t, i) => {
       const checkDir = dir => settings.map.data?.[i + dir] === 'x' ? 'x' : 'o'
@@ -387,12 +391,27 @@ function init() {
 
       if (!matchingTile) console.log(criteria, criteria2)
 
-      placeTile({
-        tileId: t === 'x' ? 'floor' : matchingTile.id,
-        i,
-        fill: true,
-      })
-  
+      if (matchingTile.id === 'dot' && randomN(10) === 10) {
+        const x = mapX(i) * d
+        const y = mapY(i) * d
+        const block = {
+          el: Object.assign(document.createElement('div'), { 
+            className: 'block',
+            // innerHTML: i
+          }),
+          x, y,
+          state: 0
+        }
+        setPos(block)
+        settings.mapImage.el.appendChild(block.el)
+        settings.map.blocks[i] = block
+      } else {
+        placeTile({
+          tileId: t === 'x' ? 'floor' : matchingTile.id,
+          i,
+        })
+      }
+
       // round off edges
       if (t === '$') {
         if (criteria[0] === 'o' && criteria[3] === 'x' && checkDir(-(column + 1)) === 'o') {
@@ -458,7 +477,8 @@ function init() {
       if (wallCloseBy) {
         clearTimeout(npc.motionTimer)
         npc.el.classList.add('attacking')
-        npc.el.classList.add(Math.abs(npc.pos - wallCloseBy) === 1 ? 'horizontal' : 'vertical')
+        npc.attackDir = Math.abs(npc.pos - wallCloseBy) === 1 ? 'horizontal' : 'vertical'
+        npc.el.classList.add(npc.attackDir)
         turnSprite({ actor: npc, newPos: wallCloseBy })
 
         const block = settings.map.blocks[wallCloseBy]
@@ -466,16 +486,17 @@ function init() {
         attackBlock = setInterval(()=> {
           block.el.classList.add(blockState[block.state])
           block.state += 1
-          if (block.state === 4) {
-            settings.mapImage.el.removeChild(block.el)
-            settings.map.blocks[wallCloseBy] = null
+          if (block.state === 5) {
             clearInterval(attackBlock)
             npc.el.classList.remove('attacking')
+            npc.el.classList.remove(npc.attackDir)
             npc.isHunting = true
             npc.pause = false
             triggerNpcMotion(npc)
+            settings.mapImage.el.removeChild(block.el)
+            settings.map.blocks[wallCloseBy] = null
           }
-        }, 800)
+        }, 400)
       
         npc.pause = true
         return
@@ -549,7 +570,7 @@ function init() {
 
     motion.push(npc.x > target.x ? 1 : -1)
     motion.push(npc.y > target.y ? w : -w)
-    motion = motion.filter(pos => noWall(npc.pos + pos))
+    motion = motion.filter(pos => noWall({ pos: npc.pos + pos }))
 
     // TODO need something here to ensure there's way out?
     moveNpc({ npc, newPos:npc.pos + (motion[Math.floor(Math.random() * motion.length)]) })
@@ -563,7 +584,7 @@ function init() {
     if (!possibleDestination.some(c => c === goal)) {
       const mapInfo = []
       possibleDestination.forEach(cell =>{  
-        if (noWall(cell) && !searchMemory[cell].searched && cell !== pos) {
+        if (noWall({ pos:cell, ignoreBlock: true }) && !searchMemory[cell].searched && cell !== pos) {
           mapInfo.push({ 
             cell, 
             prev: current, 
@@ -602,9 +623,9 @@ function init() {
   
 
   // TODO enable cat and mouse to be in the same spot, but not mouse and dog
-  const noWall = pos =>{    
+  const noWall = ({ pos, ignoreBlock }) =>{    
     const { map: { data, blocks }, npcs } = settings
-    if (!data[pos] || blocks[pos] || player.pos === pos 
+    if (!data[pos] || (!ignoreBlock && blocks[pos]) || player.pos === pos 
       || npcs.some(npc => npc.pos === pos)
       ) return false
     return settings.map.data[pos] !== '$'
@@ -636,7 +657,7 @@ function init() {
     if (!dir || player.pause) return
     const { diff, para, dist } = getWalkConfig(dir) 
     turnSprite({ actor: player, diff })
-    if (noWall(actor.pos + diff)) {
+    if (noWall({ pos: actor.pos + diff })) {
       if (actor === player) { // TODO may not require this if this is only used for player
         settings.mapImage[para] += dist
         setStyles(settings.mapImage)
@@ -673,7 +694,7 @@ function init() {
     }
     const index = (((drawPos.y) / d) * column) + drawPos.x / d
 
-    if (noWall(index)) {
+    if (noWall({ pos: index })) {
       const block = {
         el: Object.assign(document.createElement('div'), { className: 'block' }),
         x: drawPos.x,
