@@ -3,9 +3,11 @@
 function init() {  
   
   // TODO refactor to simplify functions?
-  // TODO enable npcs to be in the same pos? //need to update this to makesure dogs don't get stuck attacking
-  // TODO add life and damage
-  // TODO enable cat to catch mouse
+  // TODO update sprites or map to make them clearer
+  // TODO add some kind of logic to prevent sprites and/or player to be trapped
+  // TODO add some kind of logic to reset everything (make reset button first)
+  // TODO update someway to keep score
+  // TODO add some way to end game when life reaches 0
 
   const tiles = [
     {
@@ -142,6 +144,7 @@ function init() {
     indicator: document.querySelector('.indicator'),
     cursor: document.querySelector('.cursor'),
     mapTiles: document.querySelector('.map-tiles'),
+    arrows: document.querySelectorAll('.arrow'),
   }
 
   const player = {
@@ -153,6 +156,13 @@ function init() {
     pause: false,
     id: 'catblob',
     d: 44,
+    life: {
+      el: document.querySelector('.life'),
+      w: 180,
+      point: 9,
+    },
+    invincible: false,
+    invincibleCount: 0,
   }
 
   const npcObj = {
@@ -207,18 +217,20 @@ function init() {
       el: elements.cursor,
       x: 0, y: 0,
     },
+    controlTimer: null
   }
 
   const mapX = i => i % settings.map.column
   const mapY = i => Math.floor(i / settings.map.column)
   const getMapCoord = para => (Math.floor(settings.map[para] / 2) - 1) * settings.map.d
   const clampMax = (n, max) =>  n < max ? n : max
+  const isNum = x => typeof x === 'number'
   const px = n => `${n}px`
   const setPos = ({ el, x, y }) => Object.assign(el.style, { left: `${x}px`, top: `${y}px` })
   const setStyles = ({ el, x, y, w, h, d }) => {
     const m = d || 1
-    if (w) el.style.width = px(w * m)
-    if (h) el.style.height = px(h * m)
+    if (isNum(w)) el.style.width = px(w * m)
+    if (isNum(h)) el.style.height = px(h * m)
     el.style.transform = `translate(${x ? px(x) : 0}, ${y ? px(y) : 0})`
   }
   const nearestN = (n, denom) => n === 0 ? 0 : (n - 1) + Math.abs(((n - 1) % denom) - denom)
@@ -488,7 +500,7 @@ function init() {
     motion = motion.filter(pos => noWall({ pos: npc.pos + pos }))
 
     // TODO need something here to ensure there's way out?
-    moveNpc({ npc, newPos:npc.pos + (motion[Math.floor(Math.random() * motion.length)]) })
+    if (motion.length) moveNpc({ npc, newPos:npc.pos + (motion[Math.floor(Math.random() * motion.length)]) })
   }
 
   const decideNextMove = ({ character, current, count }) =>{
@@ -541,7 +553,7 @@ function init() {
   const noWall = ({ pos, ignoreSphere }) =>{    
     const { map: { data, spheres }, npcs } = settings
     if (!data[pos] || (!ignoreSphere && spheres[pos]) || player.pos === pos 
-      || npcs.some(npc => npc.pos === pos)
+      // || npcs.some(npc => npc.pos === pos)
       ) return false
     return settings.map.data[pos] !== '$'
   }
@@ -588,6 +600,7 @@ function init() {
   const handleKeyAction = e => {
     const key = e.key ? e.key.toLowerCase().replace('arrow','') : e
     if (e.key && e.key[0] === 'A') handleWalk(key)
+    if (['top', 'right', 'bottom', 'left'].includes(e)) handleWalk(e)
   }
 
   const placeSphere = () => {
@@ -615,11 +628,16 @@ function init() {
 
   const moveCursor = e => {
     const { d } = settings.map
-    const { left, top } = settings.mapImage.canvas.getBoundingClientRect()
-    settings.cursor.x = nearestN(e.pageX - left - window.scrollX, d) - d + left + window.scrollX
-    settings.cursor.y = nearestN(e.pageY - top - window.scrollY, d) - d + top + window.scrollY
+    const { width, height, left, top } = settings.mapImage.canvas.getBoundingClientRect()
+    if (e.pageX > left && e.pageX < (left + width) && e.pageY > top && e.pageY < (top + height)) {
+      settings.cursor.x = nearestN(e.pageX - left - window.scrollX, d) - d + left + window.scrollX
+      settings.cursor.y = nearestN(e.pageY - top - window.scrollY, d) - d + top + window.scrollY
+      settings.cursor.el.classList.remove('d-none')
+      setStyles(settings.cursor)
+    } else {
+      settings.cursor.el.classList.add('d-none')
+    }
 
-    setStyles(settings.cursor)
   }
 
 
@@ -667,7 +685,7 @@ function init() {
         track: [],
       }
     })
-    const mouseBlobs = new Array(3).fill('').map((_, i) => {
+    const mouseBlobs = new Array(10).fill('').map((_, i) => {
       return {
         ...npcObj,
         ...mouseBlobObj,
@@ -695,6 +713,37 @@ function init() {
     })
   }
 
+  const damagePlayer = npc => {
+    npc.el.classList.add('attacking')
+    npc.attackDir = Math.abs(npc.pos - player.pos) === 1 ? 'horizontal' : 'vertical'
+    npc.el.classList.add(npc.attackDir)
+    turnSprite({ actor: npc, newPos: player.pos})
+    setTimeout(()=> {
+      npc.el.classList.remove('attacking')
+      npc.el.classList.remove(npc.attackDir)
+    }, 2000)
+
+    player.life.point -= 1
+    player.life.w = player.life.point * 20
+    player.invincible = true
+    player.el.classList.add('blink')
+    setStyles(player.life)
+    // setTimeout(()=> {
+    //   player.invincible = false
+    //   player.el.classList.remove('blink')
+    // }, 6000)
+  }
+
+  const catchMouse = npc => {
+    if (npc.pause) return
+    npc.pause = true
+    npc.el.classList.add('sparkle')
+    setTimeout(()=> {
+      settings.mapImage.el.removeChild(npc.el)
+      settings.npcs = settings.npcs.filter(n => npc.id !== n.id)
+    }, 1000)
+  }
+
   createNpcs()
   setupMap()
   addNpcs()
@@ -702,21 +751,40 @@ function init() {
 
   setInterval(()=> {
     if (!settings.isWindowActive) return
-    ;[player, ...settings.npcs].forEach(actor => {
-      settings.yOffset = settings.yOffset + 1 === 4
-        ? 0
-        : settings.yOffset + 1
+    settings.yOffset = settings.yOffset + 1 === 4
+      ? 0
+      : settings.yOffset + 1
+    ;[player,...settings.npcs].forEach(actor => {
       const { sprite: el, d } = actor
       setPos({ el, y: [0, -d, -(d * 2), -d][settings.yOffset] })
     })
+    
+    if (!player.invincible) {
+      settings.npcs.forEach(npc => {
+        if (npc.isFleeing && npc.pos === player.pos) {
+          catchMouse(npc)
+        } else if (npc.isHunting && npc.pos === player.pos) {
+          damagePlayer(npc)
+        }
+      })
+    } else {
+      player.invincibleCount += 1
+      if (player.invincibleCount > 30) {
+        player.invincibleCount = 0
+        player.invincible = false
+        player.el.classList.remove('blink')
+      }
+    }
   }, 200)
 
   setInterval(()=> {
     if (!settings.isWindowActive) return
     settings.npcs.forEach(npc => {
-      if (npc.isFleeing) {
+      if (npc.isFleeing && !npc.pause) {
         avoidPlayer(npc)
-      } else if (npc.isHunting) triggerNpcMotion(npc)
+      } else if (npc.isHunting) {
+        triggerNpcMotion(npc)
+      }
     })
   }, 600)
 
@@ -731,6 +799,18 @@ function init() {
     clearInterval(player.walkingInterval)
   })
   window.addEventListener('keydown', handleKeyAction)
+  elements.arrows.forEach(arrow => {
+    ;['mousedown', 'touchstart'].forEach(action => {
+      arrow.addEventListener(action, ()=> {
+        settings.controlTimer = setInterval(()=> {
+          walk({ actor: player, dir: arrow.dataset.dir })
+        }, 200)
+      })
+    })
+    ;['mouseup', 'touchend'].forEach(action => {
+      arrow.addEventListener(action, ()=> clearInterval(settings.controlTimer))
+    })
+  })
 }
 
 window.addEventListener('DOMContentLoaded', init)
