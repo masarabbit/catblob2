@@ -230,51 +230,50 @@ canvas {
   border-radius: 50%;
 }
 
-.control {
+.control-wrapper {
   position: fixed;
-  bottom: 100px;
-  left: 100px;
-  --size: 50px;
-  width: var(--size);
-  height: var(--size);
+  bottom: 20px;
+  left: 20px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  /* border: 1px solid white; */
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
-.arrow {
+.control {
   position: absolute;
+  width: 0;
+  height: 0;
+  /* border: 1px solid red; */
+  transform: translate(75px, 75px);
+  cursor: grab;
+  transition: 0.2s;
+  /* pointer-events: none; */
+}
+
+.control:after {
+  position: absolute;
+  content: '';
+  --size: 96px;
+  top: calc(var(--size) * -0.5);
+  left: calc(var(--size) * -0.5);
+  border-radius: 50%;
   width: var(--size);
   height: var(--size);
-  --indent: 0px;
-  background-color: aquamarine;
-  border: 0 solid rgb(252, 252, 93);
-  border-bottom-width: 4px;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAI1JREFUWEftV0EOwCAIW///aBYOJG6TJQIbmOBZSqlYEURER+JCE/AoAAB8ei4Ma7Akl/Yx41gC78k9JLoJW4FWoKYCfM8t/vD2pmmYj0QR9jojouFeCIwO94UCM8esRYAZph6BSJTahH9PZ+HXbbWAJtAK7KlAiaE0dSwfHTPtY7JqONr+PZswqnrGOQHGKseh+5Ps2AAAAABJRU5ErkJggg==);
+  opacity: 0.7;
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+  background-size: var(--size); 
+  /* transform: translate(27px, 27px); */
 }
 
-.arrow:hover {
-  border-bottom-width: 0;
-  --indent: -4px;
-  bottom: var(--indent);
-}
-
-.arrow:nth-child(1) {
-  top: calc(var(--size) * -1 - var(--indent));
-}
-
-.arrow:nth-child(2) {
-  right: calc(var(--size) * -1);
-}
-
-.arrow:nth-child(3) {
-  bottom: calc(var(--size) * -1 + var(--indent));
-}
-
-.arrow:nth-child(4) {
-  left: calc(var(--size) * -1);
-}
 
 .life-indicator {
   position: fixed;
-  top: 30px;
-  left: 50px;
+  top: 20px;
+  left: 20px;
   width: 184px;
   height: 34px;
   border: 2px solid rgb(252, 252, 93);
@@ -317,3 +316,11 @@ a {
 }
 
 a:hover { text-decoration: underline; }
+
+.marker {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: yellow;
+  border-radius: 50%;
+}

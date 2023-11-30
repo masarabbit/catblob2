@@ -8,6 +8,7 @@ function init() {
   // TODO add some kind of logic to reset everything (make reset button first)
   // TODO update someway to keep score
   // TODO add some way to end game when life reaches 0
+  // TODO need to prevent more than one arrows being pressed at the same time, or only add touchEvent to control (not each arrows) 
 
   const tiles = [
     {
@@ -144,7 +145,6 @@ function init() {
     indicator: document.querySelector('.indicator'),
     cursor: document.querySelector('.cursor'),
     mapTiles: document.querySelector('.map-tiles'),
-    arrows: document.querySelectorAll('.arrow'),
   }
 
   const player = {
@@ -217,7 +217,23 @@ function init() {
       el: elements.cursor,
       x: 0, y: 0,
     },
-    controlTimer: null
+  }
+
+  const control = {
+    wrapper: document.querySelector('.control-wrapper'),
+    el: document.querySelector('.control'),
+    x: 75, y: 75,
+    active: false,
+    direction: null,
+    timer: null,
+  }
+
+  const controlPos = () => {
+    const { width, height, left, top } = control.wrapper.getBoundingClientRect()
+    return {
+      x: left + (width / 2),
+      y: top + (height / 2)
+    }
   }
 
   const mapX = i => i % settings.map.column
@@ -236,6 +252,21 @@ function init() {
   const nearestN = (n, denom) => n === 0 ? 0 : (n - 1) + Math.abs(((n - 1) % denom) - denom)
   const randomN = max => Math.ceil(Math.random() * max)
   const sphereState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
+  const distanceBetween = (a, b) => Math.round(Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2)))
+  const degToRad = deg => deg / (180 / Math.PI)
+  const radToDeg = rad => Math.round(rad * (180 / Math.PI))
+  const getOffsetPos = ({ center, distance, deg }) => {
+    return {
+      x: center.x + (distance * Math.cos(degToRad(deg - 90))),
+      y: center.y + (distance * Math.sin(degToRad(deg - 90)))
+    }
+  }
+  const getAngle = (el, pos) => {
+    const { x, y } = pos
+    const angle = radToDeg(Math.atan2(el.y - y, el.x - x)) - 90
+    const adjustedAngle = angle < 0 ? angle + 360 : angle
+    return adjustedAngle
+  }
 
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -637,7 +668,6 @@ function init() {
     } else {
       settings.cursor.el.classList.add('d-none')
     }
-
   }
 
 
@@ -728,10 +758,6 @@ function init() {
     player.invincible = true
     player.el.classList.add('blink')
     setStyles(player.life)
-    // setTimeout(()=> {
-    //   player.invincible = false
-    //   player.el.classList.remove('blink')
-    // }, 6000)
   }
 
   const catchMouse = npc => {
@@ -799,16 +825,55 @@ function init() {
     clearInterval(player.walkingInterval)
   })
   window.addEventListener('keydown', handleKeyAction)
-  elements.arrows.forEach(arrow => {
-    ;['mousedown', 'touchstart'].forEach(action => {
-      arrow.addEventListener(action, ()=> {
-        settings.controlTimer = setInterval(()=> {
-          walk({ actor: player, dir: arrow.dataset.dir })
-        }, 200)
-      })
+
+
+  // const placeMarker = ({ x, y }) => {
+  //   const marker = {
+  //     el: Object.assign(document.createElement('div'), { className: 'marker' }),
+  //     x, y
+  //   }
+  //   setPos(marker)
+  //   elements.wrapper.appendChild(marker.el)
+  // }
+
+  ;['mousemove', 'touchmove'].forEach(action => {
+    control.wrapper.addEventListener(action, e => {
+      if (!control.active) return
+      const center = controlPos()
+      const pos = { x: e.pageX, y: e.pageY }
+      const distance = distanceBetween(center, pos)
+      if (distance < 45) {
+        const offsetPos = getOffsetPos({
+          deg: getAngle(center, pos), center, distance
+        })  
+        const { left, top } = control.wrapper.getBoundingClientRect()
+        control.x = offsetPos.x - left
+        control.y = offsetPos.y - top
+        setStyles(control)
+
+        control.direction = Math.abs(pos.x - center.x) < Math.abs(pos.y - center.y)
+          ? pos.y < center.y ? 'up' : 'down'
+          : pos.x < center.x ? 'left' : 'right'
+      }
     })
-    ;['mouseup', 'touchend'].forEach(action => {
-      arrow.addEventListener(action, ()=> clearInterval(settings.controlTimer))
+  })
+
+  ;['mousedown', 'touchstart'].forEach(action => {
+    control.wrapper.addEventListener(action, () =>  {
+      control.active = true
+      control.timer = setInterval(()=> {
+        if (control.active) walk({ actor: player, dir: control.direction })
+      }, 200)
+    })
+  })
+
+  ;['mouseleave', 'mouseup', 'touchend'].forEach(action => {
+    control.wrapper.addEventListener(action, () =>  {
+      control.active = false
+      control.x = 75
+      control.y = 75
+      setStyles(control)
+      clearInterval(control.timer)
     })
   })
 }
