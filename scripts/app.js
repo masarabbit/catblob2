@@ -6,7 +6,6 @@ function init() {
   // TODO update sprites or map to make them clearer
   // TODO add some kind of logic to prevent sprites and/or player to be trapped
   // TODO add some kind of logic to reset everything (make reset button first)
-  // TODO update someway to keep score
   // TODO add some way to end game when life reaches 0
 
 
@@ -163,6 +162,11 @@ function init() {
     },
     invincible: false,
     invincibleCount: 0,
+    mouseBlobCaught: {
+      el: document.querySelector('.catch-indicator'),
+      no: 0,
+      total: 0,
+    }
   }
 
   const npcObj = {
@@ -609,18 +613,27 @@ function init() {
       down: { diff: column, para: 'y', dist: -d }
     }[dir] 
   }
+
+  const hitCheck = () => {
+    settings.npcs.forEach(npc => {
+      if (npc.isFleeing && npc.pos === player.pos) {
+        catchMouse(npc)
+      } else if (npc.isHunting && npc.pos === player.pos) {
+        damagePlayer(npc)
+      }
+    })
+  }
   
   const walk = ({ actor, dir }) => {
     if (!dir || player.pause) return
     const { diff, para, dist } = getWalkConfig(dir) 
     turnSprite({ actor: player, diff })
-    if (noWall({ pos: actor.pos + diff, actor })) {
-      if (actor === player) { // TODO may not require this if this is only used for player
-        settings.mapImage[para] += dist
-        setStyles(settings.mapImage)
-        player.pos += diff
-        elements.indicator.innerHTML = `pos:${player.pos} dataX:${mapX(player.pos)} dataY:${mapY(player.pos)}`
-      } 
+    if (actor === player && noWall({ pos: actor.pos + diff, actor })) {
+      settings.mapImage[para] += dist
+      setStyles(settings.mapImage)
+      player.pos += diff
+      elements.indicator.innerHTML = `pos:${player.pos} dataX:${mapX(player.pos)} dataY:${mapY(player.pos)}`
+      if (!player.invincible) hitCheck()
     }
     settings.npcs.forEach(npc => {
       if (!npc.isHunting && !npc.isFleeing) triggerNpcMotion(npc)
@@ -669,6 +682,11 @@ function init() {
     }
   }
 
+  const updateMouseBlobCounter = () => {
+    const { no, total } =  player.mouseBlobCaught
+    player.mouseBlobCaught.el.innerHTML = `${no}/${total}`
+  }
+
 
   const turnSprite = ({ actor, diff, newPos = 0 }) => {
     const { column } = settings.map
@@ -698,6 +716,8 @@ function init() {
   }
 
   const createNpcs = () => {
+    const mouseBlobNo = 10
+
     const dogBlobs = new Array(3).fill('').map((_, i) => {
       return {
         ...npcObj,
@@ -714,7 +734,7 @@ function init() {
         track: [],
       }
     })
-    const mouseBlobs = new Array(10).fill('').map((_, i) => {
+    const mouseBlobs = new Array(mouseBlobNo).fill('').map((_, i) => {
       return {
         ...npcObj,
         ...mouseBlobObj,
@@ -726,6 +746,8 @@ function init() {
         }),
       }
     })
+    player.mouseBlobCaught.total = mouseBlobNo
+    updateMouseBlobCounter()
     settings.npcs = [
       ...dogBlobs,
       ...mouseBlobs
@@ -763,6 +785,8 @@ function init() {
     if (npc.pause) return
     npc.pause = true
     npc.el.classList.add('sparkle')
+    player.mouseBlobCaught.no += 1
+    updateMouseBlobCounter()
     setTimeout(()=> {
       settings.mapImage.el.removeChild(npc.el)
       settings.npcs = settings.npcs.filter(n => npc.id !== n.id)
@@ -785,14 +809,8 @@ function init() {
     })
     
     if (!player.invincible) {
-      settings.npcs.forEach(npc => {
-        if (npc.isFleeing && npc.pos === player.pos) {
-          catchMouse(npc)
-        } else if (npc.isHunting && npc.pos === player.pos) {
-          damagePlayer(npc)
-        }
-      })
-    } else {
+      hitCheck()
+    } else if (player.invincible) {
       player.invincibleCount += 1
       if (player.invincibleCount > 30) {
         player.invincibleCount = 0
@@ -834,12 +852,13 @@ function init() {
   //   setPos(marker)
   //   elements.wrapper.appendChild(marker.el)
   // }
+  const ePos = (e, type) => e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`]
 
   ;['mousemove', 'touchmove'].forEach(action => {
     control.wrapper.addEventListener(action, e => {
       if (!control.active) return
       const center = controlPos()
-      const pos = { x: e.pageX, y: e.pageY }
+      const pos = { x: ePos(e, 'X'), y: ePos(e,'Y') }
       const distance = distanceBetween(center, pos)
       if (distance < 45) {
         const deg = getAngle(center, pos)

@@ -269,11 +269,19 @@ canvas {
   /* transform: translate(27px, 27px); */
 }
 
-
-.life-indicator {
+.status {
   position: fixed;
   top: 20px;
   left: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 250px;
+  color: white;
+}
+
+.life-indicator {
   width: 184px;
   height: 34px;
   border: 2px solid rgb(252, 252, 93);
