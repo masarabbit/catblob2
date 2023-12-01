@@ -8,7 +8,7 @@ function init() {
   // TODO add some kind of logic to reset everything (make reset button first)
   // TODO update someway to keep score
   // TODO add some way to end game when life reaches 0
-  // TODO need to prevent more than one arrows being pressed at the same time, or only add touchEvent to control (not each arrows) 
+
 
   const tiles = [
     {
@@ -479,17 +479,17 @@ function init() {
     }
   }
 
-  const selectPath = ({ character, current }) =>{
-    character.route.push(current)
-    if (character.searchMemory[current].prev) {
+  const selectPath = ({ actor, current }) =>{
+    actor.route.push(current)
+    if (actor.searchMemory[current].prev) {
       selectPath({ 
-        character, 
-        current: character.searchMemory[current].prev 
+        actor, 
+        current: actor.searchMemory[current].prev 
       })
     } else {
       chainMotion({
-        npc: character,
-        route: character.route.reverse(),
+        npc: actor,
+        route: actor.route.reverse(),
         index: 0
       })
     }
@@ -528,21 +528,22 @@ function init() {
 
     motion.push(npc.x > target.x ? 1 : -1)
     motion.push(npc.y > target.y ? w : -w)
-    motion = motion.filter(pos => noWall({ pos: npc.pos + pos }))
+    motion = motion.filter(pos => noWall({ pos: npc.pos + pos, actor: npc }))
 
     // TODO need something here to ensure there's way out?
     if (motion.length) moveNpc({ npc, newPos:npc.pos + (motion[Math.floor(Math.random() * motion.length)]) })
   }
 
-  const decideNextMove = ({ character, current, count }) =>{
-    const { pos, goal, searchMemory } = character
+  const decideNextMove = ({ actor, current, count }) =>{
+    const { pos, goal, searchMemory } = actor
     const { column: w } = settings.map
-    if (!character.carryOn) return
+    if (!actor.carryOn) return
     const possibleDestination = [1, -1, -w, w].map(d => d + current)
-    if (!possibleDestination.some(c => c === goal)) {
+    // TODO need workaround
+    if (possibleDestination.length && !possibleDestination.some(c => c === goal)) {
       const mapInfo = []
       possibleDestination.forEach(cell =>{  
-        if (noWall({ pos:cell, ignoreSphere: true }) && !searchMemory[cell].searched && cell !== pos) {
+        if (noWall({ pos:cell, ignoreSphere: true, actor }) && !searchMemory[cell].searched && cell !== pos) {
           mapInfo.push({ 
             cell, 
             prev: current, 
@@ -552,19 +553,19 @@ function init() {
       })
       const minValue = Math.min(...mapInfo.map(c => c.distanceToGoal))
       mapInfo.filter(c => c.distanceToGoal === minValue).forEach(c =>{
-        character.searchMemory[c.cell].searched = true 
-        character.searchMemory[c.cell].prev = current 
+        actor.searchMemory[c.cell].searched = true 
+        actor.searchMemory[c.cell].prev = current 
         decideNextMove({ 
-          character, 
+          actor, 
           current: c.cell, 
           count: count + 1 
         })
       })
     } else {
-      character.carryOn = false
-      character.searchMemory[goal].prev = current
-      clearTimeout(character.motionTimer)
-      selectPath({ character, current: goal })
+      actor.carryOn = false
+      actor.searchMemory[goal].prev = current
+      clearTimeout(actor.motionTimer)
+      selectPath({ actor, current: goal })
     }  
   }
 
@@ -576,16 +577,14 @@ function init() {
     npc.searchMemory = defaultPathMemory(settings.map.data)
     npc.carryOn = true
     if (target) npc.goal = target.pos
-    decideNextMove({ character: npc, current: npc.pos })
+    decideNextMove({ actor: npc, current: npc.pos })
   }
   
 
-  // TODO enable cat and mouse to be in the same spot, but not mouse and dog
-  const noWall = ({ pos, ignoreSphere }) =>{    
+  const noWall = ({ pos, ignoreSphere, actor }) =>{    
     const { map: { data, spheres }, npcs } = settings
-    if (!data[pos] || (!ignoreSphere && spheres[pos]) || player.pos === pos 
-      // || npcs.some(npc => npc.pos === pos)
-      ) return false
+    if (!data[pos] || (!ignoreSphere && spheres[pos]) || player.pos === pos) return false
+    if (actor !== player && npcs.some(npc => npc.pos === pos)) return false
     return settings.map.data[pos] !== '$'
   }
 
@@ -615,7 +614,7 @@ function init() {
     if (!dir || player.pause) return
     const { diff, para, dist } = getWalkConfig(dir) 
     turnSprite({ actor: player, diff })
-    if (noWall({ pos: actor.pos + diff })) {
+    if (noWall({ pos: actor.pos + diff, actor })) {
       if (actor === player) { // TODO may not require this if this is only used for player
         settings.mapImage[para] += dist
         setStyles(settings.mapImage)
@@ -843,17 +842,18 @@ function init() {
       const pos = { x: e.pageX, y: e.pageY }
       const distance = distanceBetween(center, pos)
       if (distance < 45) {
-        const offsetPos = getOffsetPos({
-          deg: getAngle(center, pos), center, distance
-        })  
+        const deg = getAngle(center, pos)
+        const offsetPos = getOffsetPos({ deg, center, distance })  
         const { left, top } = control.wrapper.getBoundingClientRect()
-        control.x = offsetPos.x - left
-        control.y = offsetPos.y - top
-        setStyles(control)
-
-        control.direction = Math.abs(pos.x - center.x) < Math.abs(pos.y - center.y)
-          ? pos.y < center.y ? 'up' : 'down'
-          : pos.x < center.x ? 'left' : 'right'
+        setStyles({
+          el: control.el,
+          x: offsetPos.x - left,
+          y: offsetPos.y - top
+        })
+        control.direction = (deg > 315 || deg <= 45) ? 'up'
+          : deg > 45 && deg <= 135 ? 'right'
+          : deg > 135 && deg <= 225 ? 'down'
+          : 'left'
       }
     })
   })
@@ -870,8 +870,6 @@ function init() {
   ;['mouseleave', 'mouseup', 'touchend'].forEach(action => {
     control.wrapper.addEventListener(action, () =>  {
       control.active = false
-      control.x = 75
-      control.y = 75
       setStyles(control)
       clearInterval(control.timer)
     })
