@@ -8,6 +8,8 @@ function init() {
   // TODO add some kind of logic to reset everything (make reset button first)
   // TODO add some way to end game when life reaches 0
 
+  // TODO add button to console.log setting, because we seem to have invisible wall sometimes
+
 
   const tiles = [
     {
@@ -230,16 +232,23 @@ function init() {
     active: false,
     direction: null,
     timer: null,
+
+    pos: { x: 0, y: 0 },
+    movePos: { x: 0, y: 0 }
   }
 
-  const controlPos = () => {
-    const { width, height, left, top } = control.wrapper.getBoundingClientRect()
-    return {
-      x: left + (width / 2),
-      y: top + (height / 2)
-    }
-  }
 
+  const addEvents = (target, event, action, array) =>{
+    array.forEach(a => event === 'remove' ? target.removeEventListener(a, action) : target.addEventListener(a, action))
+  }
+  
+  const mouse = {
+    up: (t, e, a) => addEvents(t, e, a, ['mouseup', 'touchend']),
+    move: (t, e, a) => addEvents(t, e, a, ['mousemove', 'touchmove']),
+    down: (t, e, a) => addEvents(t, e, a, ['mousedown', 'touchstart']),
+    enter: (t, e, a) => addEvents(t, e, a, ['mouseenter', 'touchstart']),
+    leave: (t, e, a) => addEvents(t, e, a, ['mouseleave'])
+  }
   const mapX = i => i % settings.map.column
   const mapY = i => Math.floor(i / settings.map.column)
   const getMapCoord = para => (Math.floor(settings.map[para] / 2) - 1) * settings.map.d
@@ -257,20 +266,7 @@ function init() {
   const randomN = max => Math.ceil(Math.random() * max)
   const sphereState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
   const distanceBetween = (a, b) => Math.round(Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2)))
-  const degToRad = deg => deg / (180 / Math.PI)
-  const radToDeg = rad => Math.round(rad * (180 / Math.PI))
-  const getOffsetPos = ({ center, distance, deg }) => {
-    return {
-      x: center.x + (distance * Math.cos(degToRad(deg - 90))),
-      y: center.y + (distance * Math.sin(degToRad(deg - 90)))
-    }
-  }
-  const getAngle = (el, pos) => {
-    const { x, y } = pos
-    const angle = radToDeg(Math.atan2(el.y - y, el.x - x)) - 90
-    const adjustedAngle = angle < 0 ? angle + 360 : angle
-    return adjustedAngle
-  }
+  const ePos = (e, type) => Math.round(e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`])
 
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -319,7 +315,6 @@ function init() {
 
   const setupMap = () => {
     const { d, column, row } = settings.map
-    // settings.map.data = decompress('$14,2,$17,8,$2,8,$7,1,$4,8,$2,5,$2,1,$3,1,$3,1,$2,5,$2,10,$2,9,$2,4,$4,16,$2,2,$2,4,$4,16,$2,2,$2,4,$6,18,$2,4,$6,18,$4,2,$4,20,$4,2,$1,1,$2,20,$2,28,$2,28,$2,28,$15,1,$29,1,$29,1,$135').map(t => t ||'x')
     const mapLength = column * row
     const wallPercentage = Math.round(mapLength * 0.2)
 
@@ -405,11 +400,13 @@ function init() {
       } 
     })
 
-    const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && i).filter(t => t)
+    const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.spheres[i] && i).filter(t => t)
     player.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
     // TODO there's nothing to stop dogs and mouses from appearing too close or in same spot as player
     settings.npcs.forEach(npc => npc.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)])
     adjustMapWidthAndHeight()
+
+    // elements.indicator.innerHTML = settings.npcs.map(n => `${n.id} ${n.pos}`).join('|')
   }
 
   const defaultPathMemory = arr => arr.map(()=> {
@@ -484,6 +481,7 @@ function init() {
   }
 
   const selectPath = ({ actor, current }) =>{
+    // if (!current) return
     actor.route.push(current)
     if (actor.searchMemory[current].prev) {
       selectPath({ 
@@ -496,7 +494,10 @@ function init() {
         route: actor.route.reverse(),
         index: 0
       })
-    }
+    } 
+    // else {
+    //   return
+    // }
   }
 
 
@@ -718,7 +719,7 @@ function init() {
   const createNpcs = () => {
     const mouseBlobNo = 10
 
-    const dogBlobs = new Array(3).fill('').map((_, i) => {
+    const dogBlobs = new Array(6).fill('').map((_, i) => {
       return {
         ...npcObj,
         ...dogBlobObj,
@@ -793,6 +794,55 @@ function init() {
     }, 1000)
   }
 
+  const drag = (el, pos, x, y) =>{
+    pos.a.x = pos.b.x - x
+    pos.a.y = pos.b.y - y
+    const newX = el.offsetLeft - pos.a.x
+    const newY = el.offsetTop - pos.a.y
+    const distance = distanceBetween({ x: 0, y: 0 }, { x: newX, y: newY })
+    if (distance < 35) {
+      setPos({ el, x: newX, y: newY })
+      control.direction = Math.abs(newX) < Math.abs(newY)
+        ? newY < 0 ? 'up' : 'down'
+        : newX < 0 ? 'left' : 'right'
+    }  
+  }
+
+
+  
+  const addTouchAction = el =>{
+    const pos = { a: { x: 0, y: 0 }, b: { x: 0, y: 0 } }
+    const onGrab = e =>{
+      pos.b.x = ePos(e, 'X')
+      pos.b.x = ePos(e, 'Y')  
+      mouse.up(document, 'add', onLetGo)
+      mouse.move(document, 'add', onDrag)
+      control.active = true
+      control.timer = setInterval(()=> {
+        if (control.active) walk({ actor: player, dir: control.direction })
+      }, 200)
+    }
+    const onDrag = e =>{
+      const x = ePos(e, 'X')
+      const y = ePos(e, 'Y')
+      drag(el, pos, x, y)
+      pos.b.x = x
+      pos.b.y = y
+    }
+    const onLetGo = () => {
+      mouse.up(document, 'remove', onLetGo)
+      mouse.move(document,'remove', onDrag)
+      el.style.transition = '0.2s'
+      setPos({ el, x: 0, y: 0 })
+      setTimeout(()=>{
+        el.style.transition = '0s'
+      }, 200)
+      clearInterval(control.timer)
+      control.active = false
+    }
+    mouse.down(el,'add', onGrab)
+  }
+
   createNpcs()
   setupMap()
   addNpcs()
@@ -843,62 +893,7 @@ function init() {
   })
   window.addEventListener('keydown', handleKeyAction)
 
-
-  // const placeMarker = ({ x, y }) => {
-  //   const marker = {
-  //     el: Object.assign(document.createElement('div'), { className: 'marker' }),
-  //     x, y
-  //   }
-  //   setPos(marker)
-  //   elements.wrapper.appendChild(marker.el)
-  // }
-  const ePos = (e, type) => e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`]
-
-  ;['mousemove', 'touchmove'].forEach(action => {
-    control.wrapper.addEventListener(action, e => {
-      if (!control.active) return
-      const center = controlPos()
-      const pos = { x: ePos(e, 'X'), y: ePos(e,'Y') }
-      const distance = distanceBetween(center, pos)
-      elements.indicator.innerHTML = `x:${pos.x} y:${pos.y} ${distance}`
-      if (distance < 45) {
-        const deg = getAngle(center, pos)
-        const offsetPos = getOffsetPos({ deg, center, distance })  
-        const { left, top } = control.wrapper.getBoundingClientRect()
-        setStyles({
-          el: control.el,
-          x: offsetPos.x - left,
-          y: offsetPos.y - top
-        })
-        control.direction = (deg > 315 || deg <= 45) ? 'up'
-          : deg > 45 && deg <= 135 ? 'right'
-          : deg > 135 && deg <= 225 ? 'down'
-          : 'left'
-        elements.indicator.innerHTML = `x:${pos.x} y:${pos.y} ${distance} dir: ${control.direction}`  
-      }
-    })
-  })
-
-  ;['mousedown', 'touchstart'].forEach(action => {
-    control.wrapper.addEventListener(action, () =>  {
-      elements.indicator.innerHTML = `touchStart`
-      control.active = true
-      control.timer = setInterval(()=> {
-        if (control.active) walk({ actor: player, dir: control.direction })
-      }, 200)
-    })
-  })
-
-  ;['mouseup', 'touchend'].forEach(action => {
-    control.wrapper.addEventListener(action, () =>  {
-      control.active = false
-      setStyles(control)
-      clearInterval(control.timer)
-    })
-  })
+  addTouchAction(control.el)
 }
 
 window.addEventListener('DOMContentLoaded', init)
-
-
-

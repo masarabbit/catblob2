@@ -2,6 +2,7 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  user-select: none;
 }
 
 p, h1, h2, h3, h4 {
@@ -16,6 +17,7 @@ p, h1, h2, h3, h4 {
 body {
   background-color: rgb(23, 7, 94);
   font-family: Arial, Helvetica, sans-serif;
+  overscroll-behavior: contain;
 }
 
 canvas {
@@ -248,7 +250,7 @@ canvas {
   /* border: 1px solid red; */
   transform: translate(75px, 75px);
   cursor: grab;
-  transition: 0.2s;
+  /* transition: 0.2s; */
   /* pointer-events: none; */
 }
 
