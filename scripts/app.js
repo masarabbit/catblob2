@@ -632,7 +632,7 @@ function init() {
       settings.mapImage[para] += dist
       setStyles(settings.mapImage)
       player.pos += diff
-      elements.indicator.innerHTML = `pos:${player.pos} dataX:${mapX(player.pos)} dataY:${mapY(player.pos)}`
+      // elements.indicator.innerHTML = `pos:${player.pos} dataX:${mapX(player.pos)} dataY:${mapY(player.pos)}`
       if (!player.invincible) hitCheck()
     }
     settings.npcs.forEach(npc => {
@@ -860,6 +860,7 @@ function init() {
       const center = controlPos()
       const pos = { x: ePos(e, 'X'), y: ePos(e,'Y') }
       const distance = distanceBetween(center, pos)
+      elements.indicator.innerHTML = `x:${pos.x} y:${pos.y} ${distance}`
       if (distance < 45) {
         const deg = getAngle(center, pos)
         const offsetPos = getOffsetPos({ deg, center, distance })  
@@ -873,12 +874,14 @@ function init() {
           : deg > 45 && deg <= 135 ? 'right'
           : deg > 135 && deg <= 225 ? 'down'
           : 'left'
+        elements.indicator.innerHTML = `x:${pos.x} y:${pos.y} ${distance} dir: ${control.direction}`  
       }
     })
   })
 
   ;['mousedown', 'touchstart'].forEach(action => {
     control.wrapper.addEventListener(action, () =>  {
+      elements.indicator.innerHTML = `touchStart`
       control.active = true
       control.timer = setInterval(()=> {
         if (control.active) walk({ actor: player, dir: control.direction })
@@ -886,7 +889,7 @@ function init() {
     })
   })
 
-  ;['mouseleave', 'mouseup', 'touchend'].forEach(action => {
+  ;['mouseup', 'touchend'].forEach(action => {
     control.wrapper.addEventListener(action, () =>  {
       control.active = false
       setStyles(control)

@@ -332,3 +332,7 @@ a:hover { text-decoration: underline; }
   background-color: yellow;
   border-radius: 50%;
 }
+
+.indicator {
+  color: white;
+}
