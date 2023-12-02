@@ -5,7 +5,8 @@ function init() {
   // TODO refactor to simplify functions?
   // TODO update sprites or map to make them clearer
   // TODO add some kind of logic to prevent sprites and/or player to be trapped
-
+  // TODO maybe update map logic by creating pre-made modules
+  // TODO update dogBlob chasing logic
 
   const tiles = [
     {
@@ -142,7 +143,6 @@ function init() {
     indicator: document.querySelector('.indicator'),
     cursor: document.querySelector('.cursor'),
     mapTiles: document.querySelector('.map-tiles'),
-    // restartBtn: document.querySelector('.restart'),
     displayBtn: document.querySelector('.display'),
     startBtn: document.querySelector('.start'),
     message: document.querySelector('.message'),
@@ -191,6 +191,7 @@ function init() {
     pos: 100,
     d: 44,
     chaseTarget: player,
+    // altTarget: 0,
     attackDir: null,
     isHunting: true,
   }
@@ -239,7 +240,7 @@ function init() {
     mouseBlobNo: 9,
     dogBlobNo: 6,
     demoMode: true,
-    isPaused: false,
+    tilesWithNoWalls: []
   }
 
   const control = {
@@ -342,7 +343,7 @@ function init() {
 
     setUpCanvas(settings.mapImage)
 
-    settings.mapImage.ctx.fillStyle = '#2e1a66'
+    settings.mapImage.ctx.fillStyle = '#ffe0e9'
     settings.mapImage.ctx.fillRect(0, 0, settings.mapImage.w, settings.mapImage.h)
 
     // add wall around edge
@@ -362,7 +363,7 @@ function init() {
           : tile.criteria.includes(criteria)
       })
 
-      if (!matchingTile) console.log(criteria, criteria2)
+      if (!matchingTile.id) console.log(criteria, criteria2)
 
       if (matchingTile.id === 'dot' && randomN(10) === 10) {
         const x = mapX(i) * d
@@ -379,7 +380,7 @@ function init() {
         settings.map.spheres[i] = sphere
         // settings.mapImage.ctx.fillStyle = '#00ff00'
         // settings.mapImage.ctx.fillRect(x, y, d, d)
-        t = 'x'
+        settings.map.data[i] = 'x'
       } else {
         placeTile({
           tileId: t === 'x' ? 'floor' : matchingTile.id,
@@ -422,10 +423,14 @@ function init() {
     const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.spheres[i] && i).filter(t => t)
     player.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
     // TODO there's nothing to stop dogs and mouses from appearing too close or in same spot as player
-    settings.npcs.forEach(npc => npc.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)])
-    adjustMapWidthAndHeight()
+    settings.npcs.forEach(npc => {
+      npc.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
+      // if (npc.isHunting) npc.altTarget = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
+    })
 
-    // elements.indicator.innerHTML = settings.npcs.map(n => `${n.id} ${n.pos}`).join('|')
+    settings.tilesWithNoWalls = tilesWithNoWalls
+
+    adjustMapWidthAndHeight()
   }
 
   const defaultPathMemory = arr => arr.map(()=> {
@@ -475,7 +480,6 @@ function init() {
             }
           }
         }, 400)
-      
         npc.pause = true
         return
       }
@@ -489,13 +493,15 @@ function init() {
     } 
 
     moveNpc({ npc, newPos })
+    // if (npc.pos === npc.goal) damagePlayer(npc)
     if (npc.pos === npc.goal || index + 1 >= route.length) {      
       clearTimeout(npc.motionTimer)
       console.log('goal')
+      // triggerNpcMotion(npc)
     } else {
       npc.motionTimer = setTimeout(()=>{
         chainMotion({ npc, route, index: index + 1 })
-      }, 500)
+      }, 400)
     }
   }
 
@@ -596,7 +602,7 @@ function init() {
     if (npc.pause || npc.pos === target?.pos) return
     npc.searchMemory = defaultPathMemory(settings.map.data)
     npc.carryOn = true
-    if (target) npc.goal = target.pos
+    if (target) npc.goal = target.pos 
     decideNextMove({ actor: npc, current: npc.pos })
   }
   
@@ -604,7 +610,7 @@ function init() {
   const noWall = ({ pos, ignoreSphere, actor }) =>{    
     const { map: { data, spheres, column: w, d }, npcs } = settings
     if (!data[pos] || (!ignoreSphere && spheres[pos]) || player.pos === pos) return false
-    if (actor !== player && npcs.some(npc => [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos -d, npc.pos].includes(pos))) return false
+    if (actor !== player && npcs.filter(n => !n.isFleeing).some(npc => [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos -d, npc.pos].includes(pos))) return false
     return settings.map.data[pos] !== '$'
   }
 
@@ -641,7 +647,7 @@ function init() {
   }
   
   const walk = ({ actor, dir }) => {
-    if (!dir || player.pause || settings.demoMode || settings.isPaused) return
+    if (!dir || isGamePaused()) return
     const { diff, para, dist } = getWalkConfig(dir) 
     turnSprite({ actor: player, diff })
     if (actor === player && noWall({ pos: actor.pos + diff, actor })) {
@@ -663,7 +669,7 @@ function init() {
   }
 
   const placeSphere = () => {
-    if (settings.demoMode || settings.isPaused) return
+    if (isGamePaused()) return
     const { d, column } = settings.map
     const { x, y } = settings.cursor
     const { left, top } = settings.mapImage.canvas.getBoundingClientRect()
@@ -795,7 +801,7 @@ function init() {
   }
 
   const damagePlayer = npc => {
-    if (player.mouseBlobCaught.no === player.mouseBlobCaught.total) return
+    if (isGamePaused()) return
     npc.el.classList.add('attacking')
     npc.attackDir = (Math.abs(npc.pos - player.pos) === 1 || ['left', 'right'].includes(npc.facingDirection)) ? 'horizontal' : 'vertical'
     npc.el.classList.add(npc.attackDir)
@@ -833,7 +839,7 @@ function init() {
   }
 
   const drag = (el, pos, x, y) =>{
-    if (settings.demoMode || settings.isPaused) return
+    if (isGamePaused()) return
     pos.a.x = pos.b.x - x
     pos.a.y = pos.b.y - y
     const newX = el.offsetLeft - pos.a.x
@@ -908,7 +914,7 @@ function init() {
     }, 600)
 
     settings.time.timer = setInterval(()=> {
-      if (!settings.isWindowActive || settings.demoMode || settings.isPaused) return
+      if (isGamePaused()) return
       updateTime()
       if (player.invincible) {
         player.invincibleCount += 1
@@ -926,9 +932,11 @@ function init() {
     elements.startBtn.innerHTML = 'play again'
     elements.startBtn.blur()
     elements.message.classList.remove('hide')
-    settings.isPaused = true
-
+    clearInterval(settings.time.timer)
     // TODO add score
+  }
+  const isGamePaused = () => {
+    return settings.demoMode || !player.life.point || player.mouseBlobCaught.no === player.mouseBlobCaught.total || !settings.isWindowActive
   }
 
 
@@ -941,6 +949,7 @@ function init() {
 
 
   const restart = () => {
+    // if (isGamePaused()) return
     elements.startBtn.blur()
     elements.message.classList.add('hide')
     if (settings.demoMode) {
@@ -958,7 +967,6 @@ function init() {
       settings.map.spheres.forEach(sphere => {
         if (sphere) settings.mapImage.el.removeChild(sphere.el)
       })
-      settings.isPaused = false
       settings.map.spheres.length = 0
       settings.npcs.length = 0
       settings.time.no = 90
