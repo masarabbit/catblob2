@@ -377,9 +377,8 @@ function init() {
         setPos(sphere)
         settings.mapImage.el.appendChild(sphere.el)
         settings.map.spheres[i] = sphere
-        settings.mapImage.ctx.fillStyle = '#00ff00'
-        settings.mapImage.ctx.fillRect(x, y, d, d)
-        
+        // settings.mapImage.ctx.fillStyle = '#00ff00'
+        // settings.mapImage.ctx.fillRect(x, y, d, d)
         t = 'x'
       } else {
         placeTile({
@@ -664,6 +663,7 @@ function init() {
   }
 
   const placeSphere = () => {
+    if (settings.demoMode || settings.isPaused) return
     const { d, column } = settings.map
     const { x, y } = settings.cursor
     const { left, top } = settings.mapImage.canvas.getBoundingClientRect()
@@ -833,6 +833,7 @@ function init() {
   }
 
   const drag = (el, pos, x, y) =>{
+    if (settings.demoMode || settings.isPaused) return
     pos.a.x = pos.b.x - x
     pos.a.y = pos.b.y - y
     const newX = el.offsetLeft - pos.a.x

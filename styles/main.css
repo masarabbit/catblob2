@@ -322,7 +322,7 @@ canvas {
 .message-window {
   position: absolute;
   background-color: rgba(199, 45, 155, 0.6);
-  /* width: 300px; */
+  /* background-color: rgba(39, 5, 60, 0.6); */
   height: 220px;
   letter-spacing: 5px;
   border-radius: 10px;
@@ -336,6 +336,10 @@ canvas {
 
 .message-window:has(.hide) {
   transform: scale(0);
+}
+
+.overlay {
+  pointer-events: none;
 }
 
 
@@ -352,7 +356,7 @@ canvas {
   padding: 8px 20px;
   border: 0;
   border-radius: 90px;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   background-color: white;
   color: var(--pink);
   font-size: 1em;
