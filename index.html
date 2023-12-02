@@ -4,6 +4,10 @@
   <link rel="stylesheet" type="text/css" href="./styles/main.css" />
   <script type="module" src ="./scripts/app.js" charset="utf-8"></script>
   
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap');
+  </style>
+
   <title>catblob 2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -18,10 +22,22 @@
 
     <div class="catch-indicator">
     </div>
+
+    <div class="time-indicator">
+      90
+    </div>
+
+    <!-- <button class="restart">restart</button> -->
+    <button class="display">display</button>
   </div>
 
-
-  <div class="wrapper overflow-hidden flex-center">
+  <div class="overlay wrapper flex-center">
+    <div class="message-window flex-center">
+      <div class="message">catblob 2</div>
+      <button class="start">start</button>
+    </div>
+  </div>
+  <div class="main wrapper overflow-hidden flex-center">
     <div class="map-cover overflow-hidden">
       <div class="map-image-wrapper">
         <canvas class="map-image"></canvas>
@@ -34,12 +50,6 @@
     </div>  
   </div>
 
-  <!-- <div class="control">
-    <button class="arrow" data-dir="up"></button>
-    <button class="arrow" data-dir="right"></button>
-    <button class="arrow" data-dir="down"></button>
-    <button class="arrow" data-dir="left"></button>
-  </div> -->
 
   <div class="control-wrapper">
     <div class="control"></div>

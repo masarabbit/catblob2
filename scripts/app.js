@@ -5,10 +5,6 @@ function init() {
   // TODO refactor to simplify functions?
   // TODO update sprites or map to make them clearer
   // TODO add some kind of logic to prevent sprites and/or player to be trapped
-  // TODO add some kind of logic to reset everything (make reset button first)
-  // TODO add some way to end game when life reaches 0
-
-  // TODO add button to console.log setting, because we seem to have invisible wall sometimes
 
 
   const tiles = [
@@ -139,20 +135,29 @@ function init() {
   ]
   
   const elements = {
-    wrapper: document.querySelector('.wrapper'),
+    wrapper: document.querySelector('.main'),
     mapCover: document.querySelector('.map-cover'), 
     player: document.querySelector('.player'), 
     mapImage: document.querySelector('.map-image'),
     indicator: document.querySelector('.indicator'),
     cursor: document.querySelector('.cursor'),
     mapTiles: document.querySelector('.map-tiles'),
+    // restartBtn: document.querySelector('.restart'),
+    displayBtn: document.querySelector('.display'),
+    startBtn: document.querySelector('.start'),
+    message: document.querySelector('.message'),
   }
+
+  elements.displayBtn.addEventListener('click', ()=> {
+    console.log('settings', settings, player)
+  })
 
   const player = {
     pos: 314,
     el: elements.player,
     sprite: document.querySelector('.player').childNodes[1].childNodes[1],
     walkingDirection: '',
+    facingDirection: '',
     walkingInterval: '',
     pause: false,
     id: 'catblob',
@@ -178,6 +183,7 @@ function init() {
     carryOn: true,
     delay: 10,
     pause: false,
+    facingDirection: '',
   }
 
   const dogBlobObj = {
@@ -201,6 +207,8 @@ function init() {
 
   const settings = {
     transitionTimer: null,
+    spriteInterval: null,
+    npcMotioninterval: null,
     isWindowActive: true,
     yOffset: 0,
     npcs: [],
@@ -223,6 +231,15 @@ function init() {
       el: elements.cursor,
       x: 0, y: 0,
     },
+    time: {
+      el: document.querySelector('.time-indicator'),
+      no: 90,
+      timer: null
+    },
+    mouseBlobNo: 9,
+    dogBlobNo: 6,
+    demoMode: true,
+    isPaused: false,
   }
 
   const control = {
@@ -232,7 +249,6 @@ function init() {
     active: false,
     direction: null,
     timer: null,
-
     pos: { x: 0, y: 0 },
     movePos: { x: 0, y: 0 }
   }
@@ -361,6 +377,10 @@ function init() {
         setPos(sphere)
         settings.mapImage.el.appendChild(sphere.el)
         settings.map.spheres[i] = sphere
+        settings.mapImage.ctx.fillStyle = '#00ff00'
+        settings.mapImage.ctx.fillRect(x, y, d, d)
+        
+        t = 'x'
       } else {
         placeTile({
           tileId: t === 'x' ? 'floor' : matchingTile.id,
@@ -481,7 +501,6 @@ function init() {
   }
 
   const selectPath = ({ actor, current }) =>{
-    // if (!current) return
     actor.route.push(current)
     if (actor.searchMemory[current].prev) {
       selectPath({ 
@@ -495,9 +514,6 @@ function init() {
         index: 0
       })
     } 
-    // else {
-    //   return
-    // }
   }
 
 
@@ -540,9 +556,9 @@ function init() {
   }
 
   const decideNextMove = ({ actor, current, count }) =>{
+    if (!actor.carryOn || settings.demoMode) return
     const { pos, goal, searchMemory } = actor
     const { column: w } = settings.map
-    if (!actor.carryOn) return
     const possibleDestination = [1, -1, -w, w].map(d => d + current)
     // TODO need workaround
     if (possibleDestination.length && !possibleDestination.some(c => c === goal)) {
@@ -587,9 +603,9 @@ function init() {
   
 
   const noWall = ({ pos, ignoreSphere, actor }) =>{    
-    const { map: { data, spheres }, npcs } = settings
+    const { map: { data, spheres, column: w, d }, npcs } = settings
     if (!data[pos] || (!ignoreSphere && spheres[pos]) || player.pos === pos) return false
-    if (actor !== player && npcs.some(npc => npc.pos === pos)) return false
+    if (actor !== player && npcs.some(npc => [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos -d, npc.pos].includes(pos))) return false
     return settings.map.data[pos] !== '$'
   }
 
@@ -626,7 +642,7 @@ function init() {
   }
   
   const walk = ({ actor, dir }) => {
-    if (!dir || player.pause) return
+    if (!dir || player.pause || settings.demoMode || settings.isPaused) return
     const { diff, para, dist } = getWalkConfig(dir) 
     turnSprite({ actor: player, diff })
     if (actor === player && noWall({ pos: actor.pos + diff, actor })) {
@@ -686,6 +702,13 @@ function init() {
   const updateMouseBlobCounter = () => {
     const { no, total } =  player.mouseBlobCaught
     player.mouseBlobCaught.el.innerHTML = `${no}/${total}`
+    if (no === total) endGame({ win: true })
+  }
+
+  const updateTime = () => {
+    settings.time.no -= 1
+    settings.time.el.innerHTML = settings.time.no
+    if (!settings.time.no ) endGame({ win: false })
   }
 
 
@@ -697,13 +720,21 @@ function init() {
     if (pDiff === -1) { // left
       setPos({ el, x: -d })
       actor.el.classList.remove('flip')
+      actor.facingDirection = 'left'
     }
     if (pDiff === 1) { // right
       setPos({ el, x: -d })
       actor.el.classList.add('flip')
+      actor.facingDirection = 'right'
     }
-    if (pDiff === -column) setPos({ el, x: -d * 2 }) // down
-    if (pDiff === column) setPos({ el, x: 0 }) // up
+    if (pDiff === -column) { // down
+      setPos({ el, x: -d * 2 }) 
+      actor.facingDirection = 'down'
+    }
+    if (pDiff === column) { // up
+      setPos({ el, x: 0 }) 
+      actor.facingDirection = 'up'
+    }
   } 
 
   const moveNpc = ({ npc, newPos }) => {
@@ -717,9 +748,7 @@ function init() {
   }
 
   const createNpcs = () => {
-    const mouseBlobNo = 10
-
-    const dogBlobs = new Array(6).fill('').map((_, i) => {
+    const dogBlobs = new Array(settings.dogBlobNo).fill('').map((_, i) => {
       return {
         ...npcObj,
         ...dogBlobObj,
@@ -735,7 +764,7 @@ function init() {
         track: [],
       }
     })
-    const mouseBlobs = new Array(mouseBlobNo).fill('').map((_, i) => {
+    const mouseBlobs = new Array(settings.mouseBlobNo).fill('').map((_, i) => {
       return {
         ...npcObj,
         ...mouseBlobObj,
@@ -747,7 +776,7 @@ function init() {
         }),
       }
     })
-    player.mouseBlobCaught.total = mouseBlobNo
+    player.mouseBlobCaught.total = settings.mouseBlobNo
     updateMouseBlobCounter()
     settings.npcs = [
       ...dogBlobs,
@@ -766,20 +795,27 @@ function init() {
   }
 
   const damagePlayer = npc => {
+    if (player.mouseBlobCaught.no === player.mouseBlobCaught.total) return
     npc.el.classList.add('attacking')
-    npc.attackDir = Math.abs(npc.pos - player.pos) === 1 ? 'horizontal' : 'vertical'
+    npc.attackDir = (Math.abs(npc.pos - player.pos) === 1 || ['left', 'right'].includes(npc.facingDirection)) ? 'horizontal' : 'vertical'
     npc.el.classList.add(npc.attackDir)
     turnSprite({ actor: npc, newPos: player.pos})
     setTimeout(()=> {
-      npc.el.classList.remove('attacking')
-      npc.el.classList.remove(npc.attackDir)
+      if (npc.el) {
+        npc.el.classList.remove('attacking')
+        npc.el.classList.remove(npc.attackDir)
+      }
     }, 2000)
 
     player.life.point -= 1
     player.life.w = player.life.point * 20
-    player.invincible = true
-    player.el.classList.add('blink')
-    setStyles(player.life)
+    if (!player.life.point) {
+      endGame({ win: false })
+    } else {
+      player.invincible = true
+      player.el.classList.add('blink')
+      setStyles(player.life)
+    }
   }
 
   const catchMouse = npc => {
@@ -789,8 +825,10 @@ function init() {
     player.mouseBlobCaught.no += 1
     updateMouseBlobCounter()
     setTimeout(()=> {
-      settings.mapImage.el.removeChild(npc.el)
-      settings.npcs = settings.npcs.filter(n => npc.id !== n.id)
+      if (npc.el) {
+        settings.mapImage.el.removeChild(npc.el)
+        settings.npcs = settings.npcs.filter(n => npc.id !== n.id)
+      }
     }, 1000)
   }
 
@@ -809,7 +847,6 @@ function init() {
   }
 
 
-  
   const addTouchAction = el =>{
     const pos = { a: { x: 0, y: 0 }, b: { x: 0, y: 0 } }
     const onGrab = e =>{
@@ -843,43 +880,98 @@ function init() {
     mouse.down(el,'add', onGrab)
   }
 
-  createNpcs()
-  setupMap()
-  addNpcs()
+  const triggerIntervals = () => {
+    settings.spriteInterval = setInterval(()=> {
+      if (!settings.isWindowActive) return
+      settings.yOffset = settings.yOffset + 1 === 4
+        ? 0
+        : settings.yOffset + 1
+      ;[player,...settings.npcs].forEach(actor => {
+        const { sprite: el, d } = actor
+        setPos({ el, y: [0, -d, -(d * 2), -d][settings.yOffset] })
+      })
+      if (!player.invincible) {
+        hitCheck()
+      } 
+    }, 200)
+  
+    settings.npcMotioninterval = setInterval(()=> {
+      if (!settings.isWindowActive) return
+      settings.npcs.forEach(npc => {
+        if (npc.isFleeing && !npc.pause) {
+          avoidPlayer(npc)
+        } else if (npc.isHunting) {
+          triggerNpcMotion(npc)
+        }
+      })
+    }, 600)
 
-
-  setInterval(()=> {
-    if (!settings.isWindowActive) return
-    settings.yOffset = settings.yOffset + 1 === 4
-      ? 0
-      : settings.yOffset + 1
-    ;[player,...settings.npcs].forEach(actor => {
-      const { sprite: el, d } = actor
-      setPos({ el, y: [0, -d, -(d * 2), -d][settings.yOffset] })
-    })
-    
-    if (!player.invincible) {
-      hitCheck()
-    } else if (player.invincible) {
-      player.invincibleCount += 1
-      if (player.invincibleCount > 30) {
-        player.invincibleCount = 0
-        player.invincible = false
-        player.el.classList.remove('blink')
+    settings.time.timer = setInterval(()=> {
+      if (!settings.isWindowActive || settings.demoMode || settings.isPaused) return
+      updateTime()
+      if (player.invincible) {
+        player.invincibleCount += 1
+        if (player.invincibleCount > 6) {
+          player.invincibleCount = 0
+          player.invincible = false
+          player.el.classList.remove('blink')
+        }
       }
+    }, 1000)
+  }
+
+  const endGame = ({ win }) => {
+    elements.message.innerHTML = win ? 'COMPLETE!!' : 'GAME OVER!'
+    elements.startBtn.innerHTML = 'play again'
+    elements.startBtn.blur()
+    elements.message.classList.remove('hide')
+    settings.isPaused = true
+
+    // TODO add score
+  }
+
+
+  const start = () => {
+    createNpcs()
+    setupMap()
+    addNpcs()
+    triggerIntervals()
+  }
+
+
+  const restart = () => {
+    elements.startBtn.blur()
+    elements.message.classList.add('hide')
+    if (settings.demoMode) {
+      settings.demoMode = false
+    } else {
+      settings.map.column = [10, 20, 30, 40][randomN(4) - 1]
+      settings.map.row = [10, 20, 30, 40][randomN(4) - 1]
+      // TODO mouse and dog number needs to be adjusted
+      clearInterval(settings.spriteInterval)
+      clearInterval(settings.npcMotioninterval)
+      settings.npcs.forEach(npc => {
+        clearTimeout(npc.motionTimer)
+        settings.mapImage.el.removeChild(npc.el)
+      })
+      settings.map.spheres.forEach(sphere => {
+        if (sphere) settings.mapImage.el.removeChild(sphere.el)
+      })
+      settings.isPaused = false
+      settings.map.spheres.length = 0
+      settings.npcs.length = 0
+      settings.time.no = 90
+      player.mouseBlobCaught.no = 0
+      updateMouseBlobCounter()
+      player.life.point = 9
+      player.el.classList.remove('blink')
+      player.invincible = false
+      setStyles(player.life)
+      start()
     }
-  }, 200)
+  }
 
-  setInterval(()=> {
-    if (!settings.isWindowActive) return
-    settings.npcs.forEach(npc => {
-      if (npc.isFleeing && !npc.pause) {
-        avoidPlayer(npc)
-      } else if (npc.isHunting) {
-        triggerNpcMotion(npc)
-      }
-    })
-  }, 600)
+  start()
 
   window.addEventListener('focus', ()=> settings.isWindowActive = true)
   window.addEventListener('blur', ()=> settings.isWindowActive = false)
@@ -892,6 +984,7 @@ function init() {
     clearInterval(player.walkingInterval)
   })
   window.addEventListener('keydown', handleKeyAction)
+  elements.startBtn.addEventListener('click', restart)
 
   addTouchAction(control.el)
 }
