@@ -356,6 +356,7 @@ canvas {
 .catch-indicator span {
   margin: 0 8px 0 4px;
   --color: #0ee2f1;
+  /* --color: white; */
   --transition: 1s;
 }
 
@@ -383,7 +384,7 @@ canvas {
   letter-spacing: 1px;
   text-transform: uppercase;
   text-align: center;
-  width: 36px;
+  width: 42px;
 }
 
 .no {
@@ -394,17 +395,19 @@ canvas {
   display: inline-block;
   animation: enlarge forwards var(--transition);
   margin: 0;
+}
+
+.time-indicator.no span {
   color: var(--color);
 }
 
 @keyframes enlarge {
   0%, 100% {
     transform: scale(1);
-    /* color: var(--color); */
   }
   50% {
     transform: scale(1.3);
-    /* color: var(--color); */
+    color: var(--color);
   }
 }
 
