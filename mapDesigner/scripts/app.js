@@ -422,6 +422,12 @@ function init() {
     outputTile()
   }
 
+  const randomModule = () => {
+    return new Array(100).fill('').map((_, i) => {
+      return (i < 30) ? '$' : ''
+    }).sort(() => Math.random() - 0.5)
+  } 
+
   elements.buttons.forEach(b =>{
     const addClickEvent = (className, event) =>{
       if (b.classList.contains(className)) b.addEventListener('click', event)
@@ -455,6 +461,10 @@ function init() {
       elements.wallBoard.classList.toggle('hide')
       artData.showWalls = !artData.showWalls
     })
+    addClickEvent('create_random_module', ()=> {
+      input.codesBox[0].value = randomModule().join(',')
+    })
+    
   })
   mouse.down(artboard, 'add', ()=> artData.draw = true)
   mouse.up(artboard, 'add', ()=> artData.draw = false)

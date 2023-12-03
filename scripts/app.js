@@ -136,17 +136,97 @@ function init() {
 
   const tileModules = [
     {
-      id: 1,
-      tiles: '$11,8,$2,8,$2,8,$2,8,$2,8,$2,8,$2,8,$2,8,$11'
+      id: 'surprise mark',
+      tiles: '5,$5,12,$2,8,$1,13,$1,3,$1,5,$1,2,$2,8,$2,5,$1,2,$2,8,$1,5,$5',
     },
     {
-      id: 2,
-      tiles: '$11,8,$2,8,$2,2,$4,2,$2,2,$4,2,$2,2,$4,2,$2,2,$4,2,$2,8,$2,8,$11'
+      id: 'cyclone',
+      tiles: '9,$1,12,$1,2,$3,4,$1,9,$1,1,$2,8,$2,1,$1,9,$1,2,$5,2,$1,11,$1,9,$1',
     },
     {
-      id: 3,
+      id: 'eye',
       tiles: '$2,6,$3,8,$1,14,$2,7,$4,6,$4,7,$2,14,$1,8,$3,6,$2'
     },
+    {
+      id: 'broken_flag',
+      tiles: '21,$4,7,$1,2,$1,25,$1,2,$1,2,$1,3,$1,3,$4,2,$1,9,$1,8'
+    },
+    {
+      id: 'dots',
+      tiles: '1,$1,2,$1,2,$1,22,$1,2,$1,2,$1,2,$1,21,$1,2,$1,2,$1,22,$1,2,$1,2,$1,2,$1'
+    },
+    {
+      id: 'vertical_river',
+      tiles: '17,$1,9,$1,4,$1,4,$1,3,$2,1,$1,2,$1,3,$1,2,$2,1,$1,6,$2,5,$1,2,$2,8,$1,15'
+    },
+    {
+      id: 'target',
+      tiles: '22,$3,1,$2,4,$1,5,$1,1,$1,7,$1,1,$1,11,$1,9,$2,4,$1,3,$3,1,$3,11'
+    },
+    {
+      id: 'r',
+      tiles: '23,$2,1,$2,4,$6,4,$5,5,$3,7,$2,8,$3,8,$2,7,$3,5'
+    },
+    {
+      id: 's',
+      tiles: '23,$4,5,$8,2,$2,9,$4,9,$2,2,$7,23'
+    },
+    {
+      id: 'dash_dot_dot_dash',
+      tiles: '20,$5,5,$5,2,$1,2,$5,21,$4,1,$1,4,$4,20'
+    },
+    {
+      id: 'i',
+      tiles: '25,$2,7,$3,7,$2,7,$4,6,$4,7,$3,6,$4,6,$3,4'
+    },
+    {
+      id: 'random1',
+      tiles: '$4,6,$2,5,$2,2,$2,3,$2,12,$2,6,$5,4,$2,2,$1,11,$1,4,$1,5,$1,14,$1'
+    },
+    {
+      id: 'random2',
+      tiles: '1,$2,1,$1,4,$1,1,$2,12,$3,7,$1,8,$2,1,$1,2,$2,4,$1,5,$3,2,$3,3,$1,5,$1,2,$1,1,$1,4,$1,10'
+    },
+    {
+      id: 'ya',
+      tiles: '23,$1,3,$1,4,$6,4,$6,5,$2,1,$2,5,$2,1,$2,2,$1,2,$2,5,$1,9,$1,6,$3'
+    },
+    {
+      id: 'random3',
+      tiles: '1,$2,3,$1,1,$2,9,$1,2,$1,1,$2,4,$1,1,$2,1,$1,6,$1,9,$1,10,$1,3,$1,3,$1,1,$2,6,$1,14,$1,3'
+    },
+    {
+      id: 'random4',
+      tiles: '$1,4,$1,4,$2,5,$1,6,$1,8,$1,4,$1,1,$2,7,$1,19,$1,3,$1,1,$3,1,$3,1,$4,2,$1,5,$3,2'
+    },
+    {
+      id: 'target2',
+      tiles: '12,$3,1,$3,3,$1,11,$1,3,$1,5,$3,5,$1,1,$1,7,$1,5,$1,4,$2,1,$2,2,$1,9,$1,9'
+    },
+    // {
+    //   id: '',
+    //   tiles: ''
+    // },
+    // {
+    //   id: '',
+    //   tiles: ''
+    // },
+    // {
+    //   id: '',
+    //   tiles: ''
+    // },
+    // {
+    //   id: '',
+    //   tiles: ''
+    // },
+    // {
+    //   id: '',
+    //   tiles: ''
+    // },
+    // {
+    //   id: '',
+    //   tiles: ''
+    // },
     // TODO this one isn't very good
     // {
     //   id: 'diagonal',
@@ -190,7 +270,7 @@ function init() {
     invincible: false,
     invincibleCount: 0,
     mouseBlobCaught: {
-      el: document.querySelector('.catch-indicator'),
+      el: document.querySelector('.catch-no'),
       no: 0,
       total: 0,
     }
@@ -252,9 +332,12 @@ function init() {
       el: elements.cursor,
       x: 0, y: 0,
     },
+    drawPos: {
+      x: 0, y: 0,
+    },
     time: {
       el: document.querySelector('.time-indicator'),
-      no: 90,
+      no: 20,
       timer: null
     },
     mouseBlobNo: 9,
@@ -303,13 +386,13 @@ function init() {
   const mapY = i => Math.floor(i / settings.map.column)
   const getMapCoord = para => (Math.floor(settings.map[para] / 2) - 1) * settings.map.d
   const clampMax = (n, max) =>  n < max ? n : max
-  const isNum = x => typeof x === 'number'
+  const isNo = x => typeof x === 'number'
   const px = n => `${n}px`
   const setPos = ({ el, x, y }) => Object.assign(el.style, { left: `${x}px`, top: `${y}px` })
   const setStyles = ({ el, x, y, w, h, d }) => {
     const m = d || 1
-    if (isNum(w)) el.style.width = px(w * m)
-    if (isNum(h)) el.style.height = px(h * m)
+    if (isNo(w)) el.style.width = px(w * m)
+    if (isNo(h)) el.style.height = px(h * m)
     el.style.transform = `translate(${x ? px(x) : 0}, ${y ? px(y) : 0})`
   }
   const nearestN = (n, denom) => n === 0 ? 0 : (n - 1) + Math.abs(((n - 1) % denom) - denom)
@@ -318,6 +401,7 @@ function init() {
   const distanceBetween = (a, b) => Math.round(Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2)))
   const ePos = (e, type) => Math.round(e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`])
   const randomItem = arr => arr[randomN(arr.length - 1)]
+  const zero = no => no < 10 ? '0' : ''
 
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -363,9 +447,14 @@ function init() {
       x, y,
       d, d)
   }
+  
+  const randomModule = () => {
+    return new Array(100).fill('').map((_, i) => {
+      return (i < 30) ? '$' : 'x'
+    }).sort(() => Math.random() - 0.5)
+  } 
 
-
-
+  
   const setupMap = () => {
     const { d, column, row } = settings.map
     const mapLength = column * row
@@ -373,7 +462,13 @@ function init() {
     // settings.map.data = new Array(mapLength).fill('').map((_, i) => {
     //   return (i < wallPercentage) ? '$' : 'x'
     // }).sort(() => Math.random() - 0.5)
-    const modulesToDraw = new Array(column * row / 100).fill('').map(()=> decompress(randomItem(tileModules).tiles))
+    // TODO we can decompress at the start so we don't need to do it each time we setupMap
+    const mapSeed = new Array(column * row / 100).fill('').map(()=> randomItem(tileModules))
+    console.log('test', mapSeed.map(t => t.id))
+    const modulesToDraw = mapSeed.map(seed=> decompress(seed.tiles))
+    // modulesToDraw.length = modulesToDraw.length - 1
+    // const test = randomModule()
+    // modulesToDraw.push(test)
   
     settings.map.data = modulesToDraw.map((m, mI) => {
       // TODO this bit could probably be refactored, possibly corrected
@@ -404,7 +499,7 @@ function init() {
     })
 
     settings.map.data.forEach((t, i) => {
-      if (t === 'x') return
+      // if (t === 'x') return
       const checkDir = dir => settings.map.data?.[i + dir] === 'x' ? 'x' : 'o'
       const criteria = [-column, 1, column, -1].reduce((acc, d) => acc + checkDir(d), '')
       const criteria2 = [column + 1, column - 1].reduce((acc, d) => acc + checkDir(d), '')
@@ -721,52 +816,46 @@ function init() {
   }
 
   const placeSphere = () => {
-    if (isGamePaused()) return
-    const { d, column } = settings.map
-    const { x, y } = settings.cursor
-    const { left, top } = settings.mapImage.canvas.getBoundingClientRect()
-    const drawPos = {
-      x: x - left + window.scrollX,
-      y: y - top + window.scrollY
-    }
-    const index = (((drawPos.y) / d) * column) + drawPos.x / d
-
-    if (noWall({ pos: index })) {
+    if (!isGamePaused() && noWall({ pos: settings.cursor.index })) {
       const sphere = {
         el: Object.assign(document.createElement('div'), { className: 'sphere' }),
-        x: drawPos.x,
-        y: drawPos.y,
+        x: settings.drawPos.x,
+        y: settings.drawPos.y,
         state: 0
       }
       setPos(sphere)
-      settings.map.spheres[index] = sphere
+      settings.map.spheres[settings.cursor.index] = sphere
       settings.mapImage.el.appendChild(sphere.el)
     }
   }
 
   const moveCursor = e => {
-    const { d } = settings.map
-    const { width, height, left, top } = settings.mapImage.canvas.getBoundingClientRect()
-    if (e.pageX > left && e.pageX < (left + width) && e.pageY > top && e.pageY < (top + height)) {
+    const { d, column } = settings.map
+    const { left, top } = settings.mapImage.canvas.getBoundingClientRect()
       settings.cursor.x = nearestN(e.pageX - left - window.scrollX, d) - d + left + window.scrollX
       settings.cursor.y = nearestN(e.pageY - top - window.scrollY, d) - d + top + window.scrollY
-      settings.cursor.el.classList.remove('d-none')
+      settings.drawPos = {
+        x: settings.cursor.x - left + window.scrollX,
+        y: settings.cursor.y - top + window.scrollY
+      }
+      settings.cursor.index = (((settings.drawPos.y) / d) * column) + settings.drawPos.x / d
       setStyles(settings.cursor)
-    } else {
-      settings.cursor.el.classList.add('d-none')
-    }
+      settings.cursor.el.classList[noWall({ pos: settings.cursor.index }) ? 'remove' : 'add']('d-none')
   }
 
   const updateMouseBlobCounter = () => {
     const { no, total } =  player.mouseBlobCaught
-    player.mouseBlobCaught.el.innerHTML = `${no}/${total}`
+    player.mouseBlobCaught.el.innerHTML = `<span>${zero(no)}${no}</span>/${zero(no)}${total}`
     if (no === total) endGame({ win: true })
   }
 
   const updateTime = () => {
     settings.time.no -= 1
-    settings.time.el.innerHTML = settings.time.no
-    if (!settings.time.no ) endGame({ win: false })
+    const { no } = settings.time
+    settings.time.el.innerHTML = no < 11 
+      ? `<span>${zero(no)}${no}</span>` 
+      : no
+    if (!no ) endGame({ win: false })
   }
 
 
