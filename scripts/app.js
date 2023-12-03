@@ -4,9 +4,10 @@ function init() {
   
   // TODO refactor to simplify functions?
   // TODO update sprites or map to make them clearer
-  // TODO add some kind of logic to prevent sprites and/or player to be trapped
-  // TODO maybe update map logic by creating pre-made modules
-  // TODO update dogBlob chasing logic
+  // TODO add some kind of logic to position sprites
+  // TODO improve dogBlob chasing logic
+  // TODO improve mouseblob fleeing
+  // TODO add items?
 
   const tiles = [
     {
@@ -207,10 +208,10 @@ function init() {
       id: 'random5',
       tiles: '8,$1,9,$1,2,$2,10,$1,2,$3,4,$1,7,$1,3,$1,1,$1,8,$2,8,$1,4,$2,2,$1,1,$1,12'
     },
-    // {
-    //   id: '',
-    //   tiles: ''
-    // },
+    {
+      id: 'random6',
+      tiles: '5,$1,5,$1,8,$2,8,$2,4,$1,2,$1,3,$1,6,$1,2,$4,1,$2,6,$2,5,$1,1,$1,3,$3,5,$6,7'
+    },
     // {
     //   id: '',
     //   tiles: ''
@@ -237,11 +238,8 @@ function init() {
   
   const elements = {
     wrapper: document.querySelector('.main'),
-    mapCover: document.querySelector('.map-cover'), 
-    player: document.querySelector('.player'), 
     mapImage: document.querySelector('.map-image'),
     indicator: document.querySelector('.indicator'),
-    cursor: document.querySelector('.cursor'),
     mapTiles: document.querySelector('.map-tiles'),
     displayBtn: document.querySelector('.display'),
     startBtn: document.querySelector('.start'),
@@ -254,7 +252,7 @@ function init() {
 
   const player = {
     pos: 314,
-    el: elements.player,
+    el: document.querySelector('.player'),
     sprite: document.querySelector('.player').childNodes[1].childNodes[1],
     walkingDirection: '',
     facingDirection: '',
@@ -320,7 +318,7 @@ function init() {
       x: 0, y: 0, w: 0, h: 0
     },
     map: {
-      el: elements.mapCover, 
+      el: document.querySelector('.map-cover'), 
       w: 30, h: 20,
       d: 32,
       column: 30,
@@ -329,7 +327,7 @@ function init() {
       spheres: [],
     }, 
     cursor: {
-      el: elements.cursor,
+      el: document.querySelector('.cursor'),
       x: 0, y: 0,
     },
     drawPos: {
@@ -337,7 +335,7 @@ function init() {
     },
     time: {
       el: document.querySelector('.time-indicator'),
-      no: 20,
+      no: 90,
       timer: null
     },
     mouseBlobNo: 9,
@@ -349,7 +347,6 @@ function init() {
   const control = {
     wrapper: document.querySelector('.control-wrapper'),
     el: document.querySelector('.control'),
-    x: 75, y: 75,
     active: false,
     direction: null,
     timer: null,
@@ -414,7 +411,7 @@ function init() {
     const x = getMapCoord('w')
     const y = getMapCoord('h')
     
-    setPos({ el: elements.player, x, y })
+    setPos({ el: player.el, x, y })
 
     // adjust mapPosition
     settings.mapImage.x = mapX(player.pos) * -d + x
@@ -434,17 +431,19 @@ function init() {
     ctx.imageSmoothingEnabled = false
   }
 
-  const placeTile = ({ tileId, i }) => {
+  const placeTile = ({ tileId, i, offset = 0 }) => {
     const { d } = settings.map
     const index = tiles.indexOf(tiles.find(t => t.id === tileId))
     const tileX = (index % 10) * 16
     const tileY = Math.floor(index / 10) * 16
     const x = mapX(i) * d
     const y = mapY(i) * d
+    settings.mapImage.ctx.filter = offset ? 'sepia(100%) contrast(250%) hue-rotate(270deg)' : 'sepia(0%) contrast(100%) hue-rotate(0deg)'
+    // settings.mapImage.ctx.filter = offset ? 'brightness(0%)' : 'brightness(100%)'
     settings.mapImage.ctx.drawImage(elements.mapTiles, 
       tileX, tileY,
       16, 16,
-      x, y,
+      x, y + offset,
       d, d)
   }
   
@@ -528,9 +527,14 @@ function init() {
         // settings.mapImage.ctx.fillStyle = '#00ff00'
         // settings.mapImage.ctx.fillRect(x, y, d, d)
         settings.map.data[i] = 'x'
-      } else {
+      } else if (t !== 'x') {
+        // placeTile({
+        //   tileId: matchingTile.id,
+        //   i,
+        //   offset: 8
+        // })
         placeTile({
-          tileId: t === 'x' ? 'floor' : matchingTile.id,
+          tileId: matchingTile.id,
           i,
         })
       }
@@ -1073,7 +1077,19 @@ function init() {
   }
 
   const endGame = ({ win }) => {
-    elements.message.innerHTML = win ? 'COMPLETE!!' : 'GAME OVER!'
+    const message = win ? 'complete!!' : 'game over!'
+    // const score = player.life.point * 200 + player.mouseBlobCaught.no * 100 + settings.time.no * 10
+    const mouseBlobScore = player.mouseBlobCaught.no * 100
+    const lifeScore = player.life.point * 200
+    const timeScore = settings.time.no * 10
+    elements.message.innerHTML = `
+      <h1 class="uppercase">${message}</h1>
+      <h2> - score - </h2>
+      <p>mouseblob: ${mouseBlobScore}</p>
+      <p>life bonus: ${lifeScore}</p> 
+      <p>time bonus: ${timeScore}</p>
+      <h3 class="uppercase">total: ${mouseBlobScore + lifeScore + timeScore}</h3>
+    `
     elements.startBtn.innerHTML = 'play again'
     elements.startBtn.blur()
     elements.message.classList.remove('hide')

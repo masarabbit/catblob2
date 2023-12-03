@@ -431,15 +431,19 @@ canvas {
   /* background-color: rgba(2, 195, 249, 0.674); */
   /* background-color: #0ee2f1b5; */
   background-color: #0ee2f1c7;
-  height: 220px;
+  min-height: 220px;
   letter-spacing: 5px;
   border-radius: 10px;
   pointer-events: all;
-  /* animation: forwards 1s enlarge; */
   transition: 0.5s;
   transform: scale(1);
   text-align: center;
-  padding: 30px;
+  padding: 60px 34px 24px;
+  flex-direction: column;
+}
+
+.message-window:has(.title) {
+  padding: 20px 34px 24px;
 }
 
 .message-window:has(.hide) {
@@ -453,14 +457,46 @@ canvas {
 .message {
   color: white;
   letter-spacing: 3px;
-  font-size: 3em;
   margin-top: -10px;
+  display: flex;
+  flex-direction: column;
+  --navy: #024272;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+h2 {
+  color: var(--navy);
+  text-transform: uppercase;
+  font-size: 1.2em;
+  margin: 10px 0 4px;
+}
+
+h3 {
+  color: var(--navy);
+  text-transform: uppercase;
+  font-size: 1.2em;
+  margin-top: 10px;
+  letter-spacing: 1px;
+}
+
+.message p {
+  color: var(--navy);
+  letter-spacing: 0;
+  font-size: 1em;
+  /* color: hotpink */
+}
+
+.uppercase {
+  text-transform: uppercase;
 }
 
 .start {
-  position: absolute;
-  bottom: 20px;
+
   padding: 8px 20px;
+  margin-top: 20px;
   border: 0;
   border-radius: 90px;
   letter-spacing: 2px;
@@ -469,6 +505,11 @@ canvas {
   font-size: 1em;
   text-transform: uppercase;
   font-family: 'Quicksand', sans-serif;
+}
+
+.start:has(span) {
+  position: absolute;
+  bottom: 20px;
 }
 
 .start:hover {
