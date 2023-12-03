@@ -102,7 +102,6 @@ function init() {
     },
     {
       id: 'block_edge_r_joint_h',
-
       criteria: ['oxoo'],
       criteria2: ['ox','xx']
     },
@@ -133,6 +132,27 @@ function init() {
     {
       id: 'floor',
     },
+  ]
+
+  const tileModules = [
+    {
+      id: 1,
+      tiles: '$11,8,$2,8,$2,8,$2,8,$2,8,$2,8,$2,8,$2,8,$11'
+    },
+    {
+      id: 2,
+      tiles: '$11,8,$2,8,$2,2,$4,2,$2,2,$4,2,$2,2,$4,2,$2,2,$4,2,$2,8,$2,8,$11'
+    },
+    {
+      id: 3,
+      tiles: '$2,6,$3,8,$1,14,$2,7,$4,6,$4,7,$2,14,$1,8,$3,6,$2'
+    },
+    // TODO this one isn't very good
+    // {
+    //   id: 'diagonal',
+    //   tiles: '$2,6,$4,7,$1,2,$1,10,$1,10,$1,10,$1,10,$1,10,$1,2,$1,7,$4,6,$2'
+    // }, 
+
   ]
   
   const elements = {
@@ -254,6 +274,19 @@ function init() {
     movePos: { x: 0, y: 0 }
   }
 
+  const decompress = arr =>{
+    const output = []
+    const input = Array.isArray(arr) ? arr : arr.split(',')
+    input.forEach(x=>{
+      const letter = x.split('').filter(y => y * 0 !== 0).join('')
+      const repeat = x.split('').filter(y => y * 0 === 0).join('')
+      for (let i = 0; i < repeat; i++){
+        output.push(letter)
+      }
+    })
+    return output
+  }
+
 
   const addEvents = (target, event, action, array) =>{
     array.forEach(a => event === 'remove' ? target.removeEventListener(a, action) : target.addEventListener(a, action))
@@ -284,6 +317,7 @@ function init() {
   const sphereState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
   const distanceBetween = (a, b) => Math.round(Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2)))
   const ePos = (e, type) => Math.round(e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`])
+  const randomItem = arr => arr[randomN(arr.length - 1)]
 
   const adjustMapWidthAndHeight = () =>{
     const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -330,14 +364,31 @@ function init() {
       d, d)
   }
 
+
+
   const setupMap = () => {
     const { d, column, row } = settings.map
     const mapLength = column * row
-    const wallPercentage = Math.round(mapLength * 0.2)
+    // const wallPercentage = Math.round(mapLength * 0.2)
+    // settings.map.data = new Array(mapLength).fill('').map((_, i) => {
+    //   return (i < wallPercentage) ? '$' : 'x'
+    // }).sort(() => Math.random() - 0.5)
+    const modulesToDraw = new Array(column * row / 100).fill('').map(()=> decompress(randomItem(tileModules).tiles))
+  
+    settings.map.data = modulesToDraw.map((m, mI) => {
+      // TODO this bit could probably be refactored, possibly corrected
+      const offset1 = mI * 10
+      const offset2 = column - 10
+      const offset3 = ((column * 10) - column) * Math.floor(mI / (column / 10))
+      return m.map((t, tI) => {
+        // return tI + (mI * 10) + (((c * 10) - 10) * Math.floor(tI / 10)) + (((c * 10 * 10) - (c * 10)) * Math.floor(mI / c))
+        return {
+          tile: t || 'x',
+          index: tI + offset1 + (offset2 * Math.floor(tI / 10)) + offset3
+        }
+      })
+    }).flat(1).sort((a, b) => a.index - b.index).map(t => t.tile)
 
-    settings.map.data = new Array(mapLength).fill('').map((_, i) => {
-      return (i < wallPercentage) ? '$' : 'x'
-    }).sort(() => Math.random() - 0.5)
     settings.mapImage.w = column * d
     settings.mapImage.h = row * d
 
@@ -353,6 +404,7 @@ function init() {
     })
 
     settings.map.data.forEach((t, i) => {
+      if (t === 'x') return
       const checkDir = dir => settings.map.data?.[i + dir] === 'x' ? 'x' : 'o'
       const criteria = [-column, 1, column, -1].reduce((acc, d) => acc + checkDir(d), '')
       const criteria2 = [column + 1, column - 1].reduce((acc, d) => acc + checkDir(d), '')
@@ -421,10 +473,10 @@ function init() {
     })
 
     const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.spheres[i] && i).filter(t => t)
-    player.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
+    player.pos = randomItem(tilesWithNoWalls)
     // TODO there's nothing to stop dogs and mouses from appearing too close or in same spot as player
     settings.npcs.forEach(npc => {
-      npc.pos = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
+      npc.pos = randomItem(tilesWithNoWalls)
       // if (npc.isHunting) npc.altTarget = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
     })
 
@@ -800,6 +852,11 @@ function init() {
     })
   }
 
+  const updateLifeDisplay = () => {
+    player.life.w = player.life.point * 20
+    setStyles(player.life)
+  }
+
   const damagePlayer = npc => {
     if (isGamePaused()) return
     npc.el.classList.add('attacking')
@@ -814,13 +871,12 @@ function init() {
     }, 2000)
 
     player.life.point -= 1
-    player.life.w = player.life.point * 20
+    updateLifeDisplay()
     if (!player.life.point) {
       endGame({ win: false })
     } else {
       player.invincible = true
       player.el.classList.add('blink')
-      setStyles(player.life)
     }
   }
 
@@ -973,9 +1029,9 @@ function init() {
       player.mouseBlobCaught.no = 0
       updateMouseBlobCounter()
       player.life.point = 9
+      updateLifeDisplay()
       player.el.classList.remove('blink')
       player.invincible = false
-      setStyles(player.life)
       start()
     }
   }
