@@ -439,7 +439,7 @@ canvas {
   transition: 0.5s;
   transform: scale(1);
   text-align: center;
-  padding: 60px 34px 24px;
+  padding: 60px 34px 16px;
   flex-direction: column;
 }
 
@@ -465,7 +465,7 @@ canvas {
 }
 
 h1 {
-  font-size: 3em;
+  font-size: 2.8em;
 }
 
 h2 {
