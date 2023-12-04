@@ -170,7 +170,7 @@ function init() {
     },
     {
       id: 's',
-      tiles: '23,$4,5,$8,2,$2,9,$4,9,$2,2,$7,23'
+      tiles: '23,$4,5,$8,2,$2,9,$4,9,$2,2,$1,1,$5,23'
     },
     {
       id: 'dash_dot_dot_dash',
@@ -341,7 +341,8 @@ function init() {
     mouseBlobNo: 9,
     dogBlobNo: 6,
     demoMode: true,
-    tilesWithNoWalls: []
+    tilesWithNoWalls: [],
+    pauseSphereCreation: false,
   }
 
   const control = {
@@ -645,7 +646,7 @@ function init() {
 
     moveNpc({ npc, newPos })
     // if (npc.pos === npc.goal) damagePlayer(npc)
-    if (npc.pos === npc.goal || index + 1 >= route.length) {      
+    if (isGamePaused() || npc.pos === npc.goal || index + 1 >= route.length) {      
       clearTimeout(npc.motionTimer)
       console.log('goal')
       // triggerNpcMotion(npc)
@@ -820,7 +821,9 @@ function init() {
   }
 
   const placeSphere = () => {
-    if (!isGamePaused() && noWall({ pos: settings.cursor.index })) {
+    if (settings.pauseSphereCreation) return
+    const { index } = settings.cursor
+    if (!isGamePaused() && noWall({ pos: index })) {
       const sphere = {
         el: Object.assign(document.createElement('div'), { className: 'sphere' }),
         x: settings.drawPos.x,
@@ -828,8 +831,19 @@ function init() {
         state: 0
       }
       setPos(sphere)
-      settings.map.spheres[settings.cursor.index] = sphere
+      settings.map.spheres[index] = sphere
       settings.mapImage.el.appendChild(sphere.el)
+    } else if (settings.map.spheres[index]) {
+      const {el} = settings.map.spheres[index]
+      el.classList.add('shattered')
+      settings.pauseSphereCreation = true
+      setTimeout(()=> {
+        settings.pauseSphereCreation = false
+        if (el) {
+          settings.mapImage.el.removeChild(el)
+          settings.map.spheres[index] = null
+        }
+      }, 400)
     }
   }
 
