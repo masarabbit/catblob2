@@ -261,9 +261,8 @@ function init() {
     id: 'catblob',
     d: 44,
     life: {
-      el: document.querySelector('.life'),
-      w: 135,
-      point: 9,
+      markers: document.querySelectorAll('.life-marker'),
+      point: 4,
     },
     invincible: false,
     invincibleCount: 0,
@@ -959,9 +958,11 @@ function init() {
     })
   }
 
-  const updateLifeDisplay = () => {
-    player.life.w = player.life.point * 15
-    setStyles(player.life)
+  const updateLife = () => {
+    player.life.point -= 1
+    if (player.life.point >= 0) {
+      player.life.markers[player.life.point].classList.add('damage')
+    }
   }
 
   const damagePlayer = npc => {
@@ -977,8 +978,7 @@ function init() {
       }
     }, 2000)
 
-    player.life.point -= 1
-    updateLifeDisplay()
+    updateLife()
     if (!player.life.point) {
       endGame({ win: false })
     } else {
@@ -1147,8 +1147,9 @@ function init() {
       settings.time.no = 90
       player.mouseBlobCaught.no = 0
       updateMouseBlobCounter()
-      player.life.point = 9
-      updateLifeDisplay()
+      updateLife()
+      player.life.point = 4
+      player.life.markers.forEach(marker => marker.classList.remove('damage'))
       player.el.classList.remove('blink')
       player.invincible = false
       start()
