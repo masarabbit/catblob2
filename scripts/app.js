@@ -262,7 +262,7 @@ function init() {
     d: 44,
     life: {
       el: document.querySelector('.life'),
-      w: 180,
+      w: 135,
       point: 9,
     },
     invincible: false,
@@ -946,7 +946,7 @@ function init() {
   }
 
   const updateLifeDisplay = () => {
-    player.life.w = player.life.point * 20
+    player.life.w = player.life.point * 15
     setStyles(player.life)
   }
 

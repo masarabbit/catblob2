@@ -299,11 +299,12 @@ canvas {
   width: 100%;
   max-width: 800px;
   color: white;
+  z-index: 2;
 }
 
 .life-indicator {
   position: relative;
-  width: 180px;
+  width: 135px;
   height: 20px;
   /* background-color: #1a1a1a; */
   background-color: #5d5656;
@@ -321,7 +322,7 @@ canvas {
 }
 
 .life {
-  width: 180px;
+  width: 135px;
   height: 20px;
   background-color: var(--pink);
   /* border-style: solid;
@@ -494,7 +495,6 @@ h3 {
 }
 
 .start {
-
   padding: 8px 20px;
   margin-top: 20px;
   border: 0;
@@ -509,7 +509,7 @@ h3 {
 
 .start:has(span) {
   position: absolute;
-  bottom: 20px;
+  bottom: 24px;
 }
 
 .start:hover {
