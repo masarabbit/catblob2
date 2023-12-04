@@ -146,6 +146,7 @@ canvas {
   width: var(--c);
   height: var(--c);
   margin: -6px 0 0 -6px;
+  overflow: hidden;
 }
 
 .flip > div {
