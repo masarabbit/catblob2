@@ -274,7 +274,8 @@ function init() {
       el: document.querySelector('.catch-no'),
       no: 0,
       total: 0,
-    }
+    },
+    itemScore: 0,
   }
 
   const npcObj = {
@@ -601,7 +602,7 @@ function init() {
       if (randomN(70) === 70) {
         const x = mapX(t) * d
         const y = mapY(t) * d
-        const type = randomN(20) === 20 ? 'strawberry' : 'chocolate'
+        const type = randomN(20) === 20 ? 'strawberry' : 'blue'
         const item = {
           el:  Object.assign(document.createElement('div'), { className: `${type}-donut item` }),
           x, y,
@@ -847,10 +848,13 @@ function init() {
             if (item.type === 'strawberry' && player.life.point < 4) {
               player.life.point += 1
               updateLife({ damage: false })
+              player.itemScore += 200
             }
-            if (item.type === 'chocolate') {
+            if (item.type === 'blue') {
               updateTime({ difference: 10 })
+              player.itemScore += 100
             }
+
 
             setTimeout(()=> {
               if (settings.items[i]) {
@@ -1143,7 +1147,7 @@ function init() {
       updateTime({ difference: -1 })
       if (player.invincible) {
         player.invincibleCount += 1
-        if (player.invincibleCount > 6) {
+        if (player.invincibleCount > 5) {
           player.invincibleCount = 0
           player.invincible = false
           player.el.classList.remove('blink')
@@ -1165,7 +1169,8 @@ function init() {
       <p>mouseblob: ${mouseBlobScore}</p>
       <p>life bonus: ${lifeScore}</p> 
       <p>time bonus: ${timeScore}</p>
-      <h3 class="uppercase">total: ${mouseBlobScore + lifeScore + timeScore}</h3>
+      <p>item bonus: ${player.itemScore}</p>
+      <h3 class="uppercase">total: ${mouseBlobScore + lifeScore + timeScore + player.itemScore}</h3>
     `
     elements.startBtn.innerHTML = 'play again'
     elements.startBtn.blur()
@@ -1189,7 +1194,6 @@ function init() {
 
 
   const restart = () => {
-    // if (isGamePaused()) return
     elements.startBtn.blur()
     elements.message.classList.add('hide')
     if (settings.demoMode) {
@@ -1210,6 +1214,7 @@ function init() {
       settings.map.spheres.length = 0
       settings.npcs.length = 0
       player.mouseBlobCaught.no = 0
+      player.itemScore = 0
       updateMouseBlobCounter()
       updateLife({ damage: false })
       player.life.point = 4
