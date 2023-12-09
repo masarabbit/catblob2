@@ -42,7 +42,7 @@ const tiles = {
     down: [],
     left: [],
   },
-  d: {
+  dd: {
     id: 'v',
     img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAACpJREFUOE9jZEACbkZ3/iPzcbF3nVNhhMnBGSCBUQNGw2A0HUCyxtDMCwB9tkARyLXlUQAAAABJRU5ErkJggg==',
     type: 'X',
@@ -123,7 +123,7 @@ const tiles = {
     down: [],
     left: [],
   },
-  m: {
+  mm: {
     id: 'block_edge',
     img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAACJJREFUOE9jZEACbkZ3/iPziWEzjhrAMBoGDKNhwDAswgAAO2IlQePWikMAAAAASUVORK5CYII=',
     type: 'A',
@@ -291,6 +291,16 @@ const tiles = {
     img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZEADbkZ3/qOL4eMzwiRJ1QjTBzaAXM0gvZQbQIntYBeMGjAaBsMjHQAAr1ElQelcPl4AAAAASUVORK5CYII=',
     type: 'Q',
   },
+  d: {
+    id: 'dog',
+    color: '#bb96e8',
+    type: 'X',
+  },
+  m: {
+    id: 'mouse',
+    color: '#00d5ff',
+    type: 'X',
+  }
   // {
   //   key: 'zf',
   //   id: 'top_dot',
