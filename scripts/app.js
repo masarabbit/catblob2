@@ -2,8 +2,12 @@
 
 function init() {  
   
-  // TODO add items?
+
+  // TODO edit donut spark
   // TODO add alt wall
+
+  // TODO increment scores, and unlock new features (or make map bigger)
+
   //? refactor to simplify functions?
   //? improve dogBlob chasing logic
   //? improve mouseblob fleeing
@@ -135,80 +139,80 @@ function init() {
     },
   ]
 
-  const tileModules = [
-    {
-      id: 'surprise_mark',
+  const tileModules = {
+    surprise_mark: {
+      id: '',
       tiles: '5,$5,12,$2,8,$1,d1,12,$1,3,$1,5,$1,2,$2,8,$2,5,$1,2,$2,7,m1,$1,5,$5',
     },
-    {
+    cyclone: {
       id: 'cyclone',
       tiles: '9,$1,3,d1,8,$1,2,$3,4,$1,9,$1,1,$2,8,$2,1,$1,8,m1,$1,2,$5,2,$1,11,$1,9,$1',
     },
-    {
+    eye: {
       id: 'eye',
       tiles: '$2,6,$3,8,$1,2,d1,4,m1,6,$2,7,$4,6,$4,7,$2,6,m1,4,d1,2,$1,8,$3,6,$2'
     },
-    {
+    broken_flag: {
       id: 'broken_flag',
       tiles: '21,$4,7,$1,m1,1,$1,2,d1,22,$1,2,$1,2,$1,3,$1,3,$4,2,$1,1,m1,7,$1,8'
     },
-    {
+    dots: {
       id: 'dots',
       tiles: '1,$1,2,$1,2,$1,20,d1,1,$1,2,$1,2,$1,2,$1,21,$1,2,$1,2,$1,4,m1,17,$1,2,$1,2,$1,2,$1'
     },
-    {
+    vertical_river: {
       id: 'vertical_river',
       tiles: '17,$1,6,d1,2,$1,4,$1,4,$1,3,$2,1,$1,2,$1,3,$1,2,$2,1,$1,6,$2,5,$1,2,$2,1,m1,6,$1,15'
     },
-    {
+    target: {
       id: 'target',
       tiles: '15,d1,6,$3,1,$2,4,$1,5,$1,1,$1,7,$1,1,$1,3,m1,1,m1,5,$1,9,$2,4,$1,3,$3,1,$3,11'
     },
-    {
+    r: {
       id: 'r',
       tiles: '18,d1,4,$2,1,$2,4,$6,4,$5,5,$3,7,$2,1,m1,6,$3,8,$2,7,$3,5'
     },
-    {
+    s: {
       id: 's',
       tiles: '23,$4,5,$8,2,$2,4,m1,4,$4,9,$2,2,$1,1,$5,7,d1,15'
     },
-    {
+    dash_dot_dot_dash: {
       id: 'dash_dot_dot_dash',
       tiles: '20,$5,5,$5,2,$1,d1,1,$5,21,$4,1,$1,1,m1,2,$4,20'
     },
-    {
+    i: {
       id: 'i',
       tiles: '12,d1,12,$2,7,$3,7,$2,m1,6,$4,6,$4,6,m1,$3,6,$4,6,$3,4'
     },
-    {
+    random1: {
       id: 'random1',
       tiles: '$4,6,$2,5,$2,2,$2,3,$2,6,d1,5,$2,6,$5,4,$2,2,$1,9,m1,1,$1,3,m1,$1,5,$1,14,$1'
     },
-    {
+    random2: {
       id: 'random2',
       tiles: '1,$2,1,$1,4,$1,1,$2,12,$3,4,d1,2,$1,8,$2,1,$1,2,$2,4,$1,5,$3,2,$3,1,m1,1,$1,2,m1,2,$1,2,$1,1,$1,4,$1,10'
     },
-    {
+    ya: {
       id: 'ya',
       tiles: '23,$1,1,d1,1,$1,4,$6,4,$6,5,$2,1,$2,5,$2,1,$2,2,$1,2,$2,5,$1,2,m1,6,$1,6,$3'
     },
-    {
+    random3: {
       id: 'random3',
       tiles: '1,$2,3,$1,1,$2,9,$1,2,$1,1,$2,4,$1,1,$2,1,$1,6,$1,4,d1,4,$1,1,m1,8,$1,3,$1,3,$1,1,$2,3,m1,2,$1,14,$1,3'
     },
-    {
+    random4: {
       id: 'random4',
       tiles: '$1,4,$1,4,$2,5,$1,6,$1,8,$1,4,$1,1,$2,4,d1,2,$1,11,m1,7,$1,3,$1,1,$3,1,$3,1,$4,m1,1,$1,5,$3,2'
     },
-    {
+    target2: {
       id: 'target2',
       tiles: '12,$3,1,$3,3,$1,11,$1,3,$1,2,d1,2,$3,5,$1,1,$1,m1,6,$1,5,$1,4,$2,1,$2,2,$1,9,$1,9'
     },
-    {
+    random5: {
       id: 'random5',
       tiles: '8,$1,9,$1,2,$2,2,d1,7,$1,2,$3,4,$1,7,$1,3,$1,1,$1,5,m1,2,$2,8,$1,4,$2,2,$1,1,$1,12'
     },
-    {
+    random6: {
       id: 'random6',
       tiles: '5,$1,5,$1,6,m1,1,$2,1,d1,6,$2,4,$1,2,$1,3,$1,6,$1,2,$4,1,$2,2,m1,3,$2,5,$1,1,$1,3,$3,5,$6,7'
     },
@@ -234,7 +238,7 @@ function init() {
     //   tiles: '$2,6,$4,7,$1,2,$1,10,$1,10,$1,10,$1,10,$1,10,$1,2,$1,7,$4,6,$2'
     // }, 
 
-  ]
+  }
   
   const elements = {
     wrapper: document.querySelector('.main'),
@@ -310,6 +314,7 @@ function init() {
     isWindowActive: true,
     yOffset: 0,
     npcs: [],
+    items: [],
     mapImage: {
       el: elements.mapImage.parentNode,
       canvas: elements.mapImage,
@@ -334,13 +339,9 @@ function init() {
     },
     time: {
       el: document.querySelector('.time-indicator'),
-      no: 90,
+      no: 60,
       timer: null
     },
-    // mouseBlobNo: 9,
-    // dogBlobNo: 6,
-    // dogBlobPos: [],
-    // mouseBlobPos: [],
     demoMode: true,
     tilesWithNoWalls: [],
     pauseSphereCreation: false,
@@ -464,7 +465,7 @@ function init() {
     //   return (i < wallPercentage) ? '$' : 'x'
     // }).sort(() => Math.random() - 0.5)
     // TODO we can decompress at the start so we don't need to do it each time we setupMap
-    const mapSeed = new Array(column * row / 100).fill('').map(()=> randomItem(tileModules))
+    const mapSeed = new Array(column * row / 100).fill('').map(()=> tileModules[randomItem(Object.keys(tileModules))])
     console.log('test', mapSeed.map(t => t.id))
     const modulesToDraw = mapSeed.map(seed=> decompress(seed.tiles))
     // modulesToDraw.length = modulesToDraw.length - 1
@@ -474,11 +475,12 @@ function init() {
     // remove dogblob and mouseblob, add place catblob in random position
     const startModuleIndex = randomN(modulesToDraw.length - 1)
     modulesToDraw[startModuleIndex] = modulesToDraw[startModuleIndex].map(t => t ? '$' : 'x')
-    const startPos = randomItem(modulesToDraw[startModuleIndex].map((t, i) => t === 'x' && i ).filter(t => t))
+    const startPos = randomItem(modulesToDraw[startModuleIndex].map((t, i) => {
+      return (t === 'x' && ![0, 9].includes(i % 10) && ![0, 9].includes(Math.floor(i / 10))) && i 
+    }).filter(t => t))
     modulesToDraw[startModuleIndex][startPos] = 'c'
 
     settings.map.data = modulesToDraw.map((m, mI) => {
-      // TODO this bit could probably be refactored, possibly corrected
       const offset1 = mI * 10
       const offset2 = column - 10
       const offset3 = ((column * 10) - column) * Math.floor(mI / (column / 10))
@@ -520,25 +522,24 @@ function init() {
       if (!matchingTile.id) console.log(criteria, criteria2)
 
 
-      const x = mapX(i) * d
-      const y = mapY(i) * d
+      // const x = mapX(i) * d
+      // const y = mapY(i) * d
 
-      if (t === 'c') {
-        settings.mapImage.ctx.fillStyle = '#00dd00'
-        settings.mapImage.ctx.fillRect(x, y, d, d)
-        player.pos = i
-      }
-      else if (t === 'd') {
-        settings.mapImage.ctx.fillStyle = '#bb96e8'
-        settings.mapImage.ctx.fillRect(x, y, d, d)
-      }
-      else if (t === 'm') {
-        settings.mapImage.ctx.fillStyle = '#00d5ff'
-        settings.mapImage.ctx.fillRect(x, y, d, d)
-      }
-      else if (matchingTile.id === 'dot' && randomN(10) === 10) {
-        // const x = mapX(i) * d
-        // const y = mapY(i) * d
+      if (t === 'c') player.pos = i
+        // settings.mapImage.ctx.fillStyle = '#00dd00'
+        // settings.mapImage.ctx.fillRect(x, y, d, d)
+      
+      // else if (t === 'd') {
+      //   settings.mapImage.ctx.fillStyle = '#bb96e8'
+      //   settings.mapImage.ctx.fillRect(x, y, d, d)
+      // }
+      // else if (t === 'm') {
+      //   settings.mapImage.ctx.fillStyle = '#00d5ff'
+      //   settings.mapImage.ctx.fillRect(x, y, d, d)
+      // }
+      else if (t === '$' && matchingTile.id === 'dot' && randomN(10) === 10) {
+        const x = mapX(i) * d
+        const y = mapY(i) * d
         const sphere = {
           el: Object.assign(document.createElement('div'), { 
             className: 'sphere',
@@ -549,8 +550,6 @@ function init() {
         setPos(sphere)
         settings.mapImage.el.appendChild(sphere.el)
         settings.map.spheres[i] = sphere
-        // settings.mapImage.ctx.fillStyle = '#00ff00'
-        // settings.mapImage.ctx.fillRect(x, y, d, d)
         settings.map.data[i] = 'x'
       } else if (t === '$') {
         // placeTile({
@@ -596,16 +595,23 @@ function init() {
       } 
     })
 
-    const tilesWithNoWalls = settings.map.data.map((t, i) => t !== '$' && !settings.map.spheres[i] && i).filter(t => t)
-    // player.pos = randomItem(tilesWithNoWalls)
-    // TODO there's nothing to stop dogs and mouses from appearing too close or in same spot as player
-
-    // settings.dogBlobNo = dogPos.length - 1
-    // dogPos.forEach(pos => )
-    // settings.npcs.forEach(npc => {
-    //   npc.pos = randomItem(tilesWithNoWalls)
-    //   // if (npc.isHunting) npc.altTarget = tilesWithNoWalls[randomN(tilesWithNoWalls.length - 1)]
-    // })
+    const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.spheres[i] && i).filter(t => t)
+    
+    tilesWithNoWalls.forEach(t => {
+      if (randomN(70) === 70) {
+        const x = mapX(t) * d
+        const y = mapY(t) * d
+        const type = randomN(20) === 20 ? 'strawberry' : 'chocolate'
+        const item = {
+          el:  Object.assign(document.createElement('div'), { className: `${type}-donut item` }),
+          x, y,
+          type
+        }
+        setPos(item)
+        settings.mapImage.el.appendChild(item.el)
+        settings.items[t] = item
+      } 
+    })
 
     settings.tilesWithNoWalls = tilesWithNoWalls
 
@@ -834,7 +840,28 @@ function init() {
       setStyles(settings.mapImage)
       player.pos += diff
       // elements.indicator.innerHTML = `pos:${player.pos} dataX:${mapX(player.pos)} dataY:${mapY(player.pos)}`
-      if (!player.invincible) hitCheck()
+      if (!player.invincible) {
+        settings.items.forEach((item, i) => {
+          if (item && player.pos === i) {
+            item.el.classList.add('sparkle')
+            if (item.type === 'strawberry' && player.life.point < 4) {
+              player.life.point += 1
+              updateLife({ damage: false })
+            }
+            if (item.type === 'chocolate') {
+              updateTime({ difference: 10 })
+            }
+
+            setTimeout(()=> {
+              if (settings.items[i]) {
+                settings.mapImage.el.removeChild(item.el)
+                settings.items[i] = null
+              }
+            }, 1000)
+          }
+        })
+        hitCheck()
+      }
     }
     settings.npcs.forEach(npc => {
       if (!npc.isHunting && !npc.isFleeing) triggerNpcMotion(npc)
@@ -890,15 +917,17 @@ function init() {
 
   const updateMouseBlobCounter = () => {
     const { no, total } =  player.mouseBlobCaught
-    player.mouseBlobCaught.el.innerHTML = `<span>${zero(no)}${no}</span>/${zero(no)}${total}`
+    player.mouseBlobCaught.el.innerHTML = `<span>${zero(no)}${no}</span>/${zero(total)}${total}`
     if (no === total) endGame({ win: true })
   }
 
-  const updateTime = () => {
+  const updateTime = ({ difference }) => {
+    settings.time.no += difference
+    if (settings.time.no > 99) settings.time.no = 99 
     const { no } = settings.time
     settings.time.el.innerHTML = no < 11 
-      ? `<span>${zero(no)}${no}</span>` 
-      : no
+      ? `<span class="${difference > 0 ? 'plus' : ''}">${zero(no)}${no}</span>` 
+      : `<span class="${difference > 0 ? 'plus' : 'minus'}">${no}</span>`
     if (!no ) endGame({ win: false })
   }
 
@@ -988,12 +1017,15 @@ function init() {
     })
   }
 
-  const updateLife = () => {
-    player.life.point -= 1
+  const updateLife = ({ damage }) => {
+    if (damage) player.life.point -= 1
     if (player.life.point >= 0) {
-      player.life.markers[player.life.point].classList.add('damage')
+      player.life.markers.forEach((marker, i) => {
+        marker.classList[i < player.life.point ? 'remove' : 'add']('damage')
+      })
     }
-  }
+    }
+
 
   const damagePlayer = npc => {
     if (isGamePaused()) return
@@ -1008,7 +1040,7 @@ function init() {
       }
     }, 2000)
 
-    updateLife()
+    updateLife({ damage: true })
     if (!player.life.point) {
       endGame({ win: false })
     } else {
@@ -1108,8 +1140,7 @@ function init() {
 
     settings.time.timer = setInterval(()=> {
       if (isGamePaused()) return
-      settings.time.no -= 1
-      updateTime()
+      updateTime({ difference: -1 })
       if (player.invincible) {
         player.invincibleCount += 1
         if (player.invincibleCount > 6) {
@@ -1152,7 +1183,7 @@ function init() {
     createNpcs()
     addNpcs()
     settings.time.no = settings.map.data.length / 10
-    updateTime()
+    updateTime({ difference: 0 })
     triggerIntervals()
   }
 
@@ -1180,7 +1211,7 @@ function init() {
       settings.npcs.length = 0
       player.mouseBlobCaught.no = 0
       updateMouseBlobCounter()
-      updateLife()
+      updateLife({ damage: false })
       player.life.point = 4
       player.life.markers.forEach(marker => marker.classList.remove('damage'))
       player.el.classList.remove('blink')
@@ -1190,21 +1221,6 @@ function init() {
   }
 
   start()
-
-  const mapData = () => {
-    let data = {}
-    tileModules.forEach(t => {
-      data[t.id] = {
-        column: 10,
-        row: 10,
-        map: t.tiles,
-        walls: '',
-      }
-    })
-    return data
-  }
-
-  console.log(mapData())
 
   window.addEventListener('focus', ()=> settings.isWindowActive = true)
   window.addEventListener('blur', ()=> settings.isWindowActive = false)
