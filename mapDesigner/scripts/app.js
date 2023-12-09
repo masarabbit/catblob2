@@ -299,8 +299,8 @@ function init() {
 
   mapLinkCells.forEach((link, i)=>{
     link.addEventListener('click',()=>{
-      const { column, row, map } = mapData[mapKeys[i]]
-      const url = `${column}#${row}#${artData.d}#${map.replaceAll(',','-')}#${i}#${mapKeys[i]}`
+      const { column, row, tiles } = mapData[mapKeys[i]]
+      const url = `${column}#${row}#${artData.d}#${tiles.replaceAll(',','-')}#${i}#${mapKeys[i]}`
       window.location.hash = url      
       location.reload(true)
     })

@@ -24,7 +24,7 @@ const tiles = {
     down: [],
     left: [],
   },
-  b: {
+  bb: {
     id: 'h_edge',
     img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAFBJREFUOE9jZIACN6M7/2FsUmhGkGJyNYP0Um4AJbaDXTAMDLBZse8/V5ccKTGHopaRKgaAjCTXFWAXkO1+UDQOvAEg51PiCnBeoNgASgwBAE5/KhUy95XiAAAAAElFTkSuQmCC',
     type: 'A',
@@ -299,6 +299,11 @@ const tiles = {
   m: {
     id: 'mouse',
     color: '#00d5ff',
+    type: 'X',
+  },
+  b: {
+    id: 'block',
+    color: '#ffd500',
     type: 'X',
   }
   // {

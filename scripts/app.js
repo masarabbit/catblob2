@@ -3,10 +3,9 @@
 function init() {  
   
 
-  // TODO edit donut spark
-  // TODO add alt wall
-
+  // TODO when dogs are in the samme spot, make them move differently?
   // TODO increment scores, and unlock new features (or make map bigger)
+  // TODO add more blocks to modules
 
   //? refactor to simplify functions?
   //? improve dogBlob chasing logic
@@ -141,85 +140,68 @@ function init() {
 
   const tileModules = {
     surprise_mark: {
-      id: '',
       tiles: '5,$5,12,$2,8,$1,d1,12,$1,3,$1,5,$1,2,$2,8,$2,5,$1,2,$2,7,m1,$1,5,$5',
     },
     cyclone: {
-      id: 'cyclone',
       tiles: '9,$1,3,d1,8,$1,2,$3,4,$1,9,$1,1,$2,8,$2,1,$1,8,m1,$1,2,$5,2,$1,11,$1,9,$1',
     },
     eye: {
-      id: 'eye',
       tiles: '$2,6,$3,8,$1,2,d1,4,m1,6,$2,7,$4,6,$4,7,$2,6,m1,4,d1,2,$1,8,$3,6,$2'
     },
     broken_flag: {
-      id: 'broken_flag',
       tiles: '21,$4,7,$1,m1,1,$1,2,d1,22,$1,2,$1,2,$1,3,$1,3,$4,2,$1,1,m1,7,$1,8'
     },
     dots: {
-      id: 'dots',
       tiles: '1,$1,2,$1,2,$1,20,d1,1,$1,2,$1,2,$1,2,$1,21,$1,2,$1,2,$1,4,m1,17,$1,2,$1,2,$1,2,$1'
     },
     vertical_river: {
-      id: 'vertical_river',
       tiles: '17,$1,6,d1,2,$1,4,$1,4,$1,3,$2,1,$1,2,$1,3,$1,2,$2,1,$1,6,$2,5,$1,2,$2,1,m1,6,$1,15'
     },
     target: {
-      id: 'target',
       tiles: '15,d1,6,$3,1,$2,4,$1,5,$1,1,$1,7,$1,1,$1,3,m1,1,m1,5,$1,9,$2,4,$1,3,$3,1,$3,11'
     },
     r: {
-      id: 'r',
       tiles: '18,d1,4,$2,1,$2,4,$6,4,$5,5,$3,7,$2,1,m1,6,$3,8,$2,7,$3,5'
     },
     s: {
-      id: 's',
       tiles: '23,$4,5,$8,2,$2,4,m1,4,$4,9,$2,2,$1,1,$5,7,d1,15'
     },
     dash_dot_dot_dash: {
-      id: 'dash_dot_dot_dash',
       tiles: '20,$5,5,$5,2,$1,d1,1,$5,21,$4,1,$1,1,m1,2,$4,20'
     },
     i: {
-      id: 'i',
       tiles: '12,d1,12,$2,7,$3,7,$2,m1,6,$4,6,$4,6,m1,$3,6,$4,6,$3,4'
     },
     random1: {
-      id: 'random1',
       tiles: '$4,6,$2,5,$2,2,$2,3,$2,6,d1,5,$2,6,$5,4,$2,2,$1,9,m1,1,$1,3,m1,$1,5,$1,14,$1'
     },
     random2: {
-      id: 'random2',
-      tiles: '1,$2,1,$1,4,$1,1,$2,12,$3,4,d1,2,$1,8,$2,1,$1,2,$2,4,$1,5,$3,2,$3,1,m1,1,$1,2,m1,2,$1,2,$1,1,$1,4,$1,10'
+      tiles: '1,$2,1,$1,4,$1,1,$2,12,$3,4,d1,2,$1,8,$2,1,$1,2,$1,5,$1,5,$3,2,$3,1,m1,1,$1,2,m1,2,$1,2,$1,1,$1,4,$1,10'
     },
     ya: {
-      id: 'ya',
       tiles: '23,$1,1,d1,1,$1,4,$6,4,$6,5,$2,1,$2,5,$2,1,$2,2,$1,2,$2,5,$1,2,m1,6,$1,6,$3'
     },
     random3: {
-      id: 'random3',
       tiles: '1,$2,3,$1,1,$2,9,$1,2,$1,1,$2,4,$1,1,$2,1,$1,6,$1,4,d1,4,$1,1,m1,8,$1,3,$1,3,$1,1,$2,3,m1,2,$1,14,$1,3'
     },
     random4: {
-      id: 'random4',
       tiles: '$1,4,$1,4,$2,5,$1,6,$1,8,$1,4,$1,1,$2,4,d1,2,$1,11,m1,7,$1,3,$1,1,$3,1,$3,1,$4,m1,1,$1,5,$3,2'
     },
     target2: {
-      id: 'target2',
       tiles: '12,$3,1,$3,3,$1,11,$1,3,$1,2,d1,2,$3,5,$1,1,$1,m1,6,$1,5,$1,4,$2,1,$2,2,$1,9,$1,9'
     },
     random5: {
-      id: 'random5',
       tiles: '8,$1,9,$1,2,$2,2,d1,7,$1,2,$3,4,$1,7,$1,3,$1,1,$1,5,m1,2,$2,8,$1,4,$2,2,$1,1,$1,12'
     },
     random6: {
-      id: 'random6',
       tiles: '5,$1,5,$1,6,m1,1,$2,1,d1,6,$2,4,$1,2,$1,3,$1,6,$1,2,$4,1,$2,2,m1,3,$2,5,$1,1,$1,3,$3,5,$6,7'
     },
-    // {
-    //   id: '',
-    //   tiles: ''
-    // },
+    block: {
+      tiles: '18,d1,3,b6,4,b6,4,b2,1,m1,b2,4,b2,m1,1,b2,4,b6,4,b6,3,d1,18'
+    },
+    block2: {
+      tiles: '11,b8,2,b8,2,b2,m1,1,b4,2,b2,2,b4,2,b8,2,b5,2,b1,2,b5,1,d1,b1,2,b8,11'
+    },
     // {
     //   id: '',
     //   tiles: ''
@@ -329,7 +311,7 @@ function init() {
       column: 30,
       row: 20,
       data: [],
-      spheres: [],
+      blocks: [],
     }, 
     cursor: {
       el: document.querySelector('.cursor'),
@@ -345,7 +327,7 @@ function init() {
     },
     demoMode: true,
     tilesWithNoWalls: [],
-    pauseSphereCreation: false,
+    pauseBlockCreation: false,
   }
 
   const control = {
@@ -398,7 +380,7 @@ function init() {
   }
   const nearestN = (n, denom) => n === 0 ? 0 : (n - 1) + Math.abs(((n - 1) % denom) - denom)
   const randomN = max => Math.ceil(Math.random() * max)
-  const sphereState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
+  const blockState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
   const distanceBetween = (a, b) => Math.round(Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2)))
   const ePos = (e, type) => Math.round(e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`])
   const randomItem = arr => arr[randomN(arr.length - 1)]
@@ -451,11 +433,11 @@ function init() {
       d, d)
   }
   
-  const randomModule = () => {
-    return new Array(100).fill('').map((_, i) => {
-      return (i < 30) ? '$' : 'x'
-    }).sort(() => Math.random() - 0.5)
-  } 
+  // const randomModule = () => {
+  //   return new Array(100).fill('').map((_, i) => {
+  //     return (i < 30) ? '$' : 'x'
+  //   }).sort(() => Math.random() - 0.5)
+  // } 
 
   
   const setupMap = () => {
@@ -466,8 +448,12 @@ function init() {
     //   return (i < wallPercentage) ? '$' : 'x'
     // }).sort(() => Math.random() - 0.5)
     // TODO we can decompress at the start so we don't need to do it each time we setupMap
-    const mapSeed = new Array(column * row / 100).fill('').map(()=> tileModules[randomItem(Object.keys(tileModules))])
-    console.log('test', mapSeed.map(t => t.id))
+    // const mapSeed = new Array(column * row / 100).fill('').map(()=> tileModules[randomItem(Object.keys(tileModules))])
+    const mapSeed = new Array(column * row / 100).fill('').map(()=> {
+      const randomKey = randomItem(Object.keys(tileModules))
+      console.log('maps', randomKey)
+      return tileModules[randomKey]
+    })
     const modulesToDraw = mapSeed.map(seed=> decompress(seed.tiles))
     // modulesToDraw.length = modulesToDraw.length - 1
     // const test = randomModule()
@@ -475,7 +461,7 @@ function init() {
 
     // remove dogblob and mouseblob, add place catblob in random position
     const startModuleIndex = randomN(modulesToDraw.length - 1)
-    modulesToDraw[startModuleIndex] = modulesToDraw[startModuleIndex].map(t => t ? '$' : 'x')
+    modulesToDraw[startModuleIndex] = modulesToDraw[startModuleIndex].map(t => t === '$' ? '$' : 'x')
     const startPos = randomItem(modulesToDraw[startModuleIndex].map((t, i) => {
       return (t === 'x' && ![0, 9].includes(i % 10) && ![0, 9].includes(Math.floor(i / 10))) && i 
     }).filter(t => t))
@@ -522,42 +508,23 @@ function init() {
 
       if (!matchingTile.id) console.log(criteria, criteria2)
 
-
-      // const x = mapX(i) * d
-      // const y = mapY(i) * d
-
       if (t === 'c') player.pos = i
-        // settings.mapImage.ctx.fillStyle = '#00dd00'
-        // settings.mapImage.ctx.fillRect(x, y, d, d)
-      
-      // else if (t === 'd') {
-      //   settings.mapImage.ctx.fillStyle = '#bb96e8'
-      //   settings.mapImage.ctx.fillRect(x, y, d, d)
-      // }
-      // else if (t === 'm') {
-      //   settings.mapImage.ctx.fillStyle = '#00d5ff'
-      //   settings.mapImage.ctx.fillRect(x, y, d, d)
-      // }
-      else if (t === '$' && matchingTile.id === 'dot' && randomN(10) === 10) {
+
+      else if (t === 'b' || (t === '$' && matchingTile.id === 'dot' && randomN(10) === 10)) {
         const x = mapX(i) * d
         const y = mapY(i) * d
-        const sphere = {
+        const block = {
           el: Object.assign(document.createElement('div'), { 
-            className: 'sphere',
+            className: 'block clay',
           }),
           x, y,
           state: 0
         }
-        setPos(sphere)
-        settings.mapImage.el.appendChild(sphere.el)
-        settings.map.spheres[i] = sphere
+        setPos(block)
+        settings.mapImage.el.appendChild(block.el)
+        settings.map.blocks[i] = block
         settings.map.data[i] = 'x'
       } else if (t === '$') {
-        // placeTile({
-        //   tileId: matchingTile.id,
-        //   i,
-        //   offset: 8
-        // })
         placeTile({
           tileId: matchingTile.id,
           i,
@@ -596,7 +563,7 @@ function init() {
       } 
     })
 
-    const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.spheres[i] && i).filter(t => t)
+    const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.blocks[i] && i).filter(t => t)
     
     tilesWithNoWalls.forEach(t => {
       if (randomN(70) === 70) {
@@ -640,7 +607,7 @@ function init() {
       npc.track.length = 0
 
       // TODO npc identifies wall close by and attacks it
-      const wallCloseBy = [npc.pos + 1, npc.pos - 1, npc.pos + column, npc.pos - column].find(p => settings.map.spheres[p])
+      const wallCloseBy = [npc.pos + 1, npc.pos - 1, npc.pos + column, npc.pos - column].find(p => settings.map.blocks[p])
       if (wallCloseBy) {
         clearTimeout(npc.motionTimer)
         npc.el.classList.add('attacking')
@@ -648,21 +615,21 @@ function init() {
         npc.el.classList.add(npc.attackDir)
         turnSprite({ actor: npc, newPos: wallCloseBy })
 
-        const sphere = settings.map.spheres[wallCloseBy]
-        let attackSphere
-        attackSphere = setInterval(()=> {
-          sphere.el.classList.add(sphereState[sphere.state])
-          sphere.state += 1
-          if (sphere.state === 5 || !settings.map.spheres[wallCloseBy]) {
-            clearInterval(attackSphere)
+        const block = settings.map.blocks[wallCloseBy]
+        let attackBlock
+        attackBlock = setInterval(()=> {
+          block.el.classList.add(blockState[block.state])
+          block.state += 1
+          if (block.state === 5 || !settings.map.blocks[wallCloseBy]) {
+            clearInterval(attackBlock)
             npc.el.classList.remove('attacking')
             npc.el.classList.remove(npc.attackDir)
             npc.isHunting = true
             npc.pause = false
             triggerNpcMotion(npc)
-            if (settings.map.spheres[wallCloseBy]) {
-              settings.mapImage.el.removeChild(sphere.el)
-              settings.map.spheres[wallCloseBy] = null
+            if (settings.map.blocks[wallCloseBy]) {
+              settings.mapImage.el.removeChild(block.el)
+              settings.map.blocks[wallCloseBy] = null
             }
           }
         }, 400)
@@ -673,16 +640,15 @@ function init() {
       npc.isHunting = true
     }
 
-    if (settings.map.spheres[newPos]) {
+    if (settings.map.blocks[newPos]) {
       triggerNpcMotion(npc)
       return
     } 
 
     moveNpc({ npc, newPos })
-    // if (npc.pos === npc.goal) damagePlayer(npc)
     if (isGamePaused() || npc.pos === npc.goal || index + 1 >= route.length) {      
       clearTimeout(npc.motionTimer)
-      console.log('goal')
+      // console.log('goal')
       // triggerNpcMotion(npc)
     } else {
       npc.motionTimer = setTimeout(()=>{
@@ -755,7 +721,7 @@ function init() {
     if (possibleDestination.length && !possibleDestination.some(c => c === goal)) {
       const mapInfo = []
       possibleDestination.forEach(cell =>{  
-        if (noWall({ pos:cell, ignoreSphere: true, actor }) && !searchMemory[cell].searched && cell !== pos) {
+        if (noWall({ pos:cell, ignoreBlock: true, actor }) && !searchMemory[cell].searched && cell !== pos) {
           mapInfo.push({ 
             cell, 
             prev: current, 
@@ -793,9 +759,9 @@ function init() {
   }
   
 
-  const noWall = ({ pos, ignoreSphere, actor }) =>{    
-    const { map: { data, spheres, column: w, d }, npcs } = settings
-    if (!data[pos] || (!ignoreSphere && spheres[pos]) || player.pos === pos) return false
+  const noWall = ({ pos, ignoreBlock, actor }) =>{    
+    const { map: { data, blocks, column: w, d }, npcs } = settings
+    if (!data[pos] || (!ignoreBlock && blocks[pos]) || player.pos === pos) return false
     if (actor !== player && npcs.filter(n => !n.isFleeing).some(npc => [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos -d, npc.pos].includes(pos))) return false
     return settings.map.data[pos] !== '$'
   }
@@ -878,28 +844,28 @@ function init() {
     if (['top', 'right', 'bottom', 'left'].includes(e)) handleWalk(e)
   }
 
-  const placeSphere = () => {
-    if (settings.pauseSphereCreation) return
+  const placeBlock = () => {
+    if (settings.pauseBlockCreation) return
     const { index } = settings.cursor
     if (!isGamePaused() && noWall({ pos: index })) {
-      const sphere = {
-        el: Object.assign(document.createElement('div'), { className: 'sphere' }),
+      const block = {
+        el: Object.assign(document.createElement('div'), { className: 'block' }),
         x: settings.drawPos.x,
         y: settings.drawPos.y,
         state: 0
       }
-      setPos(sphere)
-      settings.map.spheres[index] = sphere
-      settings.mapImage.el.appendChild(sphere.el)
-    } else if (settings.map.spheres[index]) {
-      const {el} = settings.map.spheres[index]
+      setPos(block)
+      settings.map.blocks[index] = block
+      settings.mapImage.el.appendChild(block.el)
+    } else if (settings.map.blocks[index]) {
+      const {el} = settings.map.blocks[index]
       el.classList.add('shattered')
-      settings.pauseSphereCreation = true
+      settings.pauseBlockCreation = true
       setTimeout(()=> {
-        settings.pauseSphereCreation = false
+        settings.pauseBlockCreation = false
         if (el) {
           settings.mapImage.el.removeChild(el)
-          settings.map.spheres[index] = null
+          settings.map.blocks[index] = null
         }
       }, 400)
     }
@@ -1208,11 +1174,13 @@ function init() {
         clearTimeout(npc.motionTimer)
         settings.mapImage.el.removeChild(npc.el)
       })
-      settings.map.spheres.forEach(sphere => {
-        if (sphere) settings.mapImage.el.removeChild(sphere.el)
+      settings.map.blocks.forEach(block => {
+        if (block) settings.mapImage.el.removeChild(block.el)
       })
-      settings.map.spheres.length = 0
-      settings.npcs.length = 0
+      settings.items.forEach(item => {
+        if (item) settings.mapImage.el.removeChild(item.el)
+      })
+      ;[settings.map.blocks, settings.items, settings.npcs].forEach(data => data.length = 0)
       player.mouseBlobCaught.no = 0
       player.itemScore = 0
       updateMouseBlobCounter()
@@ -1232,7 +1200,7 @@ function init() {
   
   window.addEventListener('resize', adjustMapWidthAndHeight)
   window.addEventListener('mousemove', moveCursor )
-  settings.map.el.addEventListener('click', placeSphere)
+  settings.map.el.addEventListener('click', placeBlock)
   window.addEventListener('keyup', () => {
     player.walkingDirection = null
     clearInterval(player.walkingInterval)

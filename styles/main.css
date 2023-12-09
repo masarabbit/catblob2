@@ -115,16 +115,23 @@ canvas {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAGxJREFUOE9jZCAB7G5L/u9aNZcRWQsKh5BZA2sAyHaYC5G9gdcLyJpweY/oMCDKBdgCCdlmgoFIkQG4nEjQBfgCCj3RYAtIeCAS4wK8BoAk8YUBLjmUaKTYAGxOxBZGRKdEQjEAkicpJWKLFQBwlVK0VTd+mgAAAABJRU5ErkJggg==);
 }
 
-.sphere {
+.block {
   position: absolute;
   --c: 32px;
   width: var(--c);
   height: var(--c);
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAgCAYAAACFM/9sAAAAAXNSR0IArs4c6QAAA9tJREFUaEPlmL2KFUEQhXuew1iMBRXZRB/AQASjxcDIB9BIcEUFA9EHMDKQjRZE0MRENFlERePFeJ/jSs3eM1TX1Knunr1zncVJ9u5Mn66ur+unZ7pErtXHHyv9qLtxuWNjvftnXR/5Kr6BxwiKddxOVAK5GP3eQUpPb+fL3ztI3a8XNBCw9shH7Z+MyyYrOY/VMAOL02uI6re3/pqM8fwbANY6zyDOoveiaL0AC8G1D70zj9aztWPM6tX7Vbpwzs3qHmCr8xbirPoKiCP7JPJYOYoA9vDk+m8AWuBsA0w99FJ4gAfyBmJfA6dGT0tHTkEUVc1To5cxctnGIfcCqF4qZ/cQgQbi0IWj/C46d3R8MoSE96BnAObQk+7bg7WQj45Td/9meDzTUeiN7Uo5TiHCeRLeI511rEXvRdeG9AIFDBhMeY5no2NMluelSAIVu/gaiBpgix7wYEMiaS59SllE2nMhPcY0QVSLH3ZF1wm7CTp6AHE9R5PeAZjp9w/9Gsg2YP9wOFR7aeo2FfN2JgZPjjG2UHp1zdl1F4CORi/q4KgYX78VUPtT9DL/7s5JXY70uzt5tKk09Y52w5nQvuLCX9eJoIvYerFRPSALCHKF9hv17BXO1jvbL8avcl4kOg5ExbbYuU2d0eNrNyG0jwiUifVvZUjrS69w+sOBXZ/MM/6YUIDY0vY9mFvXG4ijyG346uTVSv5lwoAsOW5hebtVE52spJzKvmoYo3UqgMUvTWsmei0ZwCePHmbfAJnDj589d8EvRf/z+7d06cpVul+l9bPnbkbhZq3zGG+NLE3fCtGuv+Qfng+RtDQApXQvOcgAyn25Pnz6XPQdNhgbed5P0grPRuFc+tooYva1HuB0atcAivhsBWAEoeSALH4beg+SjvB/GoHbAAAHPVvRPUD6+u5N3zy//P7TJ9f1i+fTtVt3wwab1cC5UhCpziDWRGAUhVofbRSDiDoIgLbuWoj6OTQ9ZfkH9EvFG8/1LtXorROb1r98/TY8ukT2dQrLunAJQB1cNmJl3JkCKAtGE5iyAUxvMxBze5kpEHXEDgB1DShFIXYJIW5rCNMjCqbo0UVl7gf37vQmSvZ15430OgJLzcNGYQawBI7VCFZD9HhJMXEcfz0AzL5o9MUATtWjjOnUxe/SAXsrADW0qQABjen1fQtyin1ENwB69U/GzA7Qcwz3bAp6EVSrZwCZXmxJF46yx3Zhb+xw1qlJQ+1gzeRRSajVMzCePoLNyo9NXy+N2ZihC0cDGIRaAKfRR2lZA7BVz+BFkLPTdm0UsgPm0vS10Qtwsv6aw7Me8xeleTWZAk2X3wAAAABJRU5ErkJggg==);
+  /* background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAgCAYAAACFM/9sAAAAAXNSR0IArs4c6QAAA+BJREFUaEPlmL9u1EAQxtcvQQEPgERFAU1EkQpRUCAhGvIUCEp0RUQVgejpKNIQIVFQIESRAqUBRTQg8gCh4CUOje++1ex4ZnbWnA9HuMnF3m9n57fzZ+0uGdfy/Zclf9TdvdlZY7X7F13v+Uq+gccAinRcTlQDORv94iil/Qfl8hdHqTs9MAMBa/d85P7RuGKymvNYjWVgdnoOkf3W1h/JGM2/DDDqvAVxEr0WResFSAiqfeiVebjeWjvGLF+8W6arV9Ss7gG2Oi8hTqoPQBzYNyLPKkcewB4eXf8NQAnc2gBRD7UUzvBAXkDsa+DY6GnpyMmJotA8ET2NoUs2DrrnQNVSubiHCBQQcxf28rvq3Nn5aogR3llvAZhCb3TfHqyEfHaeusf33OMZj0JtbFfLcRMinDfCe6CTjrXotejakJ6ggIEFk57j2eAYU+R5LZJARS4+ApEDbNEDHmxQJE2lT6mISHkuNI8xTRDZ4vOu8DohN4FHDyCu52jSKwAL/eGJXgOtDTg8yYdqLU3VpiLezsjg6hgjC6VW15RdVwHwaNSiDo6S8fVbgWl/jJ7m39tZ1WVPv7dTRhtLU+1ol8+E8hUX/qpOOF1E1ouN6gGZQBiXa79Rb73CyXon+8XwVU6LRMUBr9hWO7eoM3x8dBNc+4hAmpj/Zoa4vvYKxz8cyPXRPMOPCRWILW1fg7l1vYA4iNyGr05arbS/TAiQNcclLG23ItFplZS/ss8axmCdDGD1S9OaCV9LAfDRs2/FN0DL4ZdPr6vg56L/ePwj3d69Zu5Xbf3WczWjcDPqPMZLI3PTt0KU66/5h+c5kuYGoJbuNQctgHSfru+fHlZ9hw2LDT3vJ2mFJ6NwKn00iiz7XA9wPLUjgDw+WwHoQag5QIvfhl6DxCP8n0bgNgDAQc2Wdw+Q3n741TfPz19/98l168aldP/OZbfBFjVwqhREqlsQIxHoRSHXextlQUQdBEBZdyVE/hyanjL9A/q14o3nfJcieunEpvWL58fu0cWzz1OY1oWLAPLgkhFL4y4UQFowmsCYDbD0MgMxt5aZBJFHbAbIa0AtCrFLCHFZQyw9omCMHl2U5t5/stubqNnnndfT8wisNQ8ZhQXAGjirRlg1hI+nFCPH8VcDYNknDb8sgGP1KGM8dfG7dsDeCkAObSxAQLP0/L4EOcY+ohsAtfpHYyYHqDmGezIFtQiK6i2Alp5sURf2skd2YW1sPutE0pA7GJncKwlRvQVG6l+/OV0evPqZ6yNsR/Sa79H1zRqgl5YRgC16DlE7/1mQi9N2NAqtA+bc9JHo41lC648cnvmYP0EFNweB9SZJAAAAAElFTkSuQmCC); */
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAgCAYAAACFM/9sAAAAAXNSR0IArs4c6QAAA7ZJREFUaEPlWTtSJDEM7T4HB9gTkHAGApKNOAY5wYZbxTGISDbYM5BsFTkH4ByzJY9lZPnp4156amAngm4/W3qWZPn1uhi/w+8/B/lqvb5crbHo+WfHe76Sb8zHQIp2XE8UEXk2+PunZfnxvTf//mlZX36agcC2ez5K/2hcN1nkPFtjLXB2eEmi+BvZn8kY5F8jMOu8ReIueBRF1QBNAlyf8WAeibds5zGHh1+H5dsFzOpC4KzzmsRd8QkSh/WNyLPKkUdgIY9+/w2BmnBrA1Q9RCncyGPmFYmlBm6NnpkTeXGiKDVPBk9j6KcPDnrmkIpSuXvGEahIbKewl9+hc69vxyFGeDe8RcAeeOP0LcRqkl/flvXuxm3PZBSisWuU4yaJ7LwR3gNOOzaDR9H1QXgihTmwyKT3/G5oY7o8jyKJWdHGZ0iUBM7gmTxegyJpL/yydBGp+0KzjZkiURjfdkXWCb0JMnqYxDrHFB4Q2OEfn3ENtDbg8bk11ShN4aGibme04LGN0YUS1TWw65AAGY0o6thRWrzeCsz1t+Bp/turY1328LdXfbSJNEWtXesJ9RWX/YVOOKeIrhcfimeSiQjj564/ibeucLre6fNivMqhSAQOeMU2PLlVnZHjs5vgrs8RSBPLv8VCEh9d4aRwoO2jeUYxISBx5thHZJ4cr0gcIndCdUK10lYmFJGR45ostFuZ6LRKyj+tLw6MwU5BYKg0VU6kLV9TjQluLpGaFBEpN+G81RjvEFMCrysooDoe4CO1ZxBUZ+/E0QJRuu6Od0SE0r8JYTWUs0D/V+ZgQXWWPCbH6o0i8tL4ZCqa9mtZixYWYkNkf+b9/nrgFj1P7sAJ8F7jjN7JAPhaBHpKDNiUTnGm93wNBSqN1S/uTyAZZkRRlCLN5wzeS3eDWPcq6TT8JSq5pWn/ZJUY9krsUkpTBHJWd5eO1o/w1DAjMZXtdfBdmiqxRF/nJHnlIPlUBMpDYMsGWnh9yta5oXx1ffmuoQ5qTBQFIvoK+1XNTYuykZzlrS9lqSoyhOtrKY3tV3gZgdHXOl03bTkr0Yu4cpbG851U3E3TeCGBlWktAi2bA/yQlkLmj8SG0xBoKCRTBLK0ZW2AobwUTjesryX84cSuGbg/gcix+ixFYBZvEWjh623Ek9Aymuf7XTipBbYmUn3Nymp50/iEptdS0CFbZ3enCQLfM+S1U1jXgET5Gz4H7kKgk5bQQT1+Fl8dR9IZ8m8QVLMknLUiLXc/Gb0MkZ8vURChz59/AWoE9J6VnrpmAAAAAElFTkSuQmCC);
   background-size: calc(var(--c) * 5) calc(var(--c) * 2); 
   background-repeat: no-repeat;
   image-rendering: pixelated;
   animation: forwards create 0.4s;
+  --y: 0;
+  background-position: 0 var(--y);
+}
+
+.block.clay {
+  --y: calc(var(--c) * -1);
 }
 
 @keyframes create {
@@ -138,18 +145,18 @@ canvas {
   }
 }
 
-.sphere:after {
+.block:after {
   position: absolute;
   content: '';
   width: var(--c);
   height: var(--c);
   background-size: var(--c);
   image-rendering: pixelated;
-  animation: sphere-puff forwards 0.5s;
+  animation: block-puff forwards 0.5s;
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAGZJREFUOE9jZKAQMBKr//+W0/9hahl9TOH6iDIAWTO6IQQNwKYZ2ZBBZgDMuciBBHIuUWGArgifIRixgCug0A3BFuXgQKTYAGyGEGM7SB9KNOIKRGQL0A0mmA4IuY4+BlDsBXw5FgArM0QRVPp3iAAAAABJRU5ErkJggg==);
 }
 
-@keyframes sphere-puff {
+@keyframes block-puff {
   0% {
     opacity: 1;
     transform: scale(0);
@@ -163,20 +170,20 @@ canvas {
   }
 }
 
-.sphere.cracked {
-  background-position: calc(var(--c) * -1) 0;
+.block.cracked {
+  background-position: calc(var(--c) * -1) var(--y);
 }
 
-.sphere.cracked-more {
-  background-position: calc(var(--c) * -2) 0;
+.block.cracked-more {
+  background-position: calc(var(--c) * -2) var(--y);
 }
 
-.sphere.cracked-even-more {
-  background-position: calc(var(--c) * -3) 0;
+.block.cracked-even-more {
+  background-position: calc(var(--c) * -3) var(--y);
 }
 
-.sphere.shattered {
-  background-position: calc(var(--c) * -4) 0;
+.block.shattered {
+  background-position: calc(var(--c) * -4) var(--y);
   animation: disappear forwards 0.6s;
 }
 
