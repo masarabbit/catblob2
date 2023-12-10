@@ -2,8 +2,6 @@
 
 function init() {  
   
-
-  // TODO when dogs are in the samme spot, make them move differently?
   // TODO increment scores, and unlock new features (or make map bigger)
   // TODO add more blocks to modules
 
@@ -271,23 +269,23 @@ function init() {
   }
 
   const dogBlobObj = {
-    id: null,
     pos: 100,
     d: 44,
     chaseTarget: player,
     // altTarget: 0,
     attackDir: null,
     isHunting: true,
+    type: 'dogBlob'
   }
 
   const mouseBlobObj = {
-    id: 'mouse',
     pos: 200,
     d: 36,
     chaseTarget: null,
     runAwayTarget: player,
     isHunting: false,
     isFleeing: true,
+    type: 'mouseBlob',
   }
 
   const settings = {
@@ -461,7 +459,7 @@ function init() {
 
     // remove dogblob and mouseblob, add place catblob in random position
     const startModuleIndex = randomN(modulesToDraw.length - 1)
-    modulesToDraw[startModuleIndex] = modulesToDraw[startModuleIndex].map(t => t === '$' ? '$' : 'x')
+    modulesToDraw[startModuleIndex] = modulesToDraw[startModuleIndex].map(t => ['$', 'b'].includes(t) ? t : 'x')
     const startPos = randomItem(modulesToDraw[startModuleIndex].map((t, i) => {
       return (t === 'x' && ![0, 9].includes(i % 10) && ![0, 9].includes(Math.floor(i / 10))) && i 
     }).filter(t => t))
@@ -595,6 +593,12 @@ function init() {
 
   const distance = (a, b) => Math.abs(mapX(a) - mapX(b)) + Math.abs(mapY(a) - mapY(b))
 
+  const moveNpcToRandomPos = npc => {
+    const { column: w } = settings.map
+    const altPos = randomItem([npc.pos + w, npc.pos - w, npc.pos + 1, npc.pos - 1].filter(pos => noWall({ pos, actor: npc })))
+    if (altPos) moveNpc({ npc, newPos: altPos })
+  }
+
   const chainMotion = ({ npc, route, index }) => {
     const newPos = route[index]
     const { column } = settings.map
@@ -645,11 +649,22 @@ function init() {
       return
     } 
 
-    moveNpc({ npc, newPos })
+    // ensure npc only moves to valid position, and if they end up in the same pos as another npc, 
+    // enable them to move to random position
+    if (newPos) {
+      moveNpc({ npc, newPos })
+    } else {
+      moveNpcToRandomPos(npc)
+      clearTimeout(npc.motionTimer)
+      return
+    }
+
     if (isGamePaused() || npc.pos === npc.goal || index + 1 >= route.length) {      
       clearTimeout(npc.motionTimer)
       // console.log('goal')
       // triggerNpcMotion(npc)
+    } else if (settings.npcs.some(n => n.id !== npc.id && n.type === 'dogBlob' && n.pos === npc.pos) ){ 
+      moveNpcToRandomPos(npc)
     } else {
       npc.motionTimer = setTimeout(()=>{
         chainMotion({ npc, route, index: index + 1 })
@@ -709,7 +724,7 @@ function init() {
     motion = motion.filter(pos => noWall({ pos: npc.pos + pos, actor: npc }))
 
     // TODO need something here to ensure there's way out?
-    if (motion.length) moveNpc({ npc, newPos:npc.pos + (motion[Math.floor(Math.random() * motion.length)]) })
+    if (motion.length) moveNpc({ npc, newPos:npc.pos + randomItem(motion) })
   }
 
   const decideNextMove = ({ actor, current, count }) =>{
@@ -748,7 +763,7 @@ function init() {
   }
 
   const triggerNpcMotion = npc => {
-    if (!settings.isWindowActive) return
+    if (!settings.isWindowActive || !npc) return
     clearTimeout(npc.motionTimer)
     const target = npc.chaseTarget
     if (npc.pause || npc.pos === target?.pos) return
@@ -762,7 +777,7 @@ function init() {
   const noWall = ({ pos, ignoreBlock, actor }) =>{    
     const { map: { data, blocks, column: w, d }, npcs } = settings
     if (!data[pos] || (!ignoreBlock && blocks[pos]) || player.pos === pos) return false
-    if (actor !== player && npcs.filter(n => !n.isFleeing).some(npc => [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos -d, npc.pos].includes(pos))) return false
+    if (actor !== player && npcs.some(npc => npc.type === 'dogBlob' && [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos -d, npc.pos].includes(pos))) return false
     return settings.map.data[pos] !== '$'
   }
 
@@ -945,6 +960,7 @@ function init() {
         id: `dog_${i}`,
         el: Object.assign(document.createElement('div'), 
         { 
+          id: `dog_${i}`,
           className: 'npc sprite-container',
           innerHTML: '<div class="overflow-hidden"><div class="dogblob sprite"></div></div>'
         }),
@@ -963,6 +979,7 @@ function init() {
         id: `mouse_${i}`,
         el: Object.assign(document.createElement('div'), 
         { 
+          id: `mouse_${i}`,
           className: 'npc sprite-container',
           innerHTML: '<div class="overflow-hidden small"><div class="mouseblob sprite"></div></div>'
         }),
@@ -1142,7 +1159,6 @@ function init() {
     elements.startBtn.blur()
     elements.message.classList.remove('hide')
     clearInterval(settings.time.timer)
-    // TODO add score
   }
   const isGamePaused = () => {
     return settings.demoMode || !player.life.point || player.mouseBlobCaught.no === player.mouseBlobCaught.total || !settings.isWindowActive
