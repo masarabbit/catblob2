@@ -4,6 +4,7 @@ function init() {
   
   // TODO increment scores, and unlock new features (or make map bigger)
   // TODO add more blocks to modules
+  // TODO add start and end, how to play
 
   //? refactor to simplify functions?
   //? improve dogBlob chasing logic
