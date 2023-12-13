@@ -570,7 +570,7 @@ function init() {
         const y = mapY(t) * d
         const type = randomN(20) === 20 ? 'strawberry' : 'blue'
         const item = {
-          el:  Object.assign(document.createElement('div'), { className: `${type}-donut item` }),
+          el: Object.assign(document.createElement('div'), { className: `${type}-donut item` }),
           x, y,
           type
         }
@@ -711,7 +711,7 @@ function init() {
         dir: -1,
       },
       {
-        arr:[p - w, p - (2 * w), p - (3 * w), p - w - 1, p - w + 1],
+        arr: [p - w, p - (2 * w), p - (3 * w), p - w - 1, p - w + 1],
         dir: -w,
       },
       {
@@ -725,7 +725,7 @@ function init() {
     motion = motion.filter(pos => noWall({ pos: npc.pos + pos, actor: npc }))
 
     // TODO need something here to ensure there's way out?
-    if (motion.length) moveNpc({ npc, newPos:npc.pos + randomItem(motion) })
+    if (motion.length) moveNpc({ npc, newPos: npc.pos + randomItem(motion) })
   }
 
   const decideNextMove = ({ actor, current, count }) =>{
@@ -737,7 +737,7 @@ function init() {
     if (possibleDestination.length && !possibleDestination.some(c => c === goal)) {
       const mapInfo = []
       possibleDestination.forEach(cell =>{  
-        if (noWall({ pos:cell, ignoreBlock: true, actor }) && !searchMemory[cell].searched && cell !== pos) {
+        if (noWall({ pos: cell, ignoreBlock: true, actor }) && !searchMemory[cell].searched && cell !== pos) {
           mapInfo.push({ 
             cell, 
             prev: current, 
@@ -778,7 +778,7 @@ function init() {
   const noWall = ({ pos, ignoreBlock, actor }) =>{    
     const { map: { data, blocks, column: w, d }, npcs } = settings
     if (!data[pos] || (!ignoreBlock && blocks[pos]) || player.pos === pos) return false
-    if (actor !== player && npcs.some(npc => npc.type === 'dogBlob' && [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos -d, npc.pos].includes(pos))) return false
+    if (actor !== player && npcs.some(npc => npc.type === 'dogBlob' && [npc.pos + w, npc.pos - w, npc.pos + d, npc.pos - d, npc.pos].includes(pos))) return false
     return settings.map.data[pos] !== '$'
   }
 
@@ -874,7 +874,7 @@ function init() {
       settings.map.blocks[index] = block
       settings.mapImage.el.appendChild(block.el)
     } else if (settings.map.blocks[index]) {
-      const {el} = settings.map.blocks[index]
+      const { el } = settings.map.blocks[index]
       el.classList.add('shattered')
       settings.pauseBlockCreation = true
       setTimeout(()=> {
@@ -890,15 +890,15 @@ function init() {
   const moveCursor = e => {
     const { d, column } = settings.map
     const { left, top } = settings.mapImage.canvas.getBoundingClientRect()
-      settings.cursor.x = nearestN(e.pageX - left - window.scrollX, d) - d + left + window.scrollX
-      settings.cursor.y = nearestN(e.pageY - top - window.scrollY, d) - d + top + window.scrollY
-      settings.drawPos = {
-        x: settings.cursor.x - left + window.scrollX,
-        y: settings.cursor.y - top + window.scrollY
-      }
-      settings.cursor.index = (((settings.drawPos.y) / d) * column) + settings.drawPos.x / d
-      setStyles(settings.cursor)
-      settings.cursor.el.classList[noWall({ pos: settings.cursor.index }) ? 'remove' : 'add']('d-none')
+    settings.cursor.x = nearestN(e.pageX - left - window.scrollX, d) - d + left + window.scrollX
+    settings.cursor.y = nearestN(e.pageY - top - window.scrollY, d) - d + top + window.scrollY
+    settings.drawPos = {
+      x: settings.cursor.x - left + window.scrollX,
+      y: settings.cursor.y - top + window.scrollY
+    }
+    settings.cursor.index = (((settings.drawPos.y) / d) * column) + settings.drawPos.x / d
+    setStyles(settings.cursor)
+    settings.cursor.el.classList[noWall({ pos: settings.cursor.index }) ? 'remove' : 'add']('d-none')
   }
 
   const updateMouseBlobCounter = () => {
@@ -908,6 +908,7 @@ function init() {
   }
 
   const updateTime = ({ difference }) => {
+    if (!settings.time.no) return
     settings.time.no += difference
     if (settings.time.no > 99) settings.time.no = 99 
     const { no } = settings.time
@@ -960,11 +961,11 @@ function init() {
         ...dogBlobObj,
         id: `dog_${i}`,
         el: Object.assign(document.createElement('div'), 
-        { 
-          id: `dog_${i}`,
-          className: 'npc sprite-container',
-          innerHTML: '<div class="overflow-hidden"><div class="dogblob sprite"></div></div>'
-        }),
+          { 
+            id: `dog_${i}`,
+            className: 'npc sprite-container',
+            innerHTML: '<div class="overflow-hidden"><div class="dogblob sprite"></div></div>'
+          }),
         motionTimer: null,
         searchMemory: null,
         route: [],
@@ -979,11 +980,11 @@ function init() {
         ...mouseBlobObj,
         id: `mouse_${i}`,
         el: Object.assign(document.createElement('div'), 
-        { 
-          id: `mouse_${i}`,
-          className: 'npc sprite-container',
-          innerHTML: '<div class="overflow-hidden small"><div class="mouseblob sprite"></div></div>'
-        }),
+          { 
+            id: `mouse_${i}`,
+            className: 'npc sprite-container',
+            innerHTML: '<div class="overflow-hidden small"><div class="mouseblob sprite"></div></div>'
+          }),
         pos
       }
     })
@@ -999,7 +1000,7 @@ function init() {
     settings.npcs.forEach(npc => {
       const { pos } = npc
       npc.sprite = npc.el.childNodes[0].childNodes[0]
-      moveNpc({ npc, newPos:pos })
+      moveNpc({ npc, newPos: pos })
       settings.mapImage.el.appendChild(npc.el)
       triggerNpcMotion(npc)
     })
@@ -1012,7 +1013,7 @@ function init() {
         marker.classList[i < player.life.point ? 'remove' : 'add']('damage')
       })
     }
-    }
+  }
 
 
   const damagePlayer = npc => {
@@ -1020,7 +1021,7 @@ function init() {
     npc.el.classList.add('attacking')
     npc.attackDir = (Math.abs(npc.pos - player.pos) === 1 || ['left', 'right'].includes(npc.facingDirection)) ? 'horizontal' : 'vertical'
     npc.el.classList.add(npc.attackDir)
-    turnSprite({ actor: npc, newPos: player.pos})
+    turnSprite({ actor: npc, newPos: player.pos })
     setTimeout(()=> {
       if (npc.el) {
         npc.el.classList.remove('attacking')
