@@ -4,221 +4,64 @@ function init() {
   
   // TODO increment scores, and unlock new features (or make map bigger)
   // TODO add more blocks to modules
-  // TODO add start and end, how to play
 
-  //? refactor to simplify functions?
-  //? improve dogBlob chasing logic
-  //? improve mouseblob fleeing
 
 
   const tiles = [
-    {
-      id: 'h_edge',
-      criteria: ['xoxx']
-    },
-    {
-      id: 'h',
-      criteria: ['xoxo', 'ooxo']
-    },
-    {
-      id: 't_joint_down',
-      criteria: ['xooo','oooo'],
-      criteria2: ['xx']
-    },
-    {
-      id: 'h_edge_h',
-      criteria: ['xxxo']
-    },
-    {
-      id: 'v_up_edge',
-      criteria: ['xxox']
-    },
-    {
-      id: 'l_corner',
-      criteria: ['ooxx']
-    },
-    {
-      id: 'l_corner_h',
-      criteria: ['oxxo']
-    },
-    {
-      id: 'r_corner',
-      criteria: ['xoox'],
-      criteria2: ['xx','xo']
-    },
-    {
-      id: 'r_corner_h',
-      criteria: ['xxoo'],
-      criteria2: ['xx','ox']
-    },
-    {
-      id: 'v',
-      criteria: ['oxox']
-    },
-    {
-      id: 'dot',
-      criteria: ['xxxx']
-    },
-    {
-      id: 'v_down_edge',
-      criteria: ['oxxx']
-    },
-    {
-      id: 'block_edge',
-      criteria: ['ooox'],
-      criteria2: ['oo', 'ox']
-    },
-    {
-      id: 'block_edge_h',
-      criteria: ['oxoo'],
-      criteria2: ['oo','xo']
-    },
-    {
-      id: 'block',
-      criteria: ['oooo','xooo'],
-      criteria2: ['oo']
-    },
-    {
-      id: 'block_corner',
-      criteria: ['xoox'],
-      criteria2: ['oo','ox']
-    },
-    {
-      id: 'block_corner_h',
-      criteria: ['xxoo'],
-      criteria2: ['xo','oo']
-    },
-    {
-      id: 'block_r_joint',
-      criteria: ['oooo','xooo'],
-      criteria2: ['xo']
-    },
-    {
-      id: 'block_r_joint_h',
-      criteria: ['oooo','xooo'],
-      criteria2: ['ox']
-    },
-    {
-      id: 'block_edge_r_joint',
-      criteria: ['ooox'],
-      criteria2: ['xo','xx']
-    },
-    {
-      id: 'block_edge_r_joint_h',
-      criteria: ['oxoo'],
-      criteria2: ['ox','xx']
-    },
-    {
-      id: 'top_left_corner',
-    },
-    {
-      id: 'top_right_corner',
-    },
-    {
-      id: 'bottom_left_corner',
-    },
-    {
-      id: 'bottom_right_corner',
-    },
-    {
-      id: 'top_dot',
-    },
-    {
-      id: 'top_dot_h',
-    },
-    {
-      id: 'bottom_dot',
-    },
-    {
-      id: 'bottom_dot_h',
-    },
-    {
-      id: 'floor',
-    },
+    { id: 'h_edge', criteria: ['xoxx'] },
+    { id: 'h', criteria: ['xoxo', 'ooxo'] },
+    { id: 't_joint_down', criteria: ['xooo','oooo'], criteria2: ['xx'] },
+    { id: 'h_edge_h', criteria: ['xxxo'] },
+    { id: 'v_up_edge', criteria: ['xxox'] },
+    { id: 'l_corner', criteria: ['ooxx'] },
+    { id: 'l_corner_h', criteria: ['oxxo'] },
+    { id: 'r_corner', criteria: ['xoox'], criteria2: ['xx','xo'] },
+    { id: 'r_corner_h', criteria: ['xxoo'], criteria2: ['xx','ox'] },
+    { id: 'v', criteria: ['oxox'] },
+    { id: 'dot', criteria: ['xxxx'] },
+    { id: 'v_down_edge', criteria: ['oxxx'] },
+    { id: 'block_edge', criteria: ['ooox'], criteria2: ['oo', 'ox'] },
+    { id: 'block_edge_h', criteria: ['oxoo'], criteria2: ['oo','xo'] },
+    { id: 'block', criteria: ['oooo','xooo'], criteria2: ['oo'] },
+    { id: 'block_corner', criteria: ['xoox'], criteria2: ['oo','ox'] },
+    { id: 'block_corner_h', criteria: ['xxoo'], criteria2: ['xo','oo'] },
+    { id: 'block_r_joint', criteria: ['oooo','xooo'], criteria2: ['xo'] },
+    { id: 'block_r_joint_h', criteria: ['oooo','xooo'], criteria2: ['ox'] },
+    { id: 'block_edge_r_joint', criteria: ['ooox'], criteria2: ['xo','xx'] },
+    { id: 'block_edge_r_joint_h', criteria: ['oxoo'], criteria2: ['ox','xx'] },
+    { id: 'top_left_corner', },
+    { id: 'top_right_corner', },
+    { id: 'bottom_left_corner', },
+    { id: 'bottom_right_corner', },
+    { id: 'top_dot', },
+    { id: 'top_dot_h', },
+    { id: 'bottom_dot', },
+    { id: 'bottom_dot_h', },
+    { id: 'floor', },
   ]
 
   const tileModules = {
-    surprise_mark: {
-      tiles: '5,$5,12,$2,8,$1,d1,12,$1,3,$1,5,$1,2,$2,8,$2,5,$1,2,$2,7,m1,$1,5,$5',
-    },
-    cyclone: {
-      tiles: '9,$1,3,d1,8,$1,2,$3,4,$1,9,$1,1,$2,8,$2,1,$1,8,m1,$1,2,$5,2,$1,11,$1,9,$1',
-    },
-    eye: {
-      tiles: '$2,6,$3,8,$1,2,d1,4,m1,6,$2,7,$4,6,$4,7,$2,6,m1,4,d1,2,$1,8,$3,6,$2'
-    },
-    broken_flag: {
-      tiles: '21,$4,7,$1,m1,1,$1,2,d1,22,$1,2,$1,2,$1,3,$1,3,$4,2,$1,1,m1,7,$1,8'
-    },
-    dots: {
-      tiles: '1,$1,2,$1,2,$1,20,d1,1,$1,2,$1,2,$1,2,$1,21,$1,2,$1,2,$1,4,m1,17,$1,2,$1,2,$1,2,$1'
-    },
-    vertical_river: {
-      tiles: '17,$1,6,d1,2,$1,4,$1,4,$1,3,$2,1,$1,2,$1,3,$1,2,$2,1,$1,6,$2,5,$1,2,$2,1,m1,6,$1,15'
-    },
-    target: {
-      tiles: '15,d1,6,$3,1,$2,4,$1,5,$1,1,$1,7,$1,1,$1,3,m1,1,m1,5,$1,9,$2,4,$1,3,$3,1,$3,11'
-    },
-    r: {
-      tiles: '18,d1,4,$2,1,$2,4,$6,4,$5,5,$3,7,$2,1,m1,6,$3,8,$2,7,$3,5'
-    },
-    s: {
-      tiles: '23,$4,5,$8,2,$2,4,m1,4,$4,9,$2,2,$1,1,$5,7,d1,15'
-    },
-    dash_dot_dot_dash: {
-      tiles: '20,$5,5,$5,2,$1,d1,1,$5,21,$4,1,$1,1,m1,2,$4,20'
-    },
-    i: {
-      tiles: '12,d1,12,$2,7,$3,7,$2,m1,6,$4,6,$4,6,m1,$3,6,$4,6,$3,4'
-    },
-    random1: {
-      tiles: '$4,6,$2,5,$2,2,$2,3,$2,6,d1,5,$2,6,$5,4,$2,2,$1,9,m1,1,$1,3,m1,$1,5,$1,14,$1'
-    },
-    random2: {
-      tiles: '1,$2,1,$1,4,$1,1,$2,12,$3,4,d1,2,$1,8,$2,1,$1,2,$1,5,$1,5,$3,2,$3,1,m1,1,$1,2,m1,2,$1,2,$1,1,$1,4,$1,10'
-    },
-    ya: {
-      tiles: '23,$1,1,d1,1,$1,4,$6,4,$6,5,$2,1,$2,5,$2,1,$2,2,$1,2,$2,5,$1,2,m1,6,$1,6,$3'
-    },
-    random3: {
-      tiles: '1,$2,3,$1,1,$2,9,$1,2,$1,1,$2,4,$1,1,$2,1,$1,6,$1,4,d1,4,$1,1,m1,8,$1,3,$1,3,$1,1,$2,3,m1,2,$1,14,$1,3'
-    },
-    random4: {
-      tiles: '$1,4,$1,4,$2,5,$1,6,$1,8,$1,4,$1,1,$2,4,d1,2,$1,11,m1,7,$1,3,$1,1,$3,1,$3,1,$4,m1,1,$1,5,$3,2'
-    },
-    target2: {
-      tiles: '12,$3,1,$3,3,$1,11,$1,3,$1,2,d1,2,$3,5,$1,1,$1,m1,6,$1,5,$1,4,$2,1,$2,2,$1,9,$1,9'
-    },
-    random5: {
-      tiles: '8,$1,9,$1,2,$2,2,d1,7,$1,2,$3,4,$1,7,$1,3,$1,1,$1,5,m1,2,$2,8,$1,4,$2,2,$1,1,$1,12'
-    },
-    random6: {
-      tiles: '5,$1,5,$1,6,m1,1,$2,1,d1,6,$2,4,$1,2,$1,3,$1,6,$1,2,$4,1,$2,2,m1,3,$2,5,$1,1,$1,3,$3,5,$6,7'
-    },
-    block: {
-      tiles: '18,d1,3,b6,4,b6,4,b2,1,m1,b2,4,b2,m1,1,b2,4,b6,4,b6,3,d1,18'
-    },
-    block2: {
-      tiles: '11,b8,2,b8,2,b2,m1,1,b4,2,b2,2,b4,2,b8,2,b5,2,b1,2,b5,1,d1,b1,2,b8,11'
-    },
-    // {
-    //   id: '',
-    //   tiles: ''
-    // },
-    // {
-    //   id: '',
-    //   tiles: ''
-    // },
-    // {
-    //   id: '',
-    //   tiles: ''
-    // },
-    // TODO this one isn't very good
-    // {
-    //   id: 'diagonal',
-    //   tiles: '$2,6,$4,7,$1,2,$1,10,$1,10,$1,10,$1,10,$1,10,$1,2,$1,7,$4,6,$2'
-    // }, 
-
+    surprise_mark: '5,$5,12,$2,8,$1,d1,12,$1,3,$1,5,$1,2,$2,8,$2,5,$1,2,$2,7,m1,$1,5,$5',
+    cyclone: '9,$1,3,d1,8,$1,2,$3,4,$1,9,$1,1,$2,8,$2,1,$1,8,m1,$1,2,$5,2,$1,11,$1,9,$1',
+    eye: '$2,6,$3,8,$1,2,d1,4,m1,6,$2,7,$4,6,$4,7,$2,6,m1,4,d1,2,$1,8,$3,6,$2',
+    broken_flag: '21,$4,7,$1,m1,1,$1,2,d1,22,$1,2,$1,2,$1,3,$1,3,$4,2,$1,1,m1,7,$1,8',
+    dots: '1,$1,2,$1,2,$1,20,d1,1,$1,2,$1,2,$1,2,$1,21,$1,2,$1,2,$1,4,m1,17,$1,2,$1,2,$1,2,$1',
+    vertical_river: '17,$1,6,d1,2,$1,4,$1,4,$1,3,$2,1,$1,2,$1,3,$1,2,$2,1,$1,6,$2,5,$1,2,$2,1,m1,6,$1,15',
+    target: '15,d1,6,$3,1,$2,4,$1,5,$1,1,$1,7,$1,1,$1,3,m1,1,m1,5,$1,9,$2,4,$1,3,$3,1,$3,11',
+    r: '18,d1,4,$2,1,$2,4,$6,4,$5,5,$3,7,$2,1,m1,6,$3,8,$2,7,$3,5',
+    s: '23,$4,5,$8,2,$2,4,m1,4,$4,9,$2,2,$1,1,$5,7,d1,15',
+    dash_dot_dot_dash: '20,$5,5,$5,2,$1,d1,1,$5,21,$4,1,$1,1,m1,2,$4,20',
+    i: '12,d1,12,$2,7,$3,7,$2,m1,6,$4,6,$4,6,m1,$3,6,$4,6,$3,4',
+    random1: '$4,6,$2,5,$2,2,$2,3,$2,6,d1,5,$2,6,$5,4,$2,2,$1,9,m1,1,$1,3,m1,$1,5,$1,14,$1',
+    random2: '1,$2,1,$1,4,$1,1,$2,12,$3,4,d1,2,$1,8,$2,1,$1,2,$1,5,$1,5,$3,2,$3,1,m1,1,$1,2,m1,2,$1,2,$1,1,$1,4,$1,10',
+    ya: '23,$1,1,d1,1,$1,4,$6,4,$6,5,$2,1,$2,5,$2,1,$2,2,$1,2,$2,5,$1,2,m1,6,$1,6,$3',
+    random:  '1,$2,3,$1,1,$2,9,$1,2,$1,1,$2,4,$1,1,$2,1,$1,6,$1,4,d1,4,$1,1,m1,8,$1,3,$1,3,$1,1,$2,3,m1,2,$1,14,$1,3',
+    random4: '$1,4,$1,4,$2,5,$1,6,$1,8,$1,4,$1,1,$2,4,d1,2,$1,11,m1,7,$1,3,$1,1,$3,1,$3,1,$4,m1,1,$1,5,$3,2',
+    target2: '12,$3,1,$3,3,$1,11,$1,3,$1,2,d1,2,$3,5,$1,1,$1,m1,6,$1,5,$1,4,$2,1,$2,2,$1,9,$1,9',
+    random5: '8,$1,9,$1,2,$2,2,d1,7,$1,2,$3,4,$1,7,$1,3,$1,1,$1,5,m1,2,$2,8,$1,4,$2,2,$1,1,$1,12',
+    random6: '5,$1,5,$1,6,m1,1,$2,1,d1,6,$2,4,$1,2,$1,3,$1,6,$1,2,$4,1,$2,2,m1,3,$2,5,$1,1,$1,3,$3,5,$6,7',
+    block: '18,d1,3,b6,4,b6,4,b2,1,m1,b2,4,b2,m1,1,b2,4,b6,4,b6,3,d1,18',
+    block2: '11,b8,2,b8,2,b2,m1,1,b4,2,b2,2,b4,2,b8,2,b5,2,b1,2,b5,1,d1,b1,2,b8,11',
   }
   
   const elements = {
@@ -267,13 +110,13 @@ function init() {
     delay: 10,
     pause: false,
     facingDirection: '',
+    // prevPos: null,
   }
 
   const dogBlobObj = {
     pos: 100,
     d: 44,
     chaseTarget: player,
-    // altTarget: 0,
     attackDir: null,
     isHunting: true,
     type: 'dogBlob'
@@ -295,6 +138,7 @@ function init() {
     npcMotioninterval: null,
     isWindowActive: true,
     yOffset: 0,
+    offsetPos: { x: 0, y: 0 },
     npcs: [],
     items: [],
     mapImage: {
@@ -327,6 +171,7 @@ function init() {
     demoMode: true,
     tilesWithNoWalls: [],
     pauseBlockCreation: false,
+    score: 0,
   }
 
   const control = {
@@ -336,7 +181,7 @@ function init() {
     direction: null,
     timer: null,
     pos: { x: 0, y: 0 },
-    movePos: { x: 0, y: 0 }
+    movePos: { x: 0, y: 0 },
   }
 
   const decompress = arr =>{
@@ -366,8 +211,6 @@ function init() {
   }
   const mapX = i => i % settings.map.column
   const mapY = i => Math.floor(i / settings.map.column)
-  const getMapCoord = para => (Math.floor(settings.map[para] / 2) - 1) * settings.map.d
-  const clampMax = (n, max) =>  n < max ? n : max
   const isNo = x => typeof x === 'number'
   const px = n => `${n}px`
   const setPos = ({ el, x, y }) => Object.assign(el.style, { left: `${x}px`, top: `${y}px` })
@@ -385,22 +228,27 @@ function init() {
   const randomItem = arr => arr[randomN(arr.length - 1)]
   const zero = no => no < 10 ? '0' : ''
 
-  const adjustMapWidthAndHeight = () =>{
-    const { offsetWidth: w, offsetHeight: h } = elements.wrapper
-    const { d } = settings.map
-  
-    settings.map.w = 2 * Math.floor((clampMax(w, 800) / d) / 2)
-    settings.map.h = 2 * Math.floor((clampMax(h, 600) / d) / 2)
-    setStyles(settings.map)
-  
-    const x = getMapCoord('w')
-    const y = getMapCoord('h')
-    
-    setPos({ el: player.el, x, y })
 
-    // adjust mapPosition
-    settings.mapImage.x = mapX(player.pos) * -d + x
-    settings.mapImage.y = mapY(player.pos) * -d + y
+
+
+const updateOffset = () => {
+  const { offsetWidth: w, offsetHeight: h } = elements.wrapper
+  settings.offsetPos = {
+    x: (w / 2) - 16,
+    y: (h / 2) - 16,
+  }
+}
+
+const positionMapImage = () => {
+  const { offsetPos: { x, y }, map: { d } } = settings
+  settings.mapImage.x = x - (mapX(player.pos) * d)
+  settings.mapImage.y = y - (mapY(player.pos) * d)
+}
+
+  const adjustMapWidthAndHeight = () =>{
+    updateOffset()
+    positionMapImage()
+
     setStyles(settings.mapImage)
     
     settings.mapImage.el.classList.add('transition')
@@ -432,31 +280,15 @@ function init() {
       d, d)
   }
   
-  // const randomModule = () => {
-  //   return new Array(100).fill('').map((_, i) => {
-  //     return (i < 30) ? '$' : 'x'
-  //   }).sort(() => Math.random() - 0.5)
-  // } 
-
   
   const setupMap = () => {
     const { d, column, row } = settings.map
     const mapLength = column * row
-    // const wallPercentage = Math.round(mapLength * 0.2)
-    // settings.map.data = new Array(mapLength).fill('').map((_, i) => {
-    //   return (i < wallPercentage) ? '$' : 'x'
-    // }).sort(() => Math.random() - 0.5)
-    // TODO we can decompress at the start so we don't need to do it each time we setupMap
-    // const mapSeed = new Array(column * row / 100).fill('').map(()=> tileModules[randomItem(Object.keys(tileModules))])
     const mapSeed = new Array(column * row / 100).fill('').map(()=> {
       const randomKey = randomItem(Object.keys(tileModules))
-      console.log('maps', randomKey)
       return tileModules[randomKey]
     })
-    const modulesToDraw = mapSeed.map(seed=> decompress(seed.tiles))
-    // modulesToDraw.length = modulesToDraw.length - 1
-    // const test = randomModule()
-    // modulesToDraw.push(test)
+    const modulesToDraw = mapSeed.map(seed=> decompress(seed))
 
     // remove dogblob and mouseblob, add place catblob in random position
     const startModuleIndex = randomN(modulesToDraw.length - 1)
@@ -506,8 +338,7 @@ function init() {
       })
 
       if (!matchingTile.id) console.log(criteria, criteria2)
-
-      if (t === 'c') player.pos = i
+      if (t === 'c')  player.pos = i
 
       else if (t === 'b' || (t === '$' && matchingTile.id === 'dot' && randomN(10) === 10)) {
         const x = mapX(i) * d
@@ -637,7 +468,7 @@ function init() {
               settings.map.blocks[wallCloseBy] = null
             }
           }
-        }, 400)
+        }, 300)
         npc.pause = true
         return
       }
@@ -662,14 +493,12 @@ function init() {
 
     if (isGamePaused() || npc.pos === npc.goal || index + 1 >= route.length) {      
       clearTimeout(npc.motionTimer)
-      // console.log('goal')
-      // triggerNpcMotion(npc)
     } else if (settings.npcs.some(n => n.id !== npc.id && n.type === 'dogBlob' && n.pos === npc.pos) ){ 
       moveNpcToRandomPos(npc)
     } else {
       npc.motionTimer = setTimeout(()=>{
         chainMotion({ npc, route, index: index + 1 })
-      }, 400)
+      }, 300)
     }
   }
 
@@ -771,6 +600,14 @@ function init() {
     npc.searchMemory = defaultPathMemory(settings.map.data)
     npc.carryOn = true
     if (target) npc.goal = target.pos 
+    // {
+    //   const { pos } = npc.chaseTarget
+    //   if (distanceBetween(npc, { x: mapX(pos) * 32, y: mapY(pos) * 32 }) > (32 * 6)) {
+    //     npc.goal = target.pos 
+    //     npc.prevPos = target.pos 
+    //   }
+    //   else npc.goal = npc.prevPos
+    // }
     decideNextMove({ actor: npc, current: npc.pos })
   }
   
@@ -820,8 +657,10 @@ function init() {
     turnSprite({ actor: player, diff })
     if (actor === player && noWall({ pos: actor.pos + diff, actor })) {
       settings.mapImage[para] += dist
+      // positionMapImage()
       setStyles(settings.mapImage)
       player.pos += diff
+      positionMapImage()
       // elements.indicator.innerHTML = `pos:${player.pos} dataX:${mapX(player.pos)} dataY:${mapY(player.pos)}`
       if (!player.invincible) {
         settings.items.forEach((item, i) => {
@@ -833,7 +672,7 @@ function init() {
               player.itemScore += 200
             }
             if (item.type === 'blue') {
-              updateTime({ difference: 10 })
+              updateTime({ difference: 5 })
               player.itemScore += 100
             }
 
@@ -1142,12 +981,12 @@ function init() {
   }
 
   const endGame = ({ win }) => {
-    const { no: time } = settings.time
-    const message = win ? 'complete!!' : time ? 'game over!' : 'time up!'
-    // const score = player.life.point * 200 + player.mouseBlobCaught.no * 100 + settings.time.no * 10
+    const { time: { no: t }, score } = settings
+    const message = win ? 'complete!!' : t ? 'game over!' : 'time up!'
     const mouseBlobScore = player.mouseBlobCaught.no * 100
     const lifeScore = player.life.point * 200
-    const timeScore = time * 10
+    const timeScore = t * 10
+    const newScore = mouseBlobScore + lifeScore + timeScore + player.itemScore
     elements.message.innerHTML = `
       <h1 class="uppercase">${message}</h1>
       <h2> - score - </h2>
@@ -1155,8 +994,10 @@ function init() {
       <p>life bonus: ${lifeScore}</p> 
       <p>time bonus: ${timeScore}</p>
       <p>item bonus: ${player.itemScore}</p>
-      <h3 class="uppercase">total: ${mouseBlobScore + lifeScore + timeScore + player.itemScore}</h3>
+      <p>past score: ${score}</p>
+      <h3 class="uppercase">total: ${newScore + score}</h3>
     `
+    settings.score = newScore
     elements.startBtn.innerHTML = 'play again'
     elements.startBtn.blur()
     elements.message.classList.remove('hide')
@@ -1171,7 +1012,7 @@ function init() {
     setupMap()
     createNpcs()
     addNpcs()
-    settings.time.no = settings.map.data.length / 10
+    settings.time.no = settings.map.data.length / 8
     updateTime({ difference: 0 })
     triggerIntervals()
   }
@@ -1184,8 +1025,9 @@ function init() {
       settings.demoMode = false
     } else {
       settings.map.column = [10, 20, 30, 40][randomN(4) - 1]
-      settings.map.row = [10, 20, 30, 40][randomN(4) - 1]
-      // TODO mouse and dog number needs to be adjusted
+      settings.map.row = settings.map.column === 10 
+        ? [20, 30, 40][randomN(4) - 1] 
+        : [10, 20, 30, 40][randomN(4) - 1]
       clearInterval(settings.spriteInterval)
       clearInterval(settings.npcMotioninterval)
       settings.npcs.forEach(npc => {
