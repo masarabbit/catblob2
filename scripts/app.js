@@ -279,6 +279,19 @@ const positionMapImage = () => {
       x, y + offset,
       d, d)
   }
+
+  const placeSquareBlock = (x, y, i) => {
+    const block = {
+      el: Object.assign(document.createElement('div'), { 
+        className: 'block square',
+      }),
+      x, y,
+      state: 0
+    }
+    setPos(block)
+    settings.mapImage.el.appendChild(block.el)
+    settings.map.blocks[i] = block
+  }
   
   
   const setupMap = () => {
@@ -343,16 +356,7 @@ const positionMapImage = () => {
       else if (t === 'b' || (t === '$' && matchingTile.id === 'dot' && randomN(10) === 10)) {
         const x = mapX(i) * d
         const y = mapY(i) * d
-        const block = {
-          el: Object.assign(document.createElement('div'), { 
-            className: 'block clay',
-          }),
-          x, y,
-          state: 0
-        }
-        setPos(block)
-        settings.mapImage.el.appendChild(block.el)
-        settings.map.blocks[i] = block
+        placeSquareBlock(x, y, i)
         settings.map.data[i] = 'x'
       } else if (t === '$') {
         placeTile({
@@ -408,6 +412,7 @@ const positionMapImage = () => {
         setPos(item)
         settings.mapImage.el.appendChild(item.el)
         settings.items[t] = item
+        placeSquareBlock(x, y, t)
       } 
     })
 
