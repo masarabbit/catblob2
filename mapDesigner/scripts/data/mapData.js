@@ -144,6 +144,18 @@ const mapData =  {
     row: 10,
     walls: '',
   },
+  block: {
+    tiles: '18,d1,3,b6,4,b6,4,b2,1,m1,b2,4,b2,m1,1,b2,4,b6,4,b6,3,d1,18',
+    column: 10,
+    row: 10,
+    walls: '',
+  },
+  block2: {
+    tiles: '11,b8,2,b8,2,b2,m1,1,b4,2,b2,2,b4,2,b8,2,b5,2,b1,2,b5,1,d1,b1,2,b8,11',
+    column: 10,
+    row: 10,
+    walls: '',
+  },
 }
 
 export {

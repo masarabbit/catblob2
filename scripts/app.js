@@ -1,12 +1,8 @@
 
 
 function init() {  
+  // TODO add how to play
   
-  // TODO increment scores, and unlock new features (or make map bigger)
-  // TODO add more blocks to modules
-
-
-
   const tiles = [
     { id: 'h_edge', criteria: ['xoxx'] },
     { id: 'h', criteria: ['xoxo', 'ooxo'] },
@@ -40,8 +36,48 @@ function init() {
     { id: 'floor', },
   ]
 
+  const extraTileModules = [
+    {
+      score: 1000,
+      modules: {
+        random1: '$4,6,$2,5,$2,2,$2,3,$2,6,d1,5,$2,6,$5,4,$2,2,$1,9,m1,1,$1,3,m1,$1,5,$1,14,$1',
+        random2: '1,$2,1,$1,4,$1,1,$2,12,$3,4,d1,2,$1,8,$2,1,$1,2,$1,5,$1,5,$3,2,$3,1,m1,1,$1,2,m1,2,$1,2,$1,1,$1,4,$1,10',
+        random3: '1,$2,3,$1,1,$2,9,$1,2,$1,1,$2,4,$1,1,$2,1,$1,6,$1,4,d1,4,$1,1,m1,8,$1,3,$1,3,$1,1,$2,3,m1,2,$1,14,$1,3',
+        random4: '$1,4,$1,4,$2,5,$1,6,$1,8,$1,4,$1,1,$2,4,d1,2,$1,11,m1,7,$1,3,$1,1,$3,1,$3,1,$4,m1,1,$1,5,$3,2',
+        block2: '11,b8,2,b8,2,b2,m1,1,b4,2,b2,2,b4,2,b8,2,b5,2,b1,2,b5,1,d1,b1,2,b8,11',
+      },
+    },
+    {
+      score: 3000,
+      modules: {
+        random5: '8,$1,9,$1,2,$2,2,d1,7,$1,2,$3,4,$1,7,$1,3,$1,1,$1,5,m1,2,$2,8,$1,4,$2,2,$1,1,$1,12',
+        random6: '5,$1,5,$1,6,m1,1,$2,1,d1,6,$2,4,$1,2,$1,3,$1,6,$1,2,$4,1,$2,2,m1,3,$2,5,$1,1,$1,3,$3,5,$6,7',
+      },
+    },
+    {
+      score: 6000,
+      modules: {
+        sun: '11,d1,2,b2,2,d1,3,b6,4,b1,m1,2,m1,b1,3,b2,4,b2,2,b2,4,b2,3,b1,m1,2,m1,b1,4,b6,3,d1,2,b2,2,d1,11',
+        block3: '11,$2,1,b2,1,$2,2,$2,1,b2,1,$2,2,d1,1,m1,2,m1,1,d1,2,b2,1,$2,1,b2,2,b2,1,$2,1,b2,2,d1,1,m1,2,m1,1,d1,2,$2,1,b2,1,$2,2,$2,1,b2,1,$2,11'
+      },
+    },
+    {
+      score: 9000,
+      modules: {
+        diagonal: '22,$2,b4,4,$1,d1,2,m1,$3,2,b1,2,m1,1,b1,4,b1,1,m1,2,b1,2,$3,m1,2,d1,$1,4,b4,$2,22',
+        random7: '14,b3,5,$3,b1,$2,d1,3,$1,m1,2,$1,2,$1,2,$4,2,$2,1,d1,1,$2,1,$1,1,b1,3,$1,2,m1,2,b1,3,b1,m1,3,m1,b1,3,$1,b3,$1,b2,11'
+      },
+    },
+    {
+      score: 12000,
+      modules: {
+        block4: '12,b6,3,b8,2,b2,m1,1,m1,1,b2,5,m1,1,m1,6,m1,1,m1,5,b2,1,m1,1,m1,b2,2,b8,3,b6,12'
+      }
+    },
+  ]
+
   const tileModules = {
-    surprise_mark: '5,$5,12,$2,8,$1,d1,12,$1,3,$1,5,$1,2,$2,8,$2,5,$1,2,$2,7,m1,$1,5,$5',
+    exclamation_mark: '5,$5,12,$2,8,$1,d1,12,$1,3,$1,5,$1,2,$2,8,$2,5,$1,2,$2,7,m1,$1,5,$5',
     cyclone: '9,$1,3,d1,8,$1,2,$3,4,$1,9,$1,1,$2,8,$2,1,$1,8,m1,$1,2,$5,2,$1,11,$1,9,$1',
     eye: '$2,6,$3,8,$1,2,d1,4,m1,6,$2,7,$4,6,$4,7,$2,6,m1,4,d1,2,$1,8,$3,6,$2',
     broken_flag: '21,$4,7,$1,m1,1,$1,2,d1,22,$1,2,$1,2,$1,3,$1,3,$4,2,$1,1,m1,7,$1,8',
@@ -52,16 +88,10 @@ function init() {
     s: '23,$4,5,$8,2,$2,4,m1,4,$4,9,$2,2,$1,1,$5,7,d1,15',
     dash_dot_dot_dash: '20,$5,5,$5,2,$1,d1,1,$5,21,$4,1,$1,1,m1,2,$4,20',
     i: '12,d1,12,$2,7,$3,7,$2,m1,6,$4,6,$4,6,m1,$3,6,$4,6,$3,4',
-    random1: '$4,6,$2,5,$2,2,$2,3,$2,6,d1,5,$2,6,$5,4,$2,2,$1,9,m1,1,$1,3,m1,$1,5,$1,14,$1',
-    random2: '1,$2,1,$1,4,$1,1,$2,12,$3,4,d1,2,$1,8,$2,1,$1,2,$1,5,$1,5,$3,2,$3,1,m1,1,$1,2,m1,2,$1,2,$1,1,$1,4,$1,10',
     ya: '23,$1,1,d1,1,$1,4,$6,4,$6,5,$2,1,$2,5,$2,1,$2,2,$1,2,$2,5,$1,2,m1,6,$1,6,$3',
     random:  '1,$2,3,$1,1,$2,9,$1,2,$1,1,$2,4,$1,1,$2,1,$1,6,$1,4,d1,4,$1,1,m1,8,$1,3,$1,3,$1,1,$2,3,m1,2,$1,14,$1,3',
-    random4: '$1,4,$1,4,$2,5,$1,6,$1,8,$1,4,$1,1,$2,4,d1,2,$1,11,m1,7,$1,3,$1,1,$3,1,$3,1,$4,m1,1,$1,5,$3,2',
     target2: '12,$3,1,$3,3,$1,11,$1,3,$1,2,d1,2,$3,5,$1,1,$1,m1,6,$1,5,$1,4,$2,1,$2,2,$1,9,$1,9',
-    random5: '8,$1,9,$1,2,$2,2,d1,7,$1,2,$3,4,$1,7,$1,3,$1,1,$1,5,m1,2,$2,8,$1,4,$2,2,$1,1,$1,12',
-    random6: '5,$1,5,$1,6,m1,1,$2,1,d1,6,$2,4,$1,2,$1,3,$1,6,$1,2,$4,1,$2,2,m1,3,$2,5,$1,1,$1,3,$3,5,$6,7',
     block: '18,d1,3,b6,4,b6,4,b2,1,m1,b2,4,b2,m1,1,b2,4,b6,4,b6,3,d1,18',
-    block2: '11,b8,2,b8,2,b2,m1,1,b4,2,b2,2,b4,2,b8,2,b5,2,b1,2,b5,1,d1,b1,2,b8,11',
   }
   
   const elements = {
@@ -197,7 +227,6 @@ function init() {
     return output
   }
 
-
   const addEvents = (target, event, action, array) =>{
     array.forEach(a => event === 'remove' ? target.removeEventListener(a, action) : target.addEventListener(a, action))
   }
@@ -227,9 +256,6 @@ function init() {
   const ePos = (e, type) => Math.round(e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`])
   const randomItem = arr => arr[randomN(arr.length - 1)]
   const zero = no => no < 10 ? '0' : ''
-
-
-
 
 const updateOffset = () => {
   const { offsetWidth: w, offsetHeight: h } = elements.wrapper
@@ -272,7 +298,6 @@ const positionMapImage = () => {
     const x = mapX(i) * d
     const y = mapY(i) * d
     settings.mapImage.ctx.filter = offset ? 'sepia(100%) contrast(250%) hue-rotate(270deg)' : 'sepia(0%) contrast(100%) hue-rotate(0deg)'
-    // settings.mapImage.ctx.filter = offset ? 'brightness(0%)' : 'brightness(100%)'
     settings.mapImage.ctx.drawImage(elements.mapTiles, 
       tileX, tileY,
       16, 16,
@@ -293,7 +318,6 @@ const positionMapImage = () => {
     settings.map.blocks[i] = block
   }
   
-  
   const setupMap = () => {
     const { d, column, row } = settings.map
     const mapLength = column * row
@@ -301,7 +325,7 @@ const positionMapImage = () => {
       const randomKey = randomItem(Object.keys(tileModules))
       return tileModules[randomKey]
     })
-    const modulesToDraw = mapSeed.map(seed=> decompress(seed))
+    const modulesToDraw = mapSeed.map(seed => decompress(seed))
 
     // remove dogblob and mouseblob, add place catblob in random position
     const startModuleIndex = randomN(modulesToDraw.length - 1)
@@ -339,7 +363,6 @@ const positionMapImage = () => {
     })
 
     settings.map.data.forEach((t, i) => {
-      // if (t === 'x') return
       const checkDir = dir => (!settings.map.data?.[i + dir] || settings.map.data?.[i + dir] === '$') ? 'o' : 'x'
       const criteria = [-column, 1, column, -1].reduce((acc, d) => acc + checkDir(d), '')
       const criteria2 = [column + 1, column - 1].reduce((acc, d) => acc + checkDir(d), '')
@@ -359,10 +382,7 @@ const positionMapImage = () => {
         placeSquareBlock(x, y, i)
         settings.map.data[i] = 'x'
       } else if (t === '$') {
-        placeTile({
-          tileId: matchingTile.id,
-          i,
-        })
+        placeTile({ tileId: matchingTile.id, i })
       }
 
       // round off edges
@@ -374,7 +394,7 @@ const positionMapImage = () => {
           placeTile({ tileId: 'top_dot_h', i })
         }
         if (criteria.slice(-2) === 'ox' && criteria2[1] === 'o') placeTile({ tileId: 'bottom_dot', i })
-        if (criteria.slice(1,3) === 'xo' && criteria2[0] === 'o') placeTile({ tileId: 'bottom_dot_h', i })
+        if (criteria.slice(1, 3) === 'xo' && criteria2[0] === 'o') placeTile({ tileId: 'bottom_dot_h', i })
       }
       
       // update corner
@@ -415,7 +435,6 @@ const positionMapImage = () => {
         placeSquareBlock(x, y, t)
       } 
     })
-
     settings.tilesWithNoWalls = tilesWithNoWalls
 
     adjustMapWidthAndHeight()
@@ -473,19 +492,17 @@ const positionMapImage = () => {
               settings.map.blocks[wallCloseBy] = null
             }
           }
-        }, 300)
+        }, 350)
         npc.pause = true
         return
       }
     } else if (npc.track.length > 4) {
       npc.isHunting = true
     }
-
     if (settings.map.blocks[newPos]) {
       triggerNpcMotion(npc)
       return
     } 
-
     // ensure npc only moves to valid position, and if they end up in the same pos as another npc, 
     // enable them to move to random position
     if (newPos) {
@@ -523,7 +540,6 @@ const positionMapImage = () => {
     } 
   }
 
-
   const avoidPlayer = npc => {
     const { pos: p } = npc
     const { column: w } = settings.map
@@ -531,7 +547,7 @@ const positionMapImage = () => {
     const target = npc.runAwayTarget
     if (!target) return
     const checkAndRemoveDir = ({ arr, dir }) => {
-      if (arr.includes(target.pos)) {
+      if ([...settings.npcs.map(n => n.pos), target.pos].some(pos => arr.includes(pos))) {
         motion = motion.filter(option => option !== dir)
       }
     }
@@ -558,7 +574,6 @@ const positionMapImage = () => {
     motion.push(npc.y > target.y ? w : -w)
     motion = motion.filter(pos => noWall({ pos: npc.pos + pos, actor: npc }))
 
-    // TODO need something here to ensure there's way out?
     if (motion.length) moveNpc({ npc, newPos: npc.pos + randomItem(motion) })
   }
 
@@ -567,7 +582,6 @@ const positionMapImage = () => {
     const { pos, goal, searchMemory } = actor
     const { column: w } = settings.map
     const possibleDestination = [1, -1, -w, w].map(d => d + current)
-    // TODO need workaround
     if (possibleDestination.length && !possibleDestination.some(c => c === goal)) {
       const mapInfo = []
       possibleDestination.forEach(cell =>{  
@@ -616,7 +630,6 @@ const positionMapImage = () => {
     decideNextMove({ actor: npc, current: npc.pos })
   }
   
-
   const noWall = ({ pos, ignoreBlock, actor }) =>{    
     const { map: { data, blocks, column: w, d }, npcs } = settings
     if (!data[pos] || (!ignoreBlock && blocks[pos]) || player.pos === pos) return false
@@ -662,11 +675,9 @@ const positionMapImage = () => {
     turnSprite({ actor: player, diff })
     if (actor === player && noWall({ pos: actor.pos + diff, actor })) {
       settings.mapImage[para] += dist
-      // positionMapImage()
       setStyles(settings.mapImage)
       player.pos += diff
       positionMapImage()
-      // elements.indicator.innerHTML = `pos:${player.pos} dataX:${mapX(player.pos)} dataY:${mapY(player.pos)}`
       if (!player.invincible) {
         settings.items.forEach((item, i) => {
           if (item && player.pos === i) {
@@ -680,8 +691,6 @@ const positionMapImage = () => {
               updateTime({ difference: 5 })
               player.itemScore += 100
             }
-
-
             setTimeout(()=> {
               if (settings.items[i]) {
                 settings.mapImage.el.removeChild(item.el)
@@ -768,21 +777,21 @@ const positionMapImage = () => {
     const { pos, sprite: el, d } = actor
     const pDiff = diff || newPos - pos 
 
-    if (pDiff === -1) { // left
+    if (pDiff === -1) {
       setPos({ el, x: -d })
       actor.el.classList.remove('flip')
       actor.facingDirection = 'left'
     }
-    if (pDiff === 1) { // right
+    if (pDiff === 1) {
       setPos({ el, x: -d })
       actor.el.classList.add('flip')
       actor.facingDirection = 'right'
     }
-    if (pDiff === -column) { // down
+    if (pDiff === -column) {
       setPos({ el, x: -d * 2 }) 
       actor.facingDirection = 'down'
     }
-    if (pDiff === column) { // up
+    if (pDiff === column) {
       setPos({ el, x: 0 }) 
       actor.facingDirection = 'up'
     }
@@ -858,7 +867,6 @@ const positionMapImage = () => {
       })
     }
   }
-
 
   const damagePlayer = npc => {
     if (isGamePaused()) return
@@ -995,11 +1003,11 @@ const positionMapImage = () => {
     elements.message.innerHTML = `
       <h1 class="uppercase">${message}</h1>
       <h2> - score - </h2>
+      <p>carry over: ${score}</p>
       <p>mouseblob: ${mouseBlobScore}</p>
       <p>life bonus: ${lifeScore}</p> 
       <p>time bonus: ${timeScore}</p>
       <p>item bonus: ${player.itemScore}</p>
-      <p>past score: ${score}</p>
       <h3 class="uppercase">total: ${newScore + score}</h3>
     `
     settings.score = newScore
@@ -1007,21 +1015,30 @@ const positionMapImage = () => {
     elements.startBtn.blur()
     elements.message.classList.remove('hide')
     clearInterval(settings.time.timer)
+
+    // Add new tileModules
+    if (!tileModules.block4) {
+      extraTileModules.forEach(tileSet => {
+        if (settings.score > tileSet.score) {
+          Object.keys(tileSet.modules).forEach(t => {
+            if (!tileModules[t]) tileModules[t] = tileSet.modules[t]
+          })
+        }
+      })
+    }
   }
   const isGamePaused = () => {
     return settings.demoMode || !player.life.point || player.mouseBlobCaught.no === player.mouseBlobCaught.total || !settings.isWindowActive
   }
 
-
   const start = () => {
     setupMap()
     createNpcs()
     addNpcs()
-    settings.time.no = settings.map.data.length / 8
+    settings.time.no = Math.round(settings.map.data.length / 8)
     updateTime({ difference: 0 })
     triggerIntervals()
   }
-
 
   const restart = () => {
     elements.startBtn.blur()
@@ -1031,7 +1048,7 @@ const positionMapImage = () => {
     } else {
       settings.map.column = [10, 20, 30, 40][randomN(4) - 1]
       settings.map.row = settings.map.column === 10 
-        ? [20, 30, 40][randomN(4) - 1] 
+        ? [20, 30, 40][randomN(3) - 1] 
         : [10, 20, 30, 40][randomN(4) - 1]
       clearInterval(settings.spriteInterval)
       clearInterval(settings.npcMotioninterval)
@@ -1050,8 +1067,8 @@ const positionMapImage = () => {
       player.itemScore = 0
       updateMouseBlobCounter()
       updateLife({ damage: false })
-      player.life.point = 4
-      player.life.markers.forEach(marker => marker.classList.remove('damage'))
+      // player.life.point = 4
+      // player.life.markers.forEach(marker => marker.classList.remove('damage'))
       player.el.classList.remove('blink')
       player.invincible = false
       start()
