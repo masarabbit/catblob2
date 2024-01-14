@@ -400,29 +400,6 @@ canvas {
   z-index: 2;
 }
 
-/* .life-indicator {
-  position: relative;
-  width: 135px;
-  height: 20px;
-  background-color: #5d5656;
-} */
-
-/* .life-indicator:after {
-  position: absolute;
-  content: 'life';
-  font-size: 11px;
-  top: -15px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.life {
-  width: 135px;
-  height: 20px;
-  background-color: var(--pink);
-  transition: 0.4s;
-} */
-
 .life-indicator:after {
   position: absolute;
   content: 'life';
@@ -477,29 +454,6 @@ canvas {
     filter: brightness(150%);
   }
 }
-
-/* @keyframes recover {
-  0%, 100% {
-    transform: scale(1);
-    filter: brightness(100%);
-  }
-  50% {
-    transform: scale(1.3);
-    filter: brightness(300%);
-  }
-} */
-
-/* .life-marker {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAANCAYAAAC6hw6qAAAAAXNSR0IArs4c6QAAAJRJREFUOE9jZEAC/zO3/Gec7sOILAZj45OLDQv7v3jVKqz60OXgikAGwgxHtxSfHMhAmD50S7HJYbUQZADMUmTLkMVhliAbChKDWYpLHKeF2IKVGAtx6YM5BGwhui9waUIPcnRfENIHsnQEWEhqcMKCLe7tIkIhiFWecdRCXOFGdpAOSLZALi/xpQRc5Syh/Ihc5AEAzGJ0LvPVnq4AAAAASUVORK5CYII=);
-  --w: 28px;
-  --h: 26px;
-  width: var(--w);
-  height: var(--h);
-  image-rendering: pixelated;
-  background-repeat: no-repeat;
-  background-size: calc(var(--w) * 2) var(--h);
-  margin-right: 6px;
-} */
 
 .catch-indicator {
   display: flex;
@@ -626,13 +580,14 @@ canvas {
   transition: 0.5s;
   transform: scale(1);
   text-align: center;
-  padding: 60px 34px 16px;
+  padding: 60px 34px 24px;
   flex-direction: column;
+  overflow: hidden;
 }
 
-.message-window:has(.title) {
+/* .message-window:has(.title) {
   padding: 20px 34px 24px;
-}
+} */
 
 .message-window:has(.hide) {
   transform: scale(0);
@@ -641,6 +596,8 @@ canvas {
 .overlay {
   pointer-events: none;
 }
+
+
 
 .message {
   color: white;
@@ -651,8 +608,28 @@ canvas {
   --navy: #024272;
 }
 
+.message-window:has(.rules) {
+  padding-top: 100px;
+}
+
+.rules {
+  margin: 80px -34px -24px;
+  padding: 24px 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  --navy: #024272;
+  background-color: #591b04db;
+}
+
+.rules p {
+  color: white;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+}
+
 h1 {
-  font-size: 2.8em;
+  font-size: 3.6em;
 }
 
 h2 {
@@ -694,10 +671,10 @@ h3 {
   font-family: 'Quicksand', sans-serif;
 }
 
-.start:has(span) {
+/* .start:has(span) {
   position: absolute;
   bottom: 24px;
-}
+} */
 
 .start:hover {
   background-color: var(--pink);

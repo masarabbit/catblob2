@@ -140,7 +140,6 @@ function init() {
     delay: 10,
     pause: false,
     facingDirection: '',
-    // prevPos: null,
   }
 
   const dogBlobObj = {
@@ -619,14 +618,6 @@ const positionMapImage = () => {
     npc.searchMemory = defaultPathMemory(settings.map.data)
     npc.carryOn = true
     if (target) npc.goal = target.pos 
-    // {
-    //   const { pos } = npc.chaseTarget
-    //   if (distanceBetween(npc, { x: mapX(pos) * 32, y: mapY(pos) * 32 }) > (32 * 6)) {
-    //     npc.goal = target.pos 
-    //     npc.prevPos = target.pos 
-    //   }
-    //   else npc.goal = npc.prevPos
-    // }
     decideNextMove({ actor: npc, current: npc.pos })
   }
   
