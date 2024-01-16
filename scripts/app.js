@@ -1033,7 +1033,11 @@ function init() {
     triggerIntervals()
   }
 
-  const restart = () => {
+  const restart = e => {
+    if (e?.touches?.length) {
+      settings.cursor.el.classList.add('hide')
+    }
+
     elements.startBtn.blur()
     elements.message.classList.add('hide')
     if (settings.gameOver) {
