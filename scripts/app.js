@@ -1,8 +1,7 @@
 
 
 function init() {  
-  // TODO add how to play
-  
+
   const tiles = [
     { id: 'h_edge', criteria: ['xoxx'] },
     { id: 'h', criteria: ['xoxo', 'ooxo'] },
@@ -102,11 +101,8 @@ function init() {
     displayBtn: document.querySelector('.display'),
     startBtn: document.querySelector('.start'),
     message: document.querySelector('.message'),
+    howToPlay: document.querySelector('.how-to-play'),
   }
-
-  elements.displayBtn.addEventListener('click', ()=> {
-    console.log('settings', settings, player)
-  })
 
   const player = {
     pos: 314,
@@ -198,6 +194,7 @@ function init() {
       timer: null
     },
     demoMode: true,
+    gameOver: false,
     tilesWithNoWalls: [],
     pauseBlockCreation: false,
     score: 0,
@@ -226,7 +223,7 @@ function init() {
     return output
   }
 
-  const addEvents = (target, event, action, array) =>{
+  const addEvents = (target, event, action, array) => {
     array.forEach(a => event === 'remove' ? target.removeEventListener(a, action) : target.addEventListener(a, action))
   }
   
@@ -256,26 +253,24 @@ function init() {
   const randomItem = arr => arr[randomN(arr.length - 1)]
   const zero = no => no < 10 ? '0' : ''
 
-const updateOffset = () => {
-  const { offsetWidth: w, offsetHeight: h } = elements.wrapper
-  settings.offsetPos = {
-    x: (w / 2) - 16,
-    y: (h / 2) - 16,
+  const updateOffset = () => {
+    const { offsetWidth: w, offsetHeight: h } = elements.wrapper
+    settings.offsetPos = {
+      x: (w / 2) - 16,
+      y: (h / 2) - 16,
+    }
   }
-}
 
-const positionMapImage = () => {
-  const { offsetPos: { x, y }, map: { d } } = settings
-  settings.mapImage.x = x - (mapX(player.pos) * d)
-  settings.mapImage.y = y - (mapY(player.pos) * d)
-}
+  const positionMapImage = () => {
+    const { offsetPos: { x, y }, map: { d } } = settings
+    settings.mapImage.x = x - (mapX(player.pos) * d)
+    settings.mapImage.y = y - (mapY(player.pos) * d)
+  }
 
   const adjustMapWidthAndHeight = () =>{
     updateOffset()
     positionMapImage()
-
     setStyles(settings.mapImage)
-    
     settings.mapImage.el.classList.add('transition')
     clearTimeout(settings.transitionTimer)
     settings.transitionTimer = setTimeout(()=> {
@@ -316,51 +311,30 @@ const positionMapImage = () => {
     settings.mapImage.el.appendChild(block.el)
     settings.map.blocks[i] = block
   }
-  
-  const setupMap = () => {
+
+  const placeItems = () => {
+    const { d } = settings.map
+    settings.tilesWithNoWalls.forEach(t => {
+      if (randomN(70) === 70) {
+        const x = mapX(t) * d
+        const y = mapY(t) * d
+        const type = randomN(20) === 20 ? 'strawberry' : 'blue'
+        const item = {
+          el: Object.assign(document.createElement('div'), { className: `${type}-donut item` }),
+          x, y,
+          type
+        }
+        setPos(item)
+        settings.mapImage.el.appendChild(item.el)
+        settings.items[t] = item
+        placeSquareBlock(x, y, t)
+      } 
+    })
+  }
+
+  const drawWallsAndPositionPlayer = () => {
     const { d, column, row } = settings.map
     const mapLength = column * row
-    const mapSeed = new Array(column * row / 100).fill('').map(()=> {
-      const randomKey = randomItem(Object.keys(tileModules))
-      return tileModules[randomKey]
-    })
-    const modulesToDraw = mapSeed.map(seed => decompress(seed))
-
-    // remove dogblob and mouseblob, add place catblob in random position
-    const startModuleIndex = randomN(modulesToDraw.length - 1)
-    modulesToDraw[startModuleIndex] = modulesToDraw[startModuleIndex].map(t => ['$', 'b'].includes(t) ? t : 'x')
-    const startPos = randomItem(modulesToDraw[startModuleIndex].map((t, i) => {
-      return (t === 'x' && ![0, 9].includes(i % 10) && ![0, 9].includes(Math.floor(i / 10))) && i 
-    }).filter(t => t))
-    modulesToDraw[startModuleIndex][startPos] = 'c'
-
-    settings.map.data = modulesToDraw.map((m, mI) => {
-      const offset1 = mI * 10
-      const offset2 = column - 10
-      const offset3 = ((column * 10) - column) * Math.floor(mI / (column / 10))
-      return m.map((t, tI) => {
-        // return tI + (mI * 10) + (((c * 10) - 10) * Math.floor(tI / 10)) + (((c * 10 * 10) - (c * 10)) * Math.floor(mI / c))
-        return {
-          tile: t || 'x',
-          index: tI + offset1 + (offset2 * Math.floor(tI / 10)) + offset3
-        }
-      })
-    }).flat(1).sort((a, b) => a.index - b.index).map(t => t.tile)
-
-    settings.mapImage.w = column * d
-    settings.mapImage.h = row * d
-
-    setUpCanvas(settings.mapImage)
-
-    settings.mapImage.ctx.fillStyle = '#ffe0e9'
-    settings.mapImage.ctx.fillRect(0, 0, settings.mapImage.w, settings.mapImage.h)
-
-    // add wall around edge
-    settings.map.data = settings.map.data.map((t, i) => {
-      if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
-      return t
-    })
-
     settings.map.data.forEach((t, i) => {
       const checkDir = dir => (!settings.map.data?.[i + dir] || settings.map.data?.[i + dir] === '$') ? 'o' : 'x'
       const criteria = [-column, 1, column, -1].reduce((acc, d) => acc + checkDir(d), '')
@@ -372,7 +346,6 @@ const positionMapImage = () => {
           : tile.criteria.includes(criteria)
       })
 
-      if (!matchingTile.id) console.log(criteria, criteria2)
       if (t === 'c')  player.pos = i
 
       else if (t === 'b' || (t === '$' && matchingTile.id === 'dot' && randomN(10) === 10)) {
@@ -384,7 +357,7 @@ const positionMapImage = () => {
         placeTile({ tileId: matchingTile.id, i })
       }
 
-      // round off edges
+      // round off edges where the walls connect
       if (t === '$') {
         if (criteria[0] === 'o' && criteria[3] === 'x' && checkDir(-(column + 1)) === 'o') {
           placeTile({ tileId: 'top_dot', i })
@@ -415,26 +388,55 @@ const positionMapImage = () => {
         placeTile({ tileId: 'bottom_right_corner', i }) 
       } 
     })
-
-    const tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.blocks[i] && i).filter(t => t)
-    
-    tilesWithNoWalls.forEach(t => {
-      if (randomN(70) === 70) {
-        const x = mapX(t) * d
-        const y = mapY(t) * d
-        const type = randomN(20) === 20 ? 'strawberry' : 'blue'
-        const item = {
-          el: Object.assign(document.createElement('div'), { className: `${type}-donut item` }),
-          x, y,
-          type
-        }
-        setPos(item)
-        settings.mapImage.el.appendChild(item.el)
-        settings.items[t] = item
-        placeSquareBlock(x, y, t)
-      } 
+  }
+  
+  const setupMap = () => {
+    const { d, column, row } = settings.map
+    const mapSeed = new Array(column * row / 100).fill('').map(()=> {
+      const randomKey = randomItem(Object.keys(tileModules))
+      return tileModules[randomKey]
     })
-    settings.tilesWithNoWalls = tilesWithNoWalls
+    const modulesToDraw = mapSeed.map(seed => decompress(seed))
+
+    // remove dogblob and mouseblob, add place catblob in random position
+    const startModuleIndex = randomN(modulesToDraw.length - 1)
+    modulesToDraw[startModuleIndex] = modulesToDraw[startModuleIndex].map(t => ['$', 'b'].includes(t) ? t : 'x')
+    // starting position needs to avoid edge of map modules, and should not be wall position
+    const startPos = randomItem(modulesToDraw[startModuleIndex].map((t, i) => {
+      return (t === 'x' && ![0, 9].includes(i % 10) && ![0, 9].includes(Math.floor(i / 10))) && i 
+    }).filter(t => t))
+    modulesToDraw[startModuleIndex][startPos] = 'c'
+
+    settings.map.data = modulesToDraw.map((m, mI) => {
+      const offset1 = mI * 10
+      const offset2 = column - 10
+      const offset3 = ((column * 10) - column) * Math.floor(mI / (column / 10))
+      return m.map((t, tI) => {
+        return {
+          tile: t || 'x',
+          index: tI + offset1 + (offset2 * Math.floor(tI / 10)) + offset3
+        }
+      })
+    }).flat(1).sort((a, b) => a.index - b.index).map(t => t.tile)
+
+    // resize map and fill ground colour
+    settings.mapImage.w = column * d
+    settings.mapImage.h = row * d
+    setUpCanvas(settings.mapImage)
+    settings.mapImage.ctx.fillStyle = '#ffe0e9'
+    settings.mapImage.ctx.fillRect(0, 0, settings.mapImage.w, settings.mapImage.h)
+
+    // add wall around edge
+    settings.map.data = settings.map.data.map((t, i) => {
+      if ([0, column - 1].includes(mapX(i)) || [0, row - 1].includes(mapY(i))) return '$'
+      return t
+    })
+
+    drawWallsAndPositionPlayer()
+
+    settings.tilesWithNoWalls = settings.map.data.map((t, i) => t === 'x' && !settings.map.blocks[i] && i).filter(t => t)
+    // place items and hide them under blocks
+    placeItems()
 
     adjustMapWidthAndHeight()
   }
@@ -465,7 +467,6 @@ const positionMapImage = () => {
       npc.isHunting = false
       npc.track.length = 0
 
-      // TODO npc identifies wall close by and attacks it
       const wallCloseBy = [npc.pos + 1, npc.pos - 1, npc.pos + column, npc.pos - column].find(p => settings.map.blocks[p])
       if (wallCloseBy) {
         clearTimeout(npc.motionTimer)
@@ -910,7 +911,6 @@ const positionMapImage = () => {
     }  
   }
 
-
   const addTouchAction = el =>{
     const pos = { a: { x: 0, y: 0 }, b: { x: 0, y: 0 } }
     const onGrab = e =>{
@@ -1001,14 +1001,15 @@ const positionMapImage = () => {
       <p>item bonus: ${player.itemScore}</p>
       <h3 class="uppercase">total: ${newScore + score}</h3>
     `
-    settings.score = newScore
+
+    settings.score = win ? newScore : 0
     elements.startBtn.innerHTML = 'play again'
     elements.startBtn.blur()
     elements.message.classList.remove('hide')
     clearInterval(settings.time.timer)
 
-    // Add new tileModules
-    if (!tileModules.block4) {
+    // add new tileModules
+    if (win && !tileModules.block4) {
       extraTileModules.forEach(tileSet => {
         if (settings.score > tileSet.score) {
           Object.keys(tileSet.modules).forEach(t => {
@@ -1017,6 +1018,7 @@ const positionMapImage = () => {
         }
       })
     }
+    settings.gameOver = !win
   }
   const isGamePaused = () => {
     return settings.demoMode || !player.life.point || player.mouseBlobCaught.no === player.mouseBlobCaught.total || !settings.isWindowActive
@@ -1034,8 +1036,14 @@ const positionMapImage = () => {
   const restart = () => {
     elements.startBtn.blur()
     elements.message.classList.add('hide')
+    if (settings.gameOver) {
+      player.life.point = 4
+      player.life.markers.forEach(marker => marker.classList.remove('damage'))
+      settings.gameOver = false
+    }
     if (settings.demoMode) {
       settings.demoMode = false
+      elements.howToPlay.remove()
     } else {
       settings.map.column = [10, 20, 30, 40][randomN(4) - 1]
       settings.map.row = settings.map.column === 10 
@@ -1058,8 +1066,6 @@ const positionMapImage = () => {
       player.itemScore = 0
       updateMouseBlobCounter()
       updateLife({ damage: false })
-      // player.life.point = 4
-      // player.life.markers.forEach(marker => marker.classList.remove('damage'))
       player.el.classList.remove('blink')
       player.invincible = false
       start()

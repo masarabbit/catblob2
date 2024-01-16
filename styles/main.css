@@ -575,7 +575,7 @@ canvas {
   background-color: #0ee2f1c7;
   min-height: 220px;
   letter-spacing: 5px;
-  border-radius: 10px;
+  border-radius: 14px;
   pointer-events: all;
   transition: 0.5s;
   transform: scale(1);
@@ -583,6 +583,7 @@ canvas {
   padding: 60px 34px 24px;
   flex-direction: column;
   overflow: hidden;
+  max-width: calc(100% - 32px);
 }
 
 /* .message-window:has(.title) {
@@ -608,13 +609,13 @@ canvas {
   --navy: #024272;
 }
 
-.message-window:has(.rules) {
+.message-window:has(.how-to-play) {
   padding-top: 100px;
 }
 
-.rules {
-  margin: 80px -34px -24px;
-  padding: 24px 34px;
+.how-to-play {
+  margin: 80px -34px -80px;
+  padding: 24px 34px 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -622,10 +623,11 @@ canvas {
   background-color: #591b04db;
 }
 
-.rules p {
+.how-to-play p {
   color: white;
   letter-spacing: 0;
   margin-bottom: 4px;
+  font-size: 0.9em;
 }
 
 h1 {
