@@ -174,9 +174,8 @@ function init() {
     },
     map: {
       el: document.querySelector('.map-cover'), 
-      w: 30, h: 20,
       d: 32,
-      column: 30,
+      column: 20,
       row: 20,
       data: [],
       blocks: [],
@@ -250,7 +249,7 @@ function init() {
   const blockState = ['cracked', 'cracked-more', 'cracked-even-more', 'shattered']
   const distanceBetween = (a, b) => Math.round(Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2)))
   const ePos = (e, type) => Math.round(e.type[0] === 'm' ? e[`page${type}`] : e.touches[0][`page${type}`])
-  const randomItem = arr => arr[randomN(arr.length - 1)]
+  const randomItem = arr => arr[randomN(arr.length) - 1]
   const zero = no => no < 10 ? '0' : ''
 
   const updateOffset = () => {
@@ -347,7 +346,6 @@ function init() {
       })
 
       if (t === 'c')  player.pos = i
-
       else if (t === 'b' || (t === '$' && matchingTile.id === 'dot' && randomN(10) === 10)) {
         const x = mapX(i) * d
         const y = mapY(i) * d
@@ -488,7 +486,7 @@ function init() {
             npc.pause = false
             triggerNpcMotion(npc)
             if (settings.map.blocks[wallCloseBy]) {
-              settings.mapImage.el.removeChild(block.el)
+              block.el?.remove()
               settings.map.blocks[wallCloseBy] = null
             }
           }
@@ -630,6 +628,8 @@ function init() {
   }
 
   const handleWalk = dir => {
+    settings.cursor.el.classList.add('d-none')
+
     if (player.walkingDirection !== dir){
       clearInterval(player.walkingInterval)
       player.walkingDirection = dir
@@ -685,7 +685,7 @@ function init() {
             }
             setTimeout(()=> {
               if (settings.items[i]) {
-                settings.mapImage.el.removeChild(item.el)
+                item.el?.remove()
                 settings.items[i] = null
               }
             }, 1000)
@@ -725,7 +725,7 @@ function init() {
       setTimeout(()=> {
         settings.pauseBlockCreation = false
         if (el) {
-          settings.mapImage.el.removeChild(el)
+          el?.remove()
           settings.map.blocks[index] = null
         }
       }, 400)
@@ -890,7 +890,7 @@ function init() {
     updateMouseBlobCounter()
     setTimeout(()=> {
       if (npc.el) {
-        settings.mapImage.el.removeChild(npc.el)
+        npc.el.remove()
         settings.npcs = settings.npcs.filter(n => npc.id !== n.id)
       }
     }, 1000)
@@ -975,7 +975,7 @@ function init() {
       updateTime({ difference: -1 })
       if (player.invincible) {
         player.invincibleCount += 1
-        if (player.invincibleCount > 5) {
+        if (player.invincibleCount > 4) {
           player.invincibleCount = 0
           player.invincible = false
           player.el.classList.remove('blink')
@@ -1002,7 +1002,7 @@ function init() {
       <h3 class="uppercase">total: ${newScore + score}</h3>
     `
 
-    settings.score = win ? newScore : 0
+    settings.score = win ? newScore + score : 0
     elements.startBtn.innerHTML = 'play again'
     elements.startBtn.blur()
     elements.message.classList.remove('hide')
@@ -1033,11 +1033,38 @@ function init() {
     triggerIntervals()
   }
 
+  const updateMapSize = () => {
+    if (settings.score > 4000) {
+      settings.map.column = 40
+      settings.map.row = 40
+    } else if (settings.score > 3000) {
+      settings.map.column = 30
+      settings.map.row = 30
+    } else if (settings.score > 2000) {
+      settings.map.column = 40
+      settings.map.row = 10
+    } else if (settings.score > 1000) {
+      settings.map.column = 30
+      settings.map.row = 20
+    } else if (settings.score > 500) {
+      settings.map.column = 30
+      settings.map.row = 10
+    } else { 
+      settings.map.column = 20
+      settings.map.row = 20
+    }
+
+    if (settings.score > 5000) {
+      settings.map.column += [-10, 10, 10, 20][randomN(4) - 1]
+      settings.map.row += [-10, 10, 10, 20][randomN(4) - 1]
+    } 
+  }
+
   const restart = e => {
+    // hide cursor on touch screen
     if (e?.touches?.length) {
       settings.cursor.el.classList.add('hide')
     }
-
     elements.startBtn.blur()
     elements.message.classList.add('hide')
     if (settings.gameOver) {
@@ -1049,22 +1076,15 @@ function init() {
       settings.demoMode = false
       elements.howToPlay.remove()
     } else {
-      settings.map.column = [10, 20, 30, 40][randomN(4) - 1]
-      settings.map.row = settings.map.column === 10 
-        ? [20, 30, 40][randomN(3) - 1] 
-        : [10, 20, 30, 40][randomN(4) - 1]
+      updateMapSize()
       clearInterval(settings.spriteInterval)
       clearInterval(settings.npcMotioninterval)
       settings.npcs.forEach(npc => {
         clearTimeout(npc.motionTimer)
-        settings.mapImage.el.removeChild(npc.el)
+        npc?.el?.remove()
       })
-      settings.map.blocks.forEach(block => {
-        if (block) settings.mapImage.el.removeChild(block.el)
-      })
-      settings.items.forEach(item => {
-        if (item) settings.mapImage.el.removeChild(item.el)
-      })
+      settings.map.blocks.forEach(block => block?.el?.remove())
+      settings.items.forEach(item => item?.el?.remove())
       ;[settings.map.blocks, settings.items, settings.npcs].forEach(data => data.length = 0)
       player.mouseBlobCaught.no = 0
       player.itemScore = 0
