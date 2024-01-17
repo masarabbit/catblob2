@@ -1062,7 +1062,7 @@ function init() {
 
   const restart = e => {
     // hide cursor on touch screen
-    if (e?.touches?.length) {
+    if (e.pointerType === 'touch') {
       settings.cursor.el.classList.add('hide')
     }
     elements.startBtn.blur()
