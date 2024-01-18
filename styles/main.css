@@ -468,20 +468,16 @@ canvas {
   background-size: calc(var(--size) * 3); 
   background-position: calc(var(--size) * -1);
   margin-top: -3px;
-  /* new simplified background */
-  /* background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAJRJREFUSEvVlVESgCAIRPUCdYPuf65uUBeosRkaVIxV4SO/9bHgAjE4nejEDRV42Y+LBzu3dSh49qiEUgAJrgl4wS2oBEcEdINRATAY/WQqmz84KdLSRFRXiunRDJy7B7Jbj1K6a1pjUfFMCaROfRRbQXkzuYBTgJ+CPeps5uPSGeqgR5pDGq3N7YBY8Gu7DK0dJIsb5I5Tl1pB0PkAAAAASUVORK5CYII=); */
 }
 
 .catch-indicator span {
   margin: 0 8px 0 4px;
   --color: #0ee2f1;
-  /* --color: white; */
   --transition: 1s;
 }
 
 .time-label {
   --size: 20px;
-  /* background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAJhJREFUOE+1lGEOgCAIRvMMddlO0GXrDDXbcErgkzb9KfD4QCQtcM71uGuX7dpTL8Q1CkgDvHtJ8gFSgAR6fg0wO1FJulwdU4A9GCWq7XOAEQXeCwvjVRgFWv4FSDCdkHqdIkDyzfZhYFZKIxUCEkxaM/Qo9N/rPs8BjoxOT2X4p1DJJvCvSnc50Fqytow1SvMXrKdE7mkeH38pvin1SURRAAAAAElFTkSuQmCC); */
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAE9JREFUKFN1kEEOADAEBLv/f7SGhEyVniyDLh08MzNqSUpdgUMsOMBcgEz0htTaChwQzAZ+WybQp/G/40S6zjjAbqaDZebpwt3G8xDeDn4Byblf+1OjRWAAAAAASUVORK5CYII=);
   background-size: var(--size); 
   margin-right: 6px;
@@ -562,8 +558,6 @@ canvas {
 
 .message-window {
   position: absolute;
-  /* background-color: rgba(2, 195, 249, 0.674); */
-  /* background-color: #0ee2f1b5; */
   background-color: #0ee2f1c7;
   min-height: 220px;
   letter-spacing: 5px;
@@ -572,7 +566,7 @@ canvas {
   transition: 0.5s;
   transform: scale(1);
   text-align: center;
-  padding: 60px 34px 24px;
+  padding: 60px 34px 28px;
   flex-direction: column;
   overflow: hidden;
   max-width: calc(100% - 32px);
@@ -600,8 +594,8 @@ canvas {
 }
 
 .how-to-play {
-  margin: 80px -34px -80px;
-  padding: 24px 34px 80px;
+  margin: 80px -34px -90px;
+  padding: 24px 34px 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -639,7 +633,6 @@ h3 {
   color: var(--navy);
   letter-spacing: 0;
   font-size: 1em;
-  /* color: hotpink */
 }
 
 .uppercase {
@@ -648,7 +641,7 @@ h3 {
 
 .start {
   padding: 8px 20px;
-  margin-top: 20px;
+  margin-top: 24px;
   border: 0;
   border-radius: 90px;
   letter-spacing: 2px;
@@ -692,10 +685,3 @@ a {
 
 a:hover { text-decoration: underline; }
 
-.marker {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  background-color: yellow;
-  border-radius: 50%;
-}

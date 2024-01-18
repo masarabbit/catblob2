@@ -1,7 +1,6 @@
 
 
 function init() {  
-
   const tiles = [
     { id: 'h_edge', criteria: ['xoxx'] },
     { id: 'h', criteria: ['xoxo', 'ooxo'] },
@@ -96,7 +95,6 @@ function init() {
   const elements = {
     wrapper: document.querySelector('.main'),
     mapImage: document.querySelector('.map-image'),
-    indicator: document.querySelector('.indicator'),
     mapTiles: document.querySelector('.map-tiles'),
     displayBtn: document.querySelector('.display'),
     startBtn: document.querySelector('.start'),
@@ -1096,7 +1094,6 @@ function init() {
     }
   }
 
-  start()
 
   window.addEventListener('focus', ()=> settings.isWindowActive = true)
   window.addEventListener('blur', ()=> settings.isWindowActive = false)
@@ -1112,6 +1109,8 @@ function init() {
   elements.startBtn.addEventListener('click', restart)
 
   addTouchAction(control.el)
+
+  start()
 }
 
 window.addEventListener('DOMContentLoaded', init)
